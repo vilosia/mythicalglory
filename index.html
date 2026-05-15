@@ -186,7 +186,24 @@
       line-height: 1;
     }
 
+    
     @media (max-width: 768px) {
+      #heroBg1 {
+        background-image:
+        linear-gradient(180deg, rgba(0,0,0,.62) 0%, rgba(0,0,0,.34) 38%, rgba(0,0,0,.16) 100%),
+        url('assets/hero-mobile.jpg') !important;
+      }
+
+      #heroBg2 {
+        display:none !important;
+      }
+
+      .hero-rotating-bg {
+        background-position: center center !important;
+      }
+    }
+
+@media (max-width: 768px) {
       .hero-rotating-bg {
         background-position: center center !important;
       }
