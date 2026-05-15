@@ -147,6 +147,13 @@
     .particle:nth-child(11){ left:61%; animation-duration:11.2s; animation-delay:3.8s; transform:scale(.42);}
     .particle:nth-child(12){ left:21%; animation-duration:13.4s; animation-delay:4.5s; transform:scale(.5);}
 
+    .particle:nth-child(13){ left:12%; animation-duration:10.8s; animation-delay:5.1s; transform:scale(.46);}
+    .particle:nth-child(14){ left:48%; animation-duration:12.8s; animation-delay:2.6s; transform:scale(.52);}
+    .particle:nth-child(15){ left:79%; animation-duration:9.8s; animation-delay:4.4s; transform:scale(.58);}
+    .particle:nth-child(16){ left:88%; animation-duration:14.2s; animation-delay:5.7s; transform:scale(.44);}
+    .particle:nth-child(17){ left:52%; animation-duration:11.6s; animation-delay:6.1s; transform:scale(.48);}
+    .particle:nth-child(18){ left:31%; animation-duration:13.8s; animation-delay:5.3s; transform:scale(.42);}
+
     @keyframes floatUp {
       0% { transform: translate3d(0, 0, 0) scale(var(--s,1)); opacity: 0; }
       12% { opacity: .5; }
@@ -259,7 +266,7 @@
   <header class="fixed top-0 left-0 right-0 z-50 bg-black/28 backdrop-blur-md border-b border-white/[0.06]">
     <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <img src="assets/logo.png" class="h-11 w-auto object-contain" alt="Logo">
+        <img src="assets/logo_mg.svg" class="h-11 w-auto object-contain" alt="Logo">
       </div>
 
       <div class="hidden lg:flex items-center gap-8 text-sm text-white/72 ml-auto">
@@ -291,12 +298,14 @@
         <span class="particle"></span><span class="particle"></span><span class="particle"></span>
         <span class="particle"></span><span class="particle"></span><span class="particle"></span>
         <span class="particle"></span><span class="particle"></span><span class="particle"></span>
+        <span class="particle"></span><span class="particle"></span><span class="particle"></span>
+        <span class="particle"></span><span class="particle"></span><span class="particle"></span>
       </div>
 
       <div class="relative z-10 max-w-7xl mx-auto px-6 w-full">
         <div class="max-w-2xl">
           <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-400/30 bg-black/24 backdrop-blur text-yellow-300 text-sm mb-7" data-i18n="heroBadge">
-            赛季上分 · 高段位玩家服务
+            赛季上分
           </div>
 
           <h1 class="text-5xl md:text-7xl font-black leading-[0.95] tracking-tight">
@@ -326,7 +335,7 @@
       <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-[.86fr_1.14fr] gap-20 items-start">
         <div class="lg:pt-8">
           <div class="text-yellow-400 font-semibold tracking-widest uppercase text-sm">Instant Quote</div>
-          <h2 class="mt-5 text-4xl md:text-5xl font-black leading-tight" data-i18n="calcTitle">先选服务，再估算价格</h2>
+          <h2 class="mt-5 text-4xl md:text-5xl font-black leading-tight" data-i18n="calcTitle">先选服务<br>再估算价格</h2>
           <p class="text-white/62 leading-relaxed mt-7 text-lg" data-i18n="calcDesc">
             价格会根据当前段位、目标段位或陪玩场次自动估算。最终价格与排期会由客服在 WhatsApp / 微信中确认。
           </p>
@@ -414,7 +423,7 @@
       <div class="max-w-7xl mx-auto px-6">
         <div class="max-w-3xl mx-auto text-center">
           <div class="text-yellow-400 font-semibold tracking-widest uppercase text-sm">Service Options</div>
-          <h2 class="mt-5 text-4xl md:text-5xl font-black leading-tight" data-i18n="serviceTitle">代打与陪玩，是两种不同需求</h2>
+          <h2 class="mt-5 text-4xl md:text-5xl font-black leading-tight" data-i18n="serviceTitle">代打与陪玩 两种不同的需求</h2>
           <p class="text-white/62 leading-relaxed mt-7 text-lg" data-i18n="serviceDesc">
             代打适合希望节省时间、直接推进段位的玩家；陪玩适合希望自己参与对局、和高段位玩家一起排位的玩家。
           </p>
@@ -439,9 +448,9 @@
     <section id="trust" class="section-bg-final py-28 bg-[#070709]" style="background-image:url('assets/section4-bg.jpg');">
       <div class="max-w-6xl mx-auto px-6 text-center">
         <div class="text-yellow-400 font-semibold tracking-widest uppercase text-sm">Service Confidence</div>
-        <h2 class="mt-5 text-4xl md:text-5xl font-black leading-tight" data-i18n="trustTitle">专业服务，不靠夸张承诺</h2>
+        <h2 class="mt-5 text-4xl md:text-5xl font-black leading-tight" data-i18n="trustTitle">五年持续运营，靠的不是夸张承诺</h2>
         <p class="text-white/62 leading-relaxed mt-7 text-lg max-w-3xl mx-auto" data-i18n="trustDesc">
-          我们更重视清楚的沟通、合理的报价、订单过程可跟进，以及高段位玩家的稳定执行。
+          而是长期可信赖的服务与稳定执行。
         </p>
       </div>
     </section>
@@ -463,16 +472,16 @@ const PRICING = [
 const text = {
  zh:{
   navQuote:"报价", navServices:"服务", navTrust:"保障",
-  heroBadge:"赛季上分 · 高段位玩家服务", heroTitleA:"冲上", heroTitleB:"Mythical Glory", heroTitleC:"不必独自硬扛",
+  heroBadge:"赛季上分", heroTitleA:"冲上", heroTitleB:"Mythical Glory", heroTitleC:"不必独自硬扛",
   heroDesc:"提供 MLBB 代打与高端玩家陪玩服务。无论你想快速推进段位，还是希望和更强的队友一起排位，我们都能提供更稳定、更清晰的服务流程。",
   heroCta1:"立即估算价格", heroCta2:"查看服务方式",
-  calcTitle:"先选服务，再估算价格", calcDesc:"价格会根据当前段位、目标段位或陪玩场次自动估算。最终价格与排期会由客服在 WhatsApp / 微信中确认。",
+  calcTitle:"先选服务<br>再估算价格", calcDesc:"价格会根据当前段位、目标段位或陪玩场次自动估算。最终价格与排期会由客服在 WhatsApp / 微信中确认。",
   paymentTitle:"支持付款方式", modeBoost:"代打上分", modeDuo:"高端陪玩", currentRankLabel:"当前段位", targetRankLabel:"目标段位", matchesLabel:"陪玩场次",
   estimatedPrice:"预估金额", summaryTitle:"订单摘要", whatsappCta:"继续通过 WhatsApp 咨询", wechatLine:"客服微信：lexlu1688", rankWarning:"目标段位必须高于当前段位。",
-  serviceTitle:"代打与陪玩，是两种不同需求", serviceDesc:"代打适合希望节省时间、直接推进段位的玩家；陪玩适合希望自己参与对局、和高段位玩家一起排位的玩家。",
+  serviceTitle:"代打与陪玩 两种不同的需求", serviceDesc:"代打适合希望节省时间、直接推进段位的玩家；陪玩适合希望自己参与对局、和高段位玩家一起排位的玩家。",
   boostTitle:"代打上分", boostDesc:"由高段位玩家协助完成指定段位目标，适合想更快获得赛季奖励或突破卡点的玩家。",
   duoTitle:"高端玩家陪玩", duoDesc:"与高段位玩家一起排位。胜负取决于匹配、阵容与对局情况，但我们会尽力提高胜率与体验。",
-  trustTitle:"专业服务，不靠夸张承诺", trustDesc:"我们更重视清楚的沟通、合理的报价、订单过程可跟进，以及高段位玩家的稳定执行。",
+  trustTitle:"五年持续运营，靠的不是夸张承诺", trustDesc:"而是长期可信赖的服务与稳定执行。",
   chooseCurrent:"请选择当前段位", chooseTarget:"请选择目标段位", chooseFirst:"请先选择当前段位", etaDefault:"请选择段位后自动计算", summaryDefault:"请选择服务与段位。"
  },
  en:{
@@ -593,7 +602,13 @@ function setLang(next){
   document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
   document.querySelectorAll("[data-i18n]").forEach(el=>{
     const key = el.getAttribute("data-i18n");
-    if(text[lang][key]) el.textContent = text[lang][key];
+    if(text[lang][key]) {
+      if (key === "calcTitle") {
+        el.innerHTML = text[lang][key];
+      } else {
+        el.textContent = text[lang][key];
+      }
+    }
   });
   byId("langZh").className = lang==="zh" ? "lang-btn px-3 py-2 rounded-lg bg-yellow-400 text-black text-base font-black" : "lang-btn px-3 py-2 rounded-lg bg-white/8 border border-white/10 text-white/80 text-base font-black backdrop-blur";
   byId("langEn").className = lang==="en" ? "lang-btn px-3 py-2 rounded-lg bg-yellow-400 text-black text-base font-black" : "lang-btn px-3 py-2 rounded-lg bg-white/8 border border-white/10 text-white/80 text-base font-black backdrop-blur";
