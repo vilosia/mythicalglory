@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mythical Glory | Mobile Legend Rank Boosting & Play With Pro</title>
+  <meta name="description" content="Mythical Glory provides MLBB rank boosting and Play With Pro services with clear pricing, high-rank players, WhatsApp support, and multilingual service." />
+  <meta name="keywords" content="MLBB rank boosting, Mobile Legends boosting, Mythical Glory, MLBB duo queue, Play With Pro, MLBB 上分, MLBB 代打, Mobile Legends 陪玩" />
+  <meta property="og:title" content="MythicalGlory | 专业代打/陪玩 Mobile Legend Rank Boosting & Play With Pro" />
+  <meta property="og:description" content="MLBB rank boosting and Play With Pro services with clear pricing and high-rank players." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.mythicalglory.com/" />
+  <meta property="og:image" content="https://www.mythicalglory.com/assets/hero-bg-1.jpg" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Inter", "Noto Sans SC", sans-serif;
+      background:#070709;
+      color:#fff;
+    }
+
+    .site-scale { font-size: 90%; }
+    .h-11 {
+    height: 1.6rem;
+}
+
+    /* First fold: removed heavy dark layer, keep only readable left gradient */
+    .hero-bg {
+
+    .hero-rotating-bg{
+      position:absolute;
+      inset:0;
+      background-size:cover;
+      background-position:center;
+      opacity:0;
+      transition:opacity 2.5s ease;
+    }
+
+    .hero-rotating-bg.active{
+      opacity:1;
+    }
+
+      position: relative;
+      overflow: hidden;
+      background: transparent;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .section-bg-boosting {
+      background-size: cover !important;
+      background-position: center !important;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .section-bg-boosting::before {
+      content:"";
+      position:absolute;
+      inset:0;
+      background: linear-gradient(90deg, rgba(7,7,9,.78), rgba(7,7,9,.56), rgba(7,7,9,.76));
+      z-index:-1;
+    }
+
+    .section-bg-trust {
+      background-size: cover !important;
+      background-position: center !important;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .section-bg-trust::before {
+      content:"";
+      position:absolute;
+      inset:0;
+      background: linear-gradient(90deg, rgba(7,7,9,.78), rgba(7,7,9,.56), rgba(7,7,9,.76));
+      z-index:-1;
+    }
+
+
+    .section-bg-final {
+      background-size: cover !important;
+      background-position: center !important;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .section-bg-final::before {
+      content:"";
+      position:absolute;
+      inset:0;
+      background: linear-gradient(90deg, rgba(7,7,9,.78), rgba(7,7,9,.56), rgba(7,7,9,.76));
+      z-index:-1;
+    }
+
+    .gold-text {
+      background: linear-gradient(135deg,#f7d56b,#b77820);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+
+    .glass-card {
+      background: rgba(13,13,17,.72);
+      border: 1px solid rgba(255,255,255,.1);
+      box-shadow: 0 24px 80px rgba(0,0,0,.34);
+      backdrop-filter: blur(12px);
+    }
+
+    .soft-card {
+      background: rgba(255,255,255,.045);
+      border: 1px solid rgba(255,255,255,.1);
+      backdrop-filter: blur(10px);
+    }
+
+    .particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .particle {
+      position: absolute;
+      bottom: -40px;
+      width: 3px;
+      height: 3px;
+      border-radius: 999px;
+      background: rgba(255, 190, 76, .95);
+      box-shadow: 0 0 14px rgba(255, 169, 42, .9);
+      animation: floatUp linear infinite;
+      opacity: 0;
+    }
+
+    .particle:nth-child(1){ left:8%; animation-duration:8s; animation-delay:.2s; transform:scale(.8);}
+    .particle:nth-child(2){ left:16%; animation-duration:11s; animation-delay:1.2s; transform:scale(.55);}
+    .particle:nth-child(3){ left:28%; animation-duration:9s; animation-delay:2.1s; transform:scale(.7);}
+    .particle:nth-child(4){ left:42%; animation-duration:12s; animation-delay:.6s; transform:scale(.5);}
+    .particle:nth-child(5){ left:56%; animation-duration:10s; animation-delay:1.7s; transform:scale(.65);}
+    .particle:nth-child(6){ left:66%; animation-duration:13s; animation-delay:.1s; transform:scale(.45);}
+    .particle:nth-child(7){ left:74%; animation-duration:9.5s; animation-delay:2.9s; transform:scale(.6);}
+    .particle:nth-child(8){ left:86%; animation-duration:12.5s; animation-delay:1.1s; transform:scale(.48);}
+    .particle:nth-child(9){ left:93%; animation-duration:10.5s; animation-delay:3.2s; transform:scale(.7);}
+    .particle:nth-child(10){ left:35%; animation-duration:14s; animation-delay:4s; transform:scale(.5);}
+    .particle:nth-child(11){ left:61%; animation-duration:11.2s; animation-delay:3.8s; transform:scale(.42);}
+    .particle:nth-child(12){ left:21%; animation-duration:13.4s; animation-delay:4.5s; transform:scale(.5);}
+
+    .particle:nth-child(13){ left:12%; animation-duration:10.8s; animation-delay:5.1s; transform:scale(.46);}
+    .particle:nth-child(14){ left:48%; animation-duration:12.8s; animation-delay:2.6s; transform:scale(.52);}
+    .particle:nth-child(15){ left:79%; animation-duration:9.8s; animation-delay:4.4s; transform:scale(.58);}
+    .particle:nth-child(16){ left:88%; animation-duration:14.2s; animation-delay:5.7s; transform:scale(.44);}
+    .particle:nth-child(17){ left:52%; animation-duration:11.6s; animation-delay:6.1s; transform:scale(.48);}
+    .particle:nth-child(18){ left:31%; animation-duration:13.8s; animation-delay:5.3s; transform:scale(.42);}
+
+    @keyframes floatUp {
+      0% { transform: translate3d(0, 0, 0) scale(var(--s,1)); opacity: 0; }
+      12% { opacity: .5; }
+      65% { opacity: .36; }
+      100% { transform: translate3d(26px, -720px, 0) scale(.2); opacity: 0; }
+    }
+    .pay-icon {
+      height: 24px;
+      width: auto;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+      opacity: .88;
+    }
+
+    .pay-icon.paypal {
+      transform: scale(.82);
+    }
+
+    .pay-icon.wechat {
+      transform: scale(.9);
+    }
+
+    .pay-icon.tng {
+      transform: scale(.88);
+    }
+
+    .pay-icon.alipay {
+      opacity: .78;
+    }
+
+
+
+    select, input { color-scheme: dark; }
+
+    .lang-btn {
+      min-width: 42px;
+      line-height: 1;
+    }
+
+    
+    @media (max-width: 768px) {
+      #heroBg1 {
+        background-image:
+        linear-gradient(180deg, rgba(0,0,0,.62) 0%, rgba(0,0,0,.34) 38%, rgba(0,0,0,.16) 100%),
+        url('assets/hero-mobile.jpg') !important;
+      }
+
+      #heroBg2 {
+        display:block !important;
+        background-image:
+        linear-gradient(180deg, rgba(0,0,0,.62) 0%, rgba(0,0,0,.34) 38%, rgba(0,0,0,.16) 100%),
+        url('assets/hero-mobile2.jpg') !important;
+      }
+
+      .hero-rotating-bg {
+        background-position: center center !important;
+      }
+    }
+
+@media (max-width: 768px) {
+      .hero-rotating-bg {
+        background-position: center center !important;
+      }
+      .site-scale { font-size: 88%; }
+      .hero-bg {
+
+    .hero-rotating-bg{
+      position:absolute;
+      inset:0;
+      background-size:cover;
+      background-position:center;
+      opacity:0;
+      transition:opacity 2.5s ease;
+    }
+
+    .hero-rotating-bg.active{
+      opacity:1;
+    }
+ background-position: 62% center; }
+    .pay-icon {
+      height: 24px;
+      width: auto;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+      opacity: .88;
+    }
+
+    .pay-icon.paypal {
+      transform: scale(.82);
+    }
+
+    .pay-icon.wechat {
+      transform: scale(.9);
+    }
+
+    .pay-icon.tng {
+      transform: scale(.88);
+    }
+
+    .pay-icon.alipay {
+      opacity: .78;
+    }
+
+
+    }
+  </style>
+</head>
+
+<body class="site-scale overflow-x-hidden">
+  <header class="fixed top-0 left-0 right-0 z-50 bg-black/28 backdrop-blur-md border-b border-white/[0.06]">
+    <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img src="assets/logo_mg.svg" class="h-11 w-auto object-contain" alt="Logo">
+      </div>
+
+      <div class="hidden lg:flex items-center gap-8 text-sm text-white/72 ml-auto">
+        <a href="#calculator" class="hover:text-yellow-400 transition" data-i18n="navQuote">报价</a>
+        <a href="#services" class="hover:text-yellow-400 transition" data-i18n="navServices">服务</a>
+        <a href="#trust" class="hover:text-yellow-400 transition" data-i18n="navTrust">保障</a>
+        <a href="#faq" class="hover:text-yellow-400 transition">FAQ</a>
+      </div>
+
+      <div class="flex items-center gap-3 ml-8">
+        <button id="langZh" class="lang-btn px-3 py-2 rounded-lg bg-yellow-400 text-black text-base font-black" aria-label="中文">🇨🇳</button>
+        <button id="langEn" class="lang-btn px-3 py-2 rounded-lg bg-white/8 border border-white/10 text-white/80 text-base font-black backdrop-blur" aria-label="English">🇬🇧</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero-bg min-h-screen flex items-center pt-24 pb-20">
+      <div class="hero-rotating-bg active" id="heroBg1" style="background-image:
+      linear-gradient(90deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.42) 34%, rgba(0,0,0,.14) 100%),
+      url('assets/hero-bg-1.jpg');"></div>
+
+      <div class="hero-rotating-bg" id="heroBg2" style="background-image:
+      linear-gradient(90deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.42) 34%, rgba(0,0,0,.14) 100%),
+      url('assets/hero-bg-2.jpg');"></div>
+
+      <div class="particles">
+        <span class="particle"></span><span class="particle"></span><span class="particle"></span>
+        <span class="particle"></span><span class="particle"></span><span class="particle"></span>
+        <span class="particle"></span><span class="particle"></span><span class="particle"></span>
+        <span class="particle"></span><span class="particle"></span><span class="particle"></span>
+        <span class="particle"></span><span class="particle"></span><span class="particle"></span>
+        <span class="particle"></span><span class="particle"></span><span class="particle"></span>
+      </div>
+
+      <div class="relative z-10 max-w-7xl mx-auto px-6 w-full">
+        <div class="max-w-2xl">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-400/30 bg-black/24 backdrop-blur text-yellow-300 text-sm mb-7" data-i18n="heroBadge">
+            赛季上分
+          </div>
+
+          <h1 class="text-5xl md:text-7xl font-black leading-[0.95] tracking-tight">
+            <span data-i18n="heroTitleA">冲上</span>
+            <span class="block gold-text" data-i18n="heroTitleB">Mythical Glory</span>
+            <span data-i18n="heroTitleC">不必独自硬扛</span>
+          </h1>
+
+          <p class="mt-8 text-white/72 text-lg md:text-xl leading-relaxed max-w-xl" data-i18n="heroDesc">
+            提供 MLBB 代打与高端玩家陪玩服务。无论你想快速推进段位，还是希望和更强的队友一起排位，我们都能提供更稳定、更清晰的服务流程。
+          </p>
+
+          <div class="mt-10 flex flex-wrap gap-4">
+            <a href="#calculator" class="bg-yellow-400 text-black font-black px-7 py-4 rounded-2xl hover:scale-[1.02] transition" data-i18n="heroCta1">
+              立即估算价格
+            </a>
+            <a href="#services" class="border border-white/15 bg-white/8 backdrop-blur px-7 py-4 rounded-2xl text-white/85 hover:bg-white/12 transition" data-i18n="heroCta2">
+              查看服务方式
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Calculator section refined from previous full version -->
+    <section id="calculator" class="section-bg-boosting py-28 border-t border-white/10 border-b border-white/10" style="background-image:url('assets/section2-bg.jpg')">
+      <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-[.86fr_1.14fr] gap-20 items-start">
+        <div class="lg:pt-8">
+          <div class="text-yellow-400 font-semibold tracking-widest uppercase text-sm">Instant Quote</div>
+          <h2 class="mt-5 text-4xl md:text-5xl font-black leading-tight" data-i18n="calcTitle">先选服务<br>再估算价格</h2>
+          <p class="text-white/62 leading-relaxed mt-7 text-lg" data-i18n="calcDesc">
+            价格会根据当前段位、目标段位或陪玩场次自动估算。最终价格与排期会由客服在 WhatsApp / 微信中确认。
+          </p>
+
+          <div class="mt-9 soft-card rounded-3xl p-7">
+            <div class="text-white/45 text-sm mb-4" data-i18n="paymentTitle">支持付款方式</div>
+            <div class="grid grid-cols-3 sm:grid-cols-5 gap-4 items-center">
+              <div class="h-12 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center">
+                <img src="assets/paynow.svg" class="pay-icon paynow" alt="PayNow">
+              </div>
+
+              <div class="h-12 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center">
+                <img src="assets/wechat_pay.svg" class="pay-icon wechat" alt="WeChat Pay">
+              </div>
+
+              <div class="h-12 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center">
+                <img src="assets/alipay.svg" class="pay-icon alipay" alt="Alipay">
+              </div>
+
+              <div class="h-12 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center">
+                <img src="assets/touchngo.svg" class="pay-icon tng" alt="Touch n Go">
+              </div>
+
+              <div class="h-12 rounded-xl bg-white/[0.03] border border-white/[0.08] flex items-center justify-center">
+                <img src="assets/paypal.svg" class="pay-icon paypal" alt="PayPal">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-[32px] p-8 md:p-10">
+          <div class="grid grid-cols-2 gap-3 p-1 bg-black/35 border border-white/10 rounded-2xl mb-8">
+            <button id="modeBoost" class="mode-btn bg-yellow-400 text-black rounded-xl py-3 font-black" data-i18n="modeBoost">代打上分</button>
+            <button id="modeDuo" class="mode-btn text-white/70 rounded-xl py-3 font-bold hover:bg-white/5" data-i18n="modeDuo">高端陪玩</button>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <label class="text-sm text-white/50 mb-3 block" data-i18n="currentRankLabel">当前段位</label>
+              <select id="currentRank" class="w-full bg-black/45 border border-white/10 rounded-xl px-4 py-4 text-white outline-none"></select>
+            </div>
+
+            <div id="targetWrap">
+              <label class="text-sm text-white/50 mb-3 block" data-i18n="targetRankLabel">目标段位</label>
+              <select id="targetRank" class="w-full bg-black/45 border border-white/10 rounded-xl px-4 py-4 text-white outline-none"></select>
+            </div>
+
+            <div id="matchesWrap" class="hidden md:col-span-2">
+              <label class="text-sm text-white/50 mb-3 block" data-i18n="matchesLabel">陪玩场次</label>
+              <input id="matchCount" type="number" min="1" value="5" class="w-full bg-black/45 border border-white/10 rounded-xl px-4 py-4 text-white outline-none" />
+            </div>
+          </div>
+
+          <div id="rankWarning" class="hidden mt-5 text-sm text-red-300 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3" data-i18n="rankWarning">
+            目标段位必须高于当前段位。
+          </div>
+
+          <div class="mt-8 grid md:grid-cols-[1fr_.9fr] gap-6">
+            <div class="rounded-3xl border border-yellow-400/20 bg-yellow-400/10 p-7">
+              <div class="text-white/50 text-sm" data-i18n="estimatedPrice">预估金额</div>
+              <div id="price" class="text-5xl md:text-6xl font-black text-yellow-400 mt-3">¥ --</div>
+              <div id="eta" class="text-sm text-white/50 mt-3">请选择段位后自动计算</div>
+            </div>
+
+            <div class="rounded-3xl border border-white/10 bg-black/25 p-7">
+              <div class="text-white/50 text-sm" data-i18n="summaryTitle">订单摘要</div>
+              <div id="summary" class="text-white/78 mt-4 leading-relaxed text-sm">请选择服务与段位。</div>
+            </div>
+          </div>
+
+          <a id="whatsappLink" href="https://wa.me/+6598156385" class="block text-center w-full mt-7 bg-yellow-400 text-black font-black py-4 rounded-2xl hover:scale-[1.01] transition" data-i18n="whatsappCta">
+            继续通过 WhatsApp 咨询
+          </a>
+          <div class="flex items-center justify-center gap-3 text-center text-white/45 text-sm mt-3">
+            <span data-i18n="wechatLine">客服微信：lexlu1688</span>
+            <button id="copyWechatBtn" onclick="copyWechat()" class="px-3 py-1 rounded-lg bg-white/8 border border-white/10 text-white/75 hover:bg-white/12 transition text-xs">
+              Copy
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="services" class="section-bg-trust py-28 border-b border-white/10" style="background-image:url('assets/section3-bg.jpg')">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="max-w-3xl mx-auto text-center">
+          <div class="text-yellow-400 font-semibold tracking-widest uppercase text-sm">Service Options</div>
+          <h2 class="mt-5 text-4xl md:text-5xl font-black leading-tight" data-i18n="serviceTitle">代打与陪玩 两种不同的需求</h2>
+          <p class="text-white/62 leading-relaxed mt-7 text-lg" data-i18n="serviceDesc">
+            代打适合希望节省时间、直接推进段位的玩家；陪玩适合希望自己参与对局、和高段位玩家一起排位的玩家。
+          </p>
+        </div>
+
+        <div class="mt-16 grid lg:grid-cols-2 gap-9">
+          <div class="glass-card rounded-[32px] p-10 text-center">
+            <div class="text-yellow-400 text-sm uppercase tracking-[.22em] font-bold">Rank Boosting</div>
+            <h3 class="text-3xl font-black mt-5" data-i18n="boostTitle">代打上分</h3>
+            <p class="text-white/62 leading-relaxed mt-5 max-w-md mx-auto" data-i18n="boostDesc">由高段位玩家协助完成指定段位目标，适合想更快获得赛季奖励或突破卡点的玩家。</p>
+          </div>
+
+          <div class="glass-card rounded-[32px] p-10 text-center">
+            <div class="text-yellow-400 text-sm uppercase tracking-[.22em] font-bold">Play With Pro</div>
+            <h3 class="text-3xl font-black mt-5" data-i18n="duoTitle">高端玩家陪玩</h3>
+            <p class="text-white/62 leading-relaxed mt-5 max-w-md mx-auto" data-i18n="duoDesc">与高段位玩家一起排位。胜负取决于匹配、阵容与对局情况，但我们会尽力提高胜率与体验。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="trust" class="section-bg-final py-28 bg-[#070709]" style="background-image:url('assets/section4-bg.jpg');">
+      <div class="max-w-6xl mx-auto px-6 text-center">
+        <div class="text-yellow-400 font-semibold tracking-widest uppercase text-sm">Service Confidence</div>
+        <h2 class="mt-5 text-4xl md:text-5xl font-black leading-tight" data-i18n="trustTitle">五年持续运营，靠的不是夸张承诺</h2>
+        <p class="text-white/62 leading-relaxed mt-7 text-lg max-w-3xl mx-auto" data-i18n="trustDesc">
+          而是长期可信赖的服务与稳定执行。
+        </p>
+
+        <a href="https://wa.me/+6598156385" class="inline-block mt-9 bg-yellow-400 text-black font-black px-7 py-4 rounded-2xl hover:scale-[1.02] transition" data-i18n="trustWhatsappCta">
+          通过 WhatsApp 咨询
+        </a>
+
+        <div class="flex items-center justify-center gap-3 text-center text-white/45 text-sm mt-3">
+          <span data-i18n="wechatLine">客服微信：lexlu1688</span>
+          <button id="copyWechatTrustBtn" onclick="copyWechatTrust()" class="px-3 py-1 rounded-lg bg-white/8 border border-white/10 text-white/75 hover:bg-white/12 transition text-xs">
+            Copy
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-white/10 py-8 text-center text-white/38 text-sm">
+    Copyright © 2026 Mythical Glory
+  </footer>
+
+<script>
+const PRICING = [
+  {rank:"Warrior 3.1", no:1, price:3.5},{rank:"Warrior 3.2", no:2, price:3.5},{rank:"Warrior 3.3", no:3, price:3.5},
+  {rank:"Elite 3.1", no:10, price:3.5},{rank:"Master 4.1", no:19, price:4.5},{rank:"Grandmaster 5.1", no:35, price:5.5},
+  {rank:"Epic 5.1", no:60, price:6.5},{rank:"Legend 5.1", no:85, price:7.5},{rank:"Mythic 1", no:110, price:9.5},
+  {rank:"Mythic 10", no:119, price:9.5},{rank:"Mythic Honor 25", no:134, price:16.5},{rank:"Mythical Glory 50", no:159, price:23.5},
+  {rank:"Mythical Immortal 100", no:209, price:23.5}
+];
+
+const text = {
+ zh:{
+  navQuote:"报价", navServices:"服务", navTrust:"保障",
+  heroBadge:"赛季上分", heroTitleA:"冲上", heroTitleB:"Mythical Glory", heroTitleC:"不必独自硬扛",
+  heroDesc:"提供 MLBB 代打与高端玩家陪玩服务。无论你想快速推进段位，还是希望和更强的队友一起排位，我们都能提供更稳定、更清晰的服务流程。",
+  heroCta1:"立即估算价格", heroCta2:"查看服务方式",
+  calcTitle:"先选服务<br>再估算价格", calcDesc:"价格会根据当前段位、目标段位或陪玩场次自动估算。最终价格与排期会由客服在 WhatsApp / 微信中确认。",
+  paymentTitle:"支持付款方式", modeBoost:"代打上分", modeDuo:"高端陪玩", currentRankLabel:"当前段位", targetRankLabel:"目标段位", matchesLabel:"陪玩场次",
+  estimatedPrice:"预估金额", summaryTitle:"订单摘要", whatsappCta:"继续通过 WhatsApp 咨询", trustWhatsappCta:"通过 WhatsApp 咨询", wechatLine:"客服微信：lexlu1688", rankWarning:"目标段位必须高于当前段位。",
+  serviceTitle:"代打与陪玩 两种不同的需求", serviceDesc:"代打适合希望节省时间、直接推进段位的玩家；陪玩适合希望自己参与对局、和高段位玩家一起排位的玩家。",
+  boostTitle:"代打上分", boostDesc:"由高段位玩家协助完成指定段位目标，适合想更快获得赛季奖励或突破卡点的玩家。",
+  duoTitle:"高端玩家陪玩", duoDesc:"与高段位玩家一起排位。胜负取决于匹配、阵容与对局情况，但我们会尽力提高胜率与体验。",
+  trustTitle:"五年持续运营，靠的不是夸张承诺", trustDesc:"而是长期可信赖的服务与稳定执行。",
+  chooseCurrent:"请选择当前段位", chooseTarget:"请选择目标段位", chooseFirst:"请先选择当前段位", etaDefault:"请选择段位后自动计算", summaryDefault:"请选择服务与段位。"
+ },
+ en:{
+  navQuote:"Quote", navServices:"Services", navTrust:"Assurance",
+  heroBadge:"Season Rank Service · High-Rank Players", heroTitleA:"Rise to", heroTitleB:"Mythical Glory", heroTitleC:"with Great Teammate",
+  heroDesc:"Professional MLBB boosting and high-rank duo service for players who want clearer progress, stronger teammates and a smoother ranked experience.",
+  heroCta1:"Calculate Price", heroCta2:"View Services",
+  calcTitle:"Select Your Service, Get A Clear Estimate", calcDesc:"Pricing is estimated based on your current rank, target rank or number of duo matches. Final pricing and schedule will be confirmed through WhatsApp / WeChat.",
+  paymentTitle:"Accepted Payment Methods", modeBoost:"Rank Boosting", modeDuo:"Play With Pro", currentRankLabel:"Current Rank", targetRankLabel:"Desired Rank", matchesLabel:"Number of Matches",
+  estimatedPrice:"Estimated Price", summaryTitle:"Order Summary", whatsappCta:"Continue via WhatsApp", trustWhatsappCta:"Contact via WhatsApp", wechatLine:"WeChat Support: lexlu1688", rankWarning:"Desired rank must be higher than current rank.",
+  serviceTitle:"Boosting and Duo Play Serve Different Needs", serviceDesc:"Boosting is for players who want direct rank progress. Play With Pro is for players who want to participate and play with stronger teammates.",
+  boostTitle:"Rank Boosting", boostDesc:"High-rank players help complete your target rank. Suitable for players who want faster seasonal progress or to break through a difficult rank.",
+  duoTitle:"Play With Pro", duoDesc:"Queue together with high-rank players. Match results depend on matchmaking, draft and in-game conditions, but our players will always play to win.",
+  trustTitle:"Professional Service Without Empty Promises", trustDesc:"We focus on clear communication, reasonable quotation, trackable order progress and stable high-rank execution.",
+  chooseCurrent:"Select current rank", chooseTarget:"Select desired rank", chooseFirst:"Select current rank first", etaDefault:"Select rank to calculate", summaryDefault:"Select service and rank."
+ }
+};
+
+let lang = "zh";
+let mode = "boost";
+const byId = id => document.getElementById(id);
+const currentRank = byId("currentRank");
+const targetRank = byId("targetRank");
+const matchCount = byId("matchCount");
+const priceEl = byId("price");
+const etaEl = byId("eta");
+const summaryEl = byId("summary");
+const rankWarning = byId("rankWarning");
+
+function money(n){ return "¥ " + Math.max(0,n).toFixed(0); }
+
+function fillCurrent(){
+  currentRank.innerHTML = `<option value="">${text[lang].chooseCurrent}</option>`;
+  PRICING.forEach((r,i)=> currentRank.add(new Option(r.rank, i)));
+  fillTarget();
+}
+
+function fillTarget(){
+  const cur = currentRank.value;
+  targetRank.innerHTML = "";
+  if(cur === ""){
+    targetRank.add(new Option(text[lang].chooseFirst, ""));
+    targetRank.disabled = true;
+    return;
+  }
+  targetRank.disabled = false;
+  targetRank.add(new Option(text[lang].chooseTarget, ""));
+  PRICING.forEach((r,i)=>{
+    const opt = new Option(r.rank, i);
+    if(i <= Number(cur)) opt.disabled = true;
+    targetRank.add(opt);
+  });
+}
+
+function stepPrice(fromIndex,toIndex){
+  if(toIndex <= fromIndex) return 0;
+  let total = 0;
+  for(let i=fromIndex+1;i<=toIndex;i++) total += PRICING[i]?.price || 0;
+  return total;
+}
+
+function calc(){
+  const cur = currentRank.value === "" ? null : Number(currentRank.value);
+  const tar = targetRank.value === "" ? null : Number(targetRank.value);
+  rankWarning.classList.add("hidden");
+
+  if(cur === null){
+    priceEl.textContent = "¥ --";
+    etaEl.textContent = text[lang].etaDefault;
+    summaryEl.textContent = text[lang].summaryDefault;
+    return;
+  }
+
+  if(mode === "boost"){
+    if(tar === null){
+      priceEl.textContent = "¥ --";
+      etaEl.textContent = text[lang].etaDefault;
+      summaryEl.textContent = text[lang].summaryDefault;
+      return;
+    }
+    if(tar <= cur){
+      rankWarning.classList.remove("hidden");
+      priceEl.textContent = "¥ --";
+      etaEl.textContent = text[lang].etaDefault;
+      summaryEl.textContent = text[lang].rankWarning;
+      return;
+    }
+    const total = stepPrice(cur, tar);
+    priceEl.textContent = money(total);
+    etaEl.textContent = lang === "zh" ? "预计排期将由客服确认" : "Schedule will be confirmed by support";
+    summaryEl.textContent = lang === "zh"
+      ? `代打上分 · ${PRICING[cur].rank} → ${PRICING[tar].rank}`
+      : `Rank Boosting · ${PRICING[cur].rank} → ${PRICING[tar].rank}`;
+  } else {
+    const matches = Math.max(1, Number(matchCount.value || 1));
+    const per = PRICING[cur].price;
+    const total = matches * per;
+    priceEl.textContent = money(total);
+    etaEl.textContent = lang === "zh" ? "陪玩排期将由客服确认" : "Duo schedule will be confirmed by support";
+    summaryEl.textContent = lang === "zh"
+      ? `高端陪玩 · ${PRICING[cur].rank} · ${matches} 场 · 按下单时段位锁定单价`
+      : `Play With Pro · ${PRICING[cur].rank} · ${matches} matches · price locked at order rank`;
+  }
+}
+
+function setMode(next){
+  mode = next;
+  const boostActive = mode === "boost";
+  byId("modeBoost").className = boostActive ? "mode-btn bg-yellow-400 text-black rounded-xl py-3 font-black" : "mode-btn text-white/70 rounded-xl py-3 font-bold hover:bg-white/5";
+  byId("modeDuo").className = !boostActive ? "mode-btn bg-yellow-400 text-black rounded-xl py-3 font-black" : "mode-btn text-white/70 rounded-xl py-3 font-bold hover:bg-white/5";
+  byId("targetWrap").classList.toggle("hidden", !boostActive);
+  byId("matchesWrap").classList.toggle("hidden", boostActive);
+  calc();
+}
+
+function setLang(next){
+  lang = next;
+  document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    const key = el.getAttribute("data-i18n");
+    if(text[lang][key]) {
+      if (key === "calcTitle") {
+        el.innerHTML = text[lang][key];
+      } else {
+        el.textContent = text[lang][key];
+      }
+    }
+  });
+  byId("langZh").className = lang==="zh" ? "lang-btn px-3 py-2 rounded-lg bg-yellow-400 text-black text-base font-black" : "lang-btn px-3 py-2 rounded-lg bg-white/8 border border-white/10 text-white/80 text-base font-black backdrop-blur";
+  byId("langEn").className = lang==="en" ? "lang-btn px-3 py-2 rounded-lg bg-yellow-400 text-black text-base font-black" : "lang-btn px-3 py-2 rounded-lg bg-white/8 border border-white/10 text-white/80 text-base font-black backdrop-blur";
+  
+const heroBg1 = document.getElementById('heroBg1');
+const heroBg2 = document.getElementById('heroBg2');
+
+let showingHero1 = true;
+
+setInterval(()=>{
+  if(showingHero1){
+    heroBg1.classList.remove('active');
+    heroBg2.classList.add('active');
+  }else{
+    heroBg2.classList.remove('active');
+    heroBg1.classList.add('active');
+  }
+  showingHero1 = !showingHero1;
+},7000);
+
+
+function copyWechat(){
+  navigator.clipboard.writeText("lexlu1688");
+  const btn = document.getElementById("copyWechatBtn");
+  const original = btn.innerText;
+  btn.innerText = "Copied";
+  setTimeout(()=>{
+    btn.innerText = original;
+  },1500);
+}
+
+
+fillCurrent();
+
+  calc();
+}
+
+currentRank.addEventListener("change",()=>{ fillTarget(); calc(); });
+targetRank.addEventListener("change", calc);
+matchCount.addEventListener("input", calc);
+byId("modeBoost").addEventListener("click",()=>setMode("boost"));
+byId("modeDuo").addEventListener("click",()=>setMode("duo"));
+byId("langZh").addEventListener("click",()=>setLang("zh"));
+byId("langEn").addEventListener("click",()=>setLang("en"));
+
+
+const heroBg1 = document.getElementById('heroBg1');
+const heroBg2 = document.getElementById('heroBg2');
+
+let showingHero1 = true;
+
+setInterval(()=>{
+  if(showingHero1){
+    heroBg1.classList.remove('active');
+    heroBg2.classList.add('active');
+  }else{
+    heroBg2.classList.remove('active');
+    heroBg1.classList.add('active');
+  }
+  showingHero1 = !showingHero1;
+},7000);
+
+
+function copyWechat(){
+  navigator.clipboard.writeText("lexlu1688");
+  const btn = document.getElementById("copyWechatBtn");
+  const original = btn.innerText;
+  btn.innerText = "Copied";
+  setTimeout(()=>{
+    btn.innerText = original;
+  },1500);
+}
+
+
+
+function copyWechatTrust(){
+  navigator.clipboard.writeText("lexlu1688");
+  const btn = document.getElementById("copyWechatTrustBtn");
+  const original = btn.innerText;
+  btn.innerText = "Copied";
+  setTimeout(()=>{
+    btn.innerText = original;
+  },1500);
+}
+
+
+fillCurrent();
+
+setLang("zh");
+</script>
+</body>
+</html>
