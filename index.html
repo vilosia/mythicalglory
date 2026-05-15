@@ -400,8 +400,11 @@
           <a id="whatsappLink" href="https://wa.me/+6598156385" class="block text-center w-full mt-7 bg-yellow-400 text-black font-black py-4 rounded-2xl hover:scale-[1.01] transition" data-i18n="whatsappCta">
             继续通过 WhatsApp 咨询
           </a>
-          <div class="text-center text-white/45 text-sm mt-3" data-i18n="wechatLine">
-            客服微信：lexlu1688
+          <div class="flex items-center justify-center gap-3 text-center text-white/45 text-sm mt-3">
+            <span data-i18n="wechatLine">客服微信：lexlu1688</span>
+            <button id="copyWechatBtn" onclick="copyWechat()" class="px-3 py-1 rounded-lg bg-white/8 border border-white/10 text-white/75 hover:bg-white/12 transition text-xs">
+              Copy
+            </button>
           </div>
         </div>
       </div>
@@ -611,6 +614,18 @@ setInterval(()=>{
   showingHero1 = !showingHero1;
 },7000);
 
+
+function copyWechat(){
+  navigator.clipboard.writeText("lexlu1688");
+  const btn = document.getElementById("copyWechatBtn");
+  const original = btn.innerText;
+  btn.innerText = "Copied";
+  setTimeout(()=>{
+    btn.innerText = original;
+  },1500);
+}
+
+
 fillCurrent();
 
   calc();
@@ -640,6 +655,18 @@ setInterval(()=>{
   }
   showingHero1 = !showingHero1;
 },7000);
+
+
+function copyWechat(){
+  navigator.clipboard.writeText("lexlu1688");
+  const btn = document.getElementById("copyWechatBtn");
+  const original = btn.innerText;
+  btn.innerText = "Copied";
+  setTimeout(()=>{
+    btn.innerText = original;
+  },1500);
+}
+
 
 fillCurrent();
 
