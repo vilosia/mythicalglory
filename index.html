@@ -3,7 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mythical Glory</title>
+  <title>Mythical Glory | MLBB Rank Boosting & Play With Pro</title>
+  <meta name="description" content="Mythical Glory provides MLBB rank boosting and Play With Pro services with clear pricing, high-rank players, WhatsApp support, and multilingual service." />
+  <meta name="keywords" content="MLBB rank boosting, Mobile Legends boosting, Mythical Glory, MLBB duo queue, Play With Pro, MLBB 上分, MLBB 代打, Mobile Legends 陪玩" />
+  <meta property="og:title" content="Mythical Glory | MLBB Rank Boosting & Play With Pro" />
+  <meta property="og:description" content="MLBB rank boosting and Play With Pro services with clear pricing and high-rank players." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.mythicalglory.com/" />
+  <meta property="og:image" content="https://www.mythicalglory.com/assets/hero-bg-1.jpg" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -174,7 +181,15 @@
 
     select, input { color-scheme: dark; }
 
+    .lang-btn {
+      min-width: 42px;
+      line-height: 1;
+    }
+
     @media (max-width: 768px) {
+      .hero-rotating-bg {
+        background-position: right center !important;
+      }
       .site-scale { font-size: 88%; }
       .hero-bg {
 
@@ -235,8 +250,8 @@
       </div>
 
       <div class="flex items-center gap-3 ml-8">
-        <button id="langZh" class="px-3 py-2 rounded-lg bg-yellow-400 text-black text-xs font-black">中文</button>
-        <button id="langEn" class="px-3 py-2 rounded-lg bg-white/8 border border-white/10 text-white/70 text-xs font-black backdrop-blur">EN</button>
+        <button id="langZh" class="lang-btn px-3 py-2 rounded-lg bg-yellow-400 text-black text-base font-black" aria-label="中文">🇨🇳</button>
+        <button id="langEn" class="lang-btn px-3 py-2 rounded-lg bg-white/8 border border-white/10 text-white/80 text-base font-black backdrop-blur" aria-label="English">🇬🇧</button>
       </div>
     </div>
   </header>
@@ -439,7 +454,7 @@ const text = {
  },
  en:{
   navQuote:"Quote", navServices:"Services", navTrust:"Assurance",
-  heroBadge:"Season Rank Service · High-Rank Players", heroTitleA:"Reach", heroTitleB:"Mythical Glory", heroTitleC:"With Better Support",
+  heroBadge:"Season Rank Service · High-Rank Players", heroTitleA:"Rise to", heroTitleB:"Mythical Glory", heroTitleC:"with Great Teammate",
   heroDesc:"Professional MLBB boosting and high-rank duo service for players who want clearer progress, stronger teammates and a smoother ranked experience.",
   heroCta1:"Calculate Price", heroCta2:"View Services",
   calcTitle:"Select Your Service, Get A Clear Estimate", calcDesc:"Pricing is estimated based on your current rank, target rank or number of duo matches. Final pricing and schedule will be confirmed through WhatsApp / WeChat.",
@@ -557,8 +572,8 @@ function setLang(next){
     const key = el.getAttribute("data-i18n");
     if(text[lang][key]) el.textContent = text[lang][key];
   });
-  byId("langZh").className = lang==="zh" ? "px-3 py-2 rounded-lg bg-yellow-400 text-black text-xs font-black" : "px-3 py-2 rounded-lg bg-white/8 border border-white/10 text-white/70 text-xs font-black backdrop-blur";
-  byId("langEn").className = lang==="en" ? "px-3 py-2 rounded-lg bg-yellow-400 text-black text-xs font-black" : "px-3 py-2 rounded-lg bg-white/8 border border-white/10 text-white/70 text-xs font-black backdrop-blur";
+  byId("langZh").className = lang==="zh" ? "lang-btn px-3 py-2 rounded-lg bg-yellow-400 text-black text-base font-black" : "lang-btn px-3 py-2 rounded-lg bg-white/8 border border-white/10 text-white/80 text-base font-black backdrop-blur";
+  byId("langEn").className = lang==="en" ? "lang-btn px-3 py-2 rounded-lg bg-yellow-400 text-black text-base font-black" : "lang-btn px-3 py-2 rounded-lg bg-white/8 border border-white/10 text-white/80 text-base font-black backdrop-blur";
   
 const heroBg1 = document.getElementById('heroBg1');
 const heroBg2 = document.getElementById('heroBg2');
