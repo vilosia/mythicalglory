@@ -284,8 +284,9 @@
       </div>
 
       <div class="flex items-center gap-3 ml-8">
-        <button id="langZh" class="lang-btn px-3 py-2 rounded-lg bg-yellow-400 text-black text-base font-black" aria-label="中文">🇨🇳</button>
-        <button id="langEn" class="lang-btn px-3 py-2 rounded-lg bg-white/8 border border-white/10 text-white/80 text-base font-black backdrop-blur" aria-label="English">🇬🇧</button>
+        <button id="langToggle" class="lang-btn w-11 h-11 rounded-lg bg-white/8 border border-white/10 backdrop-blur flex items-center justify-center hover:bg-white/12 transition" aria-label="Switch language">
+          <img id="langIcon" src="assets/cn.svg" class="w-6 h-6 object-contain" alt="Language">
+        </button>
       </div>
     </div>
   </header>
@@ -461,6 +462,28 @@
         <p class="text-white/62 leading-relaxed mt-7 text-lg max-w-3xl mx-auto" data-i18n="trustDesc">
           而是长期可信赖的服务与稳定执行。
         </p>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-14">
+          <div class="soft-card rounded-3xl p-7">
+            <div class="text-4xl font-black text-yellow-400">5 Years</div>
+            <div class="text-white/55 text-sm mt-3" data-i18n="statYears">持续运营经验</div>
+          </div>
+
+          <div class="soft-card rounded-3xl p-7">
+            <div class="text-4xl font-black text-yellow-400">3,456+</div>
+            <div class="text-white/55 text-sm mt-3" data-i18n="statPlayers">已协助玩家</div>
+          </div>
+
+          <div class="soft-card rounded-3xl p-7">
+            <div class="text-4xl font-black text-yellow-400">8,000+</div>
+            <div class="text-white/55 text-sm mt-3" data-i18n="statMatches">已完成排位服务</div>
+          </div>
+
+          <div class="soft-card rounded-3xl p-7">
+            <div class="text-4xl font-black text-yellow-400">24/7</div>
+            <div class="text-white/55 text-sm mt-3" data-i18n="statSupport">客服沟通支持</div>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -491,7 +514,7 @@ const text = {
   boostTitle:"代打上分", boostDesc:"由高段位玩家协助完成指定段位目标，适合想更快获得赛季奖励或突破卡点的玩家。",
   duoTitle:"高端玩家陪玩", duoDesc:"与高段位玩家一起排位。胜负取决于匹配、阵容与对局情况，但我们会尽力提高胜率与体验。",
   trustTitle:"五年持续运营，靠的不是夸张承诺", trustDesc:"而是长期可信赖的服务与稳定执行。",
-  chooseCurrent:"请选择当前段位", chooseTarget:"请选择目标段位", chooseFirst:"请先选择当前段位", etaDefault:"请选择段位后自动计算", summaryDefault:"请选择服务与段位。"
+  chooseCurrent:"请选择当前段位", chooseTarget:"请选择目标段位", chooseFirst:"请先选择当前段位", etaDefault:"请选择段位后自动计算", summaryDefault:"请选择服务与段位。", statYears:"持续运营经验", statPlayers:"已协助玩家", statMatches:"已完成排位服务", statSupport:"客服沟通支持"
  },
  en:{
   navQuote:"Quote", navServices:"Services", navTrust:"Assurance",
@@ -505,7 +528,7 @@ const text = {
   boostTitle:"Rank Boosting", boostDesc:"High-rank players help complete your target rank. Suitable for players who want faster seasonal progress or to break through a difficult rank.",
   duoTitle:"Play With Pro", duoDesc:"Queue together with high-rank players. Match results depend on matchmaking, draft and in-game conditions, but our players will always play to win.",
   trustTitle:"Professional Service Without Empty Promises", trustDesc:"We focus on clear communication, reasonable quotation, trackable order progress and stable high-rank execution.",
-  chooseCurrent:"Select current rank", chooseTarget:"Select desired rank", chooseFirst:"Select current rank first", etaDefault:"Select rank to calculate", summaryDefault:"Select service and rank."
+  chooseCurrent:"Select current rank", chooseTarget:"Select desired rank", chooseFirst:"Select current rank first", etaDefault:"Select rank to calculate", summaryDefault:"Select service and rank.", statYears:"Continuous Operation", statPlayers:"Players Assisted", statMatches:"Ranked Services Completed", statSupport:"Support Availability"
  }
 };
 
@@ -619,8 +642,7 @@ function setLang(next){
       }
     }
   });
-  byId("langZh").className = lang==="zh" ? "lang-btn px-3 py-2 rounded-lg bg-yellow-400 text-black text-base font-black" : "lang-btn px-3 py-2 rounded-lg bg-white/8 border border-white/10 text-white/80 text-base font-black backdrop-blur";
-  byId("langEn").className = lang==="en" ? "lang-btn px-3 py-2 rounded-lg bg-yellow-400 text-black text-base font-black" : "lang-btn px-3 py-2 rounded-lg bg-white/8 border border-white/10 text-white/80 text-base font-black backdrop-blur";
+  byId("langIcon").src = lang === "zh" ? "assets/cn.svg" : "assets/en.svg";
   
 const heroBg1 = document.getElementById('heroBg1');
 const heroBg2 = document.getElementById('heroBg2');
@@ -660,8 +682,9 @@ targetRank.addEventListener("change", calc);
 matchCount.addEventListener("input", calc);
 byId("modeBoost").addEventListener("click",()=>setMode("boost"));
 byId("modeDuo").addEventListener("click",()=>setMode("duo"));
-byId("langZh").addEventListener("click",()=>setLang("zh"));
-byId("langEn").addEventListener("click",()=>setLang("en"));
+byId("langToggle").addEventListener("click",()=>{
+  setLang(lang === "zh" ? "en" : "zh");
+});
 
 
 const heroBg1 = document.getElementById('heroBg1');
