@@ -24,6 +24,7 @@
     }
 
     .site-scale { font-size: 90%; }
+    .h-11 { height: 2rem; }
 
     /* First fold: removed heavy dark layer, keep only readable left gradient */
     .hero-bg {
@@ -452,6 +453,17 @@
         <p class="text-white/62 leading-relaxed mt-7 text-lg max-w-3xl mx-auto" data-i18n="trustDesc">
           而是长期可信赖的服务与稳定执行。
         </p>
+
+        <a href="https://wa.me/+6598156385" class="inline-block mt-9 bg-yellow-400 text-black font-black px-7 py-4 rounded-2xl hover:scale-[1.02] transition" data-i18n="trustWhatsappCta">
+          通过 WhatsApp 咨询
+        </a>
+
+        <div class="flex items-center justify-center gap-3 text-center text-white/45 text-sm mt-3">
+          <span data-i18n="wechatLine">客服微信：lexlu1688</span>
+          <button id="copyWechatTrustBtn" onclick="copyWechatTrust()" class="px-3 py-1 rounded-lg bg-white/8 border border-white/10 text-white/75 hover:bg-white/12 transition text-xs">
+            Copy
+          </button>
+        </div>
       </div>
     </section>
   </main>
@@ -477,7 +489,7 @@ const text = {
   heroCta1:"立即估算价格", heroCta2:"查看服务方式",
   calcTitle:"先选服务<br>再估算价格", calcDesc:"价格会根据当前段位、目标段位或陪玩场次自动估算。最终价格与排期会由客服在 WhatsApp / 微信中确认。",
   paymentTitle:"支持付款方式", modeBoost:"代打上分", modeDuo:"高端陪玩", currentRankLabel:"当前段位", targetRankLabel:"目标段位", matchesLabel:"陪玩场次",
-  estimatedPrice:"预估金额", summaryTitle:"订单摘要", whatsappCta:"继续通过 WhatsApp 咨询", wechatLine:"客服微信：lexlu1688", rankWarning:"目标段位必须高于当前段位。",
+  estimatedPrice:"预估金额", summaryTitle:"订单摘要", whatsappCta:"继续通过 WhatsApp 咨询", trustWhatsappCta:"通过 WhatsApp 咨询", wechatLine:"客服微信：lexlu1688", rankWarning:"目标段位必须高于当前段位。",
   serviceTitle:"代打与陪玩 两种不同的需求", serviceDesc:"代打适合希望节省时间、直接推进段位的玩家；陪玩适合希望自己参与对局、和高段位玩家一起排位的玩家。",
   boostTitle:"代打上分", boostDesc:"由高段位玩家协助完成指定段位目标，适合想更快获得赛季奖励或突破卡点的玩家。",
   duoTitle:"高端玩家陪玩", duoDesc:"与高段位玩家一起排位。胜负取决于匹配、阵容与对局情况，但我们会尽力提高胜率与体验。",
@@ -491,7 +503,7 @@ const text = {
   heroCta1:"Calculate Price", heroCta2:"View Services",
   calcTitle:"Select Your Service, Get A Clear Estimate", calcDesc:"Pricing is estimated based on your current rank, target rank or number of duo matches. Final pricing and schedule will be confirmed through WhatsApp / WeChat.",
   paymentTitle:"Accepted Payment Methods", modeBoost:"Rank Boosting", modeDuo:"Play With Pro", currentRankLabel:"Current Rank", targetRankLabel:"Desired Rank", matchesLabel:"Number of Matches",
-  estimatedPrice:"Estimated Price", summaryTitle:"Order Summary", whatsappCta:"Continue via WhatsApp", wechatLine:"WeChat Support: lexlu1688", rankWarning:"Desired rank must be higher than current rank.",
+  estimatedPrice:"Estimated Price", summaryTitle:"Order Summary", whatsappCta:"Continue via WhatsApp", trustWhatsappCta:"Contact via WhatsApp", wechatLine:"WeChat Support: lexlu1688", rankWarning:"Desired rank must be higher than current rank.",
   serviceTitle:"Boosting and Duo Play Serve Different Needs", serviceDesc:"Boosting is for players who want direct rank progress. Play With Pro is for players who want to participate and play with stronger teammates.",
   boostTitle:"Rank Boosting", boostDesc:"High-rank players help complete your target rank. Suitable for players who want faster seasonal progress or to break through a difficult rank.",
   duoTitle:"Play With Pro", duoDesc:"Queue together with high-rank players. Match results depend on matchmaking, draft and in-game conditions, but our players will always play to win.",
@@ -675,6 +687,18 @@ setInterval(()=>{
 function copyWechat(){
   navigator.clipboard.writeText("lexlu1688");
   const btn = document.getElementById("copyWechatBtn");
+  const original = btn.innerText;
+  btn.innerText = "Copied";
+  setTimeout(()=>{
+    btn.innerText = original;
+  },1500);
+}
+
+
+
+function copyWechatTrust(){
+  navigator.clipboard.writeText("lexlu1688");
+  const btn = document.getElementById("copyWechatTrustBtn");
   const original = btn.innerText;
   btn.innerText = "Copied";
   setTimeout(()=>{
