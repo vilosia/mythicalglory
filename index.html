@@ -475,13 +475,7 @@
   </footer>
 
 <script>
-const PRICING = [
-  {rank:"Warrior 3.1", no:1, price:3.5},{rank:"Warrior 3.2", no:2, price:3.5},{rank:"Warrior 3.3", no:3, price:3.5},
-  {rank:"Elite 3.1", no:10, price:3.5},{rank:"Master 4.1", no:19, price:4.5},{rank:"Grandmaster 5.1", no:35, price:5.5},
-  {rank:"Epic 5.1", no:60, price:6.5},{rank:"Legend 5.1", no:85, price:7.5},{rank:"Mythic 1", no:110, price:9.5},
-  {rank:"Mythic 10", no:119, price:9.5},{rank:"Mythic Honor 25", no:134, price:16.5},{rank:"Mythical Glory 50", no:159, price:23.5},
-  {rank:"Mythical Immortal 100", no:209, price:23.5}
-];
+const PRICING = [{"en":"Warrior 3.1","zh":"勇士3.1","price":3.5},{"en":"Warrior 3.2","zh":"勇士3.2","price":3.5},{"en":"Warrior 3.3","zh":"勇士3.3","price":3.5},{"en":"Warrior 2.1","zh":"勇士2.1","price":3.5},{"en":"Warrior 2.2","zh":"勇士2.2","price":3.5},{"en":"Warrior 2.3","zh":"勇士2.3","price":3.5},{"en":"Warrior 1.1","zh":"勇士1.1","price":3.5},{"en":"Warrior 1.2","zh":"勇士1.2","price":3.5},{"en":"Warrior 1.3","zh":"勇士1.3","price":3.5},{"en":"Elite  3.1","zh":"精英3.1","price":3.5},{"en":"Elite  3.2","zh":"精英3.2","price":3.5},{"en":"Elite  3.3","zh":"精英3.3","price":3.5},{"en":"Elite  2.1","zh":"精英2.1","price":3.5},{"en":"Elite  2.2","zh":"精英2.2","price":3.5},{"en":"Elite  2.3","zh":"精英2.3","price":3.5},{"en":"Elite  1.1","zh":"精英1.1","price":3.5},{"en":"Elite  1.2","zh":"精英1.2","price":3.5},{"en":"Elite  1.3","zh":"精英1.3","price":3.5},{"en":"大师4.1","zh":"大师4.1","price":4.5},{"en":"Master 4.2","zh":"大师4.2","price":4.5},{"en":"Master 4.3","zh":"大师4.3","price":4.5},{"en":"Master 4.4","zh":"大师4.4","price":4.5},{"en":"Master 3.1","zh":"大师3.1","price":4.5},{"en":"Master 3.2","zh":"大师3.2","price":4.5},{"en":"Master 3.3","zh":"大师3.3","price":4.5},{"en":"Master 3.4","zh":"大师3.4","price":4.5},{"en":"Master 2.1","zh":"大师2.1","price":4.5},{"en":"Master 2.2","zh":"大师2.2","price":4.5},{"en":"Master 2.3","zh":"大师2.3","price":4.5},{"en":"Master 2.4","zh":"大师2.4","price":4.5},{"en":"Master 1.1","zh":"大师1.1","price":4.5},{"en":"Master 1.2","zh":"大师1.2","price":4.5},{"en":"Master 1.3","zh":"大师1.3","price":4.5},{"en":"Master 1.4","zh":"大师1.4","price":4.5},{"en":"Grand Master 4.1","zh":"宗师4.1","price":4.5},{"en":"Grand Master 4.2","zh":"宗师4.2","price":4.5},{"en":"Grand Master 4.3","zh":"宗师4.3","price":4.5},{"en":"Grand Master 4.4","zh":"宗师4.4","price":4.5},{"en":"Grand Master 3.1","zh":"宗师3.1","price":4.5},{"en":"Grand Master 3.2","zh":"宗师3.2","price":4.5},{"en":"Grand Master 3.3","zh":"宗师3.3","price":4.5},{"en":"Grand Master 3.4","zh":"宗师3.4","price":4.5},{"en":"Grand Master 2.1","zh":"宗师2.1","price":4.5},{"en":"Grand Master 2.2","zh":"宗师2.2","price":4.5},{"en":"Grand Master 2.3","zh":"宗师2.3","price":4.5},{"en":"Grand Master 2.4","zh":"宗师2.4","price":4.5},{"en":"Grand Master 1.1","zh":"宗师1.1","price":4.5},{"en":"Grand Master 1.2","zh":"宗师1.2","price":4.5},{"en":"Grand Master 1.3","zh":"宗师1.3","price":4.5},{"en":"Grand Master 1.4","zh":"宗师1.4","price":4.5},{"en":"Epic 5.1","zh":"史诗5.1","price":5.5},{"en":"Epic 5.2","zh":"史诗5.2","price":5.5},{"en":"Epic 5.3","zh":"史诗5.3","price":5.5},{"en":"Epic 5.4","zh":"史诗5.4","price":5.5},{"en":"Epic 5.5","zh":"史诗5.5","price":5.5},{"en":"Epic 4.1","zh":"史诗4.1","price":5.5},{"en":"Epic 4.2","zh":"史诗4.2","price":5.5},{"en":"Epic 4.3","zh":"史诗4.3","price":5.5},{"en":"Epic 4.4","zh":"史诗4.4","price":5.5},{"en":"Epic 4.5","zh":"史诗4.5","price":5.5},{"en":"Epic 3.1","zh":"史诗3.1","price":5.5},{"en":"Epic 3.2","zh":"史诗3.2","price":5.5},{"en":"Epic 3.3","zh":"史诗3.3","price":5.5},{"en":"Epic 3.4","zh":"史诗3.4","price":5.5},{"en":"Epic 3.5","zh":"史诗3.5","price":5.5},{"en":"Epic 2.1","zh":"史诗2.1","price":5.5},{"en":"Epic 2.2","zh":"史诗2.2","price":5.5},{"en":"Epic 2.3","zh":"史诗2.3","price":5.5},{"en":"Epic 2.4","zh":"史诗2.4","price":5.5},{"en":"Epic 2.5","zh":"史诗2.5","price":5.5},{"en":"Epic 1.1","zh":"史诗1.1","price":5.5},{"en":"Epic 1.2","zh":"史诗1.2","price":5.5},{"en":"Epic 1.3","zh":"史诗1.3","price":5.5},{"en":"Epic 1.4","zh":"史诗1.4","price":5.5},{"en":"Epic 1.5","zh":"史诗1.5","price":5.5},{"en":"Legend 5.1","zh":"传奇5.1","price":8.0},{"en":"Legend 5.2","zh":"传奇5.2","price":8.0},{"en":"Legend 5.3","zh":"传奇5.3","price":8.0},{"en":"Legend 5.4","zh":"传奇5.4","price":8.0},{"en":"Legend 5.5","zh":"传奇5.5","price":8.0},{"en":"Legend 4.1","zh":"传奇4.1","price":8.0},{"en":"Legend 4.2","zh":"传奇4.2","price":8.0},{"en":"Legend 4.3","zh":"传奇4.3","price":8.0},{"en":"Legend 4.4","zh":"传奇4.4","price":8.0},{"en":"Legend 4.5","zh":"传奇4.5","price":8.0},{"en":"Legend 3.1","zh":"传奇3.1","price":8.0},{"en":"Legend 3.2","zh":"传奇3.2","price":8.0},{"en":"Legend 3.3","zh":"传奇3.3","price":8.0},{"en":"Legend 3.4","zh":"传奇3.4","price":8.0},{"en":"Legend 3.5","zh":"传奇3.5","price":8.0},{"en":"Legend 2.1","zh":"传奇2.1","price":8.0},{"en":"Legend 2.2","zh":"传奇2.2","price":8.0},{"en":"Legend 2.3","zh":"传奇2.3","price":8.0},{"en":"Legend 2.4","zh":"传奇2.4","price":8.0},{"en":"Legend 2.5","zh":"传奇2.5","price":8.0},{"en":"Legend 1.1","zh":"传奇1.1","price":8.0},{"en":"Legend 1.2","zh":"传奇1.2","price":8.0},{"en":"Legend 1.3","zh":"传奇1.3","price":8.0},{"en":"Legend 1.4","zh":"传奇1.4","price":8.0},{"en":"Legend 1.5","zh":"传奇1.5","price":8.0},{"en":"Mythic Calibration 1","zh":"神话定级1","price":16.0},{"en":"Mythic Calibration 2","zh":"神话定级2","price":16.0},{"en":"Mythic Calibration 3","zh":"神话定级3","price":16.0},{"en":"Mythic Calibration 4","zh":"神话定级4","price":16.0},{"en":"Mythic Calibration 5","zh":"神话定级5","price":16.0},{"en":"Mythic Calibration 6","zh":"神话定级6","price":16.0},{"en":"Mythic Calibration 7","zh":"神话定级7","price":16.0},{"en":"Mythic Calibration 8","zh":"神话定级8","price":16.0},{"en":"Mythic Calibration 9","zh":"神话定级9","price":16.0},{"en":"Mythic Calibration 10","zh":"神话定级10","price":16.0},{"en":"Mythic 16","zh":"神话16","price":16.0},{"en":"Mythic 17","zh":"神话17","price":16.0},{"en":"Mythic 18","zh":"神话18","price":16.0},{"en":"Mythic 19","zh":"神话19","price":16.0},{"en":"Mythic 20","zh":"神话20","price":16.0},{"en":"Mythic 21","zh":"神话21","price":16.0},{"en":"Mythic 22","zh":"神话22","price":16.0},{"en":"Mythic 23","zh":"神话23","price":16.0},{"en":"Mythic 24","zh":"神话24","price":16.0},{"en":"Mythical Honor 25","zh":"百战神话25","price":18.5},{"en":"Mythical Honor 26","zh":"百战神话26","price":18.5},{"en":"Mythical Honor 27","zh":"百战神话27","price":18.5},{"en":"Mythical Honor 28","zh":"百战神话28","price":18.5},{"en":"Mythical Honor 29","zh":"百战神话29","price":18.5},{"en":"Mythical Honor 30","zh":"百战神话30","price":18.5},{"en":"Mythical Honor 31","zh":"百战神话31","price":18.5},{"en":"Mythical Honor 32","zh":"百战神话32","price":18.5},{"en":"Mythical Honor 33","zh":"百战神话33","price":18.5},{"en":"Mythical Honor 34","zh":"百战神话34","price":18.5},{"en":"Mythical Honor 35","zh":"百战神话35","price":18.5},{"en":"Mythical Honor 36","zh":"百战神话36","price":18.5},{"en":"Mythical Honor 37","zh":"百战神话37","price":18.5},{"en":"Mythical Honor 38","zh":"百战神话38","price":18.5},{"en":"Mythical Honor 39","zh":"百战神话39","price":18.5},{"en":"Mythical Honor 40","zh":"百战神话40","price":18.5},{"en":"Mythical Honor 41","zh":"百战神话41","price":18.5},{"en":"Mythical Honor 42","zh":"百战神话42","price":18.5},{"en":"Mythical Honor 43","zh":"百战神话43","price":18.5},{"en":"Mythical Honor 44","zh":"百战神话44","price":18.5},{"en":"Mythical Honor 45","zh":"百战神话45","price":18.5},{"en":"Mythical Honor 46","zh":"百战神话46","price":18.5},{"en":"Mythical Honor 47","zh":"百战神话47","price":18.5},{"en":"Mythical Honor 48","zh":"百战神话48","price":18.5},{"en":"Mythical Honor 49","zh":"百战神话49","price":18.5},{"en":"Mythical Glory  50","zh":"荣耀神话50","price":18.5},{"en":"Mythical Glory  51","zh":"荣耀神话51","price":23.5},{"en":"Mythical Glory  52","zh":"荣耀神话52","price":23.5},{"en":"Mythical Glory  53","zh":"荣耀神话53","price":23.5},{"en":"Mythical Glory  54","zh":"荣耀神话54","price":23.5},{"en":"Mythical Glory  55","zh":"荣耀神话55","price":23.5},{"en":"Mythical Glory  56","zh":"荣耀神话56","price":23.5},{"en":"Mythical Glory  57","zh":"荣耀神话57","price":23.5},{"en":"Mythical Glory  58","zh":"荣耀神话58","price":23.5},{"en":"Mythical Glory  59","zh":"荣耀神话59","price":23.5},{"en":"Mythical Glory  60","zh":"荣耀神话60","price":23.5},{"en":"Mythical Glory  61","zh":"荣耀神话61","price":23.5},{"en":"Mythical Glory  62","zh":"荣耀神话62","price":23.5},{"en":"Mythical Glory  63","zh":"荣耀神话63","price":23.5},{"en":"Mythical Glory  64","zh":"荣耀神话64","price":23.5},{"en":"Mythical Glory  65","zh":"荣耀神话65","price":23.5},{"en":"Mythical Glory  66","zh":"荣耀神话66","price":23.5},{"en":"Mythical Glory  67","zh":"荣耀神话67","price":23.5},{"en":"Mythical Glory  68","zh":"荣耀神话68","price":23.5},{"en":"Mythical Glory  69","zh":"荣耀神话69","price":23.5},{"en":"Mythical Glory  70","zh":"荣耀神话70","price":23.5},{"en":"Mythical Glory  71","zh":"荣耀神话71","price":23.5},{"en":"Mythical Glory  72","zh":"荣耀神话72","price":23.5},{"en":"Mythical Glory  73","zh":"荣耀神话73","price":23.5},{"en":"Mythical Glory  74","zh":"荣耀神话74","price":23.5},{"en":"Mythical Glory  75","zh":"荣耀神话75","price":23.5},{"en":"Mythical Glory  76","zh":"荣耀神话76","price":23.5},{"en":"Mythical Glory  77","zh":"荣耀神话77","price":23.5},{"en":"Mythical Glory  78","zh":"荣耀神话78","price":23.5},{"en":"Mythical Glory  79","zh":"荣耀神话79","price":23.5},{"en":"Mythical Glory  80","zh":"荣耀神话80","price":23.5},{"en":"Mythical Glory  81","zh":"荣耀神话81","price":23.5},{"en":"Mythical Glory  82","zh":"荣耀神话82","price":23.5},{"en":"Mythical Glory  83","zh":"荣耀神话83","price":23.5},{"en":"Mythical Glory  84","zh":"荣耀神话84","price":23.5},{"en":"Mythical Glory  85","zh":"荣耀神话85","price":23.5},{"en":"Mythical Glory  86","zh":"荣耀神话86","price":23.5},{"en":"Mythical Glory  87","zh":"荣耀神话87","price":23.5},{"en":"Mythical Glory  88","zh":"荣耀神话88","price":23.5},{"en":"Mythical Glory  89","zh":"荣耀神话89","price":23.5},{"en":"Mythical Glory  90","zh":"荣耀神话90","price":23.5},{"en":"Mythical Glory  91","zh":"荣耀神话91","price":23.5},{"en":"Mythical Glory  92","zh":"荣耀神话92","price":23.5},{"en":"Mythical Glory  93","zh":"荣耀神话93","price":23.5},{"en":"Mythical Glory  94","zh":"荣耀神话94","price":23.5},{"en":"Mythical Glory  95","zh":"荣耀神话95","price":23.5},{"en":"Mythical Glory  96","zh":"荣耀神话96","price":23.5},{"en":"Mythical Glory  97","zh":"荣耀神话97","price":23.5},{"en":"Mythical Glory  98","zh":"荣耀神话98","price":23.5},{"en":"Mythical Glory  99","zh":"荣耀神话99","price":23.5},{"en":"Mythical Immortal 100","zh":"不朽神话100","price":23.5}];
 
 const text = {
  zh:{
@@ -527,9 +521,16 @@ const rankWarning = byId("rankWarning");
 
 function money(n){ return "¥ " + Math.max(0,n).toFixed(0); }
 
+function rankLabel(index){
+  const item = PRICING[index];
+  if(!item) return "";
+  return lang === "zh" ? item.zh : item.en;
+}
+
+
 function fillCurrent(){
   currentRank.innerHTML = `<option value="">${text[lang].chooseCurrent}</option>`;
-  PRICING.forEach((r,i)=> currentRank.add(new Option(r.rank, i)));
+  PRICING.forEach((r,i)=> currentRank.add(new Option(rankLabel(i), i)));
   fillTarget();
 }
 
@@ -544,7 +545,7 @@ function fillTarget(){
   targetRank.disabled = false;
   targetRank.add(new Option(text[lang].chooseTarget, ""));
   PRICING.forEach((r,i)=>{
-    const opt = new Option(r.rank, i);
+    const opt = new Option(rankLabel(i), i);
     if(i <= Number(cur)) opt.disabled = true;
     targetRank.add(opt);
   });
@@ -587,8 +588,8 @@ function calc(){
     priceEl.textContent = money(total);
     etaEl.textContent = lang === "zh" ? "预计排期将由客服确认" : "Schedule will be confirmed by support";
     summaryEl.textContent = lang === "zh"
-      ? `代打上分 · ${PRICING[cur].rank} → ${PRICING[tar].rank}`
-      : `Rank Boosting · ${PRICING[cur].rank} → ${PRICING[tar].rank}`;
+      ? `代打上分 · ${rankLabel(cur)} → ${rankLabel(tar)}`
+      : `Rank Boosting · ${rankLabel(cur)} → ${rankLabel(tar)}`;
   } else {
     const matches = Math.max(1, Number(matchCount.value || 1));
     const per = PRICING[cur].price;
@@ -596,8 +597,8 @@ function calc(){
     priceEl.textContent = money(total);
     etaEl.textContent = lang === "zh" ? "陪玩排期将由客服确认" : "Duo schedule will be confirmed by support";
     summaryEl.textContent = lang === "zh"
-      ? `高端陪玩 · ${PRICING[cur].rank} · ${matches} 场 · 按下单时段位锁定单价`
-      : `Play With Pro · ${PRICING[cur].rank} · ${matches} matches · price locked at order rank`;
+      ? `高端陪玩 · ${rankLabel(cur)} · ${matches} 场 · 按下单时段位锁定单价`
+      : `Play With Pro · ${rankLabel(cur)} · ${matches} matches · price locked at order rank`;
   }
 }
 
@@ -612,6 +613,8 @@ function setMode(next){
 }
 
 function setLang(next){
+  const prevCurrent = currentRank.value;
+  const prevTarget = targetRank.value;
   lang = next;
   document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
   document.querySelectorAll("[data-i18n]").forEach(el=>{
@@ -656,6 +659,13 @@ function copyWechat(){
 
 
 fillCurrent();
+  if(prevCurrent !== ""){
+    currentRank.value = prevCurrent;
+    fillTarget();
+    if(prevTarget !== ""){
+      targetRank.value = prevTarget;
+    }
+  }
 
   calc();
 }
