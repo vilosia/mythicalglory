@@ -25,7 +25,7 @@
 
     .site-scale { font-size: 90%; }
     .h-11 {
-    height: 1.6rem;
+    height: 1.25rem !important;
 }
 
     /* First fold: removed heavy dark layer, keep only readable left gradient */
@@ -262,14 +262,21 @@
 
 
     }
-  </style>
+  
+.site-logo{
+    height:1.25rem !important;
+    width:auto;
+    object-fit:contain;
+}
+
+</style>
 </head>
 
 <body class="site-scale overflow-x-hidden">
   <header class="fixed top-0 left-0 right-0 z-50 bg-black/28 backdrop-blur-md border-b border-white/[0.06]">
     <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <img src="assets/logo_mg.svg" class="h-11 w-auto object-contain" alt="Logo">
+        <img src="assets/logo_mg.svg" class="site-logo h-11 w-auto object-contain" alt="Logo">
       </div>
 
       <div class="hidden lg:flex items-center gap-8 text-sm text-white/72 ml-auto">
