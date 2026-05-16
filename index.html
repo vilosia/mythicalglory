@@ -216,6 +216,13 @@
         url('assets/hero-mobile2.jpg') !important;
       }
 
+      #heroBg3 {
+        display:block !important;
+        background-image:
+        linear-gradient(180deg, rgba(0,0,0,.62) 0%, rgba(0,0,0,.34) 38%, rgba(0,0,0,.16) 100%),
+        url('assets/hero-mobile3.jpg') !important;
+      }
+
       .hero-rotating-bg {
         background-position: center center !important;
       }
@@ -300,6 +307,10 @@
       <div class="hero-rotating-bg" id="heroBg2" style="background-image:
       linear-gradient(90deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.42) 34%, rgba(0,0,0,.14) 100%),
       url('assets/hero-bg-2.jpg');"></div>
+
+      <div class="hero-rotating-bg" id="heroBg3" style="background-image:
+      linear-gradient(90deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.42) 34%, rgba(0,0,0,.14) 100%),
+      url('assets/hero-bg-3.jpg');"></div>
 
       <div class="particles">
         <span class="particle"></span><span class="particle"></span><span class="particle"></span>
@@ -493,13 +504,7 @@
   </footer>
 
 <script>
-const PRICING = [
-  {rank:"Warrior 3.1", no:1, price:3.5},{rank:"Warrior 3.2", no:2, price:3.5},{rank:"Warrior 3.3", no:3, price:3.5},
-  {rank:"Elite 3.1", no:10, price:3.5},{rank:"Master 4.1", no:19, price:4.5},{rank:"Grandmaster 5.1", no:35, price:5.5},
-  {rank:"Epic 5.1", no:60, price:6.5},{rank:"Legend 5.1", no:85, price:7.5},{rank:"Mythic 1", no:110, price:9.5},
-  {rank:"Mythic 10", no:119, price:9.5},{rank:"Mythic Honor 25", no:134, price:16.5},{rank:"Mythical Glory 50", no:159, price:23.5},
-  {rank:"Mythical Immortal 100", no:209, price:23.5}
-];
+const PRICING = [{"rank":"Warrior 3.1","no":1,"price":3.5},{"rank":"Warrior 3.2","no":2,"price":3.5},{"rank":"Warrior 3.3","no":3,"price":3.5},{"rank":"Warrior 2.1","no":4,"price":3.5},{"rank":"Warrior 2.2","no":5,"price":3.5},{"rank":"Warrior 2.3","no":6,"price":3.5},{"rank":"Warrior 1.1","no":7,"price":3.5},{"rank":"Warrior 1.2","no":8,"price":3.5},{"rank":"Warrior 1.3","no":9,"price":3.5},{"rank":"Elite 3.1","no":10,"price":3.5},{"rank":"Elite 3.2","no":11,"price":3.5},{"rank":"Elite 3.3","no":12,"price":3.5},{"rank":"Elite 2.1","no":13,"price":3.5},{"rank":"Elite 2.2","no":14,"price":3.5},{"rank":"Elite 2.3","no":15,"price":3.5},{"rank":"Elite 1.1","no":16,"price":3.5},{"rank":"Elite 1.2","no":17,"price":3.5},{"rank":"Elite 1.3","no":18,"price":3.5},{"rank":"Master 4.1","no":19,"price":4.5},{"rank":"Master 4.2","no":20,"price":4.5},{"rank":"Master 4.3","no":21,"price":4.5},{"rank":"Master 4.4","no":22,"price":4.5},{"rank":"Master 3.1","no":23,"price":4.5},{"rank":"Master 3.2","no":24,"price":4.5},{"rank":"Master 3.3","no":25,"price":4.5},{"rank":"Master 3.4","no":26,"price":4.5},{"rank":"Master 2.1","no":27,"price":4.5},{"rank":"Master 2.2","no":28,"price":4.5},{"rank":"Master 2.3","no":29,"price":4.5},{"rank":"Master 2.4","no":30,"price":4.5},{"rank":"Master 1.1","no":31,"price":4.5},{"rank":"Master 1.2","no":32,"price":4.5},{"rank":"Master 1.3","no":33,"price":4.5},{"rank":"Master 1.4","no":34,"price":4.5},{"rank":"宗师4.1","no":35,"price":4.5},{"rank":"Grand Master 4.2","no":36,"price":4.5},{"rank":"Grand Master 4.3","no":37,"price":4.5},{"rank":"Grand Master 4.4","no":38,"price":4.5},{"rank":"Grand Master 3.1","no":39,"price":4.5},{"rank":"Grand Master 3.2","no":40,"price":4.5},{"rank":"Grand Master 3.3","no":41,"price":4.5},{"rank":"Grand Master 3.4","no":42,"price":4.5},{"rank":"Grand Master 2.1","no":43,"price":4.5},{"rank":"Grand Master 2.2","no":44,"price":4.5},{"rank":"Grand Master 2.3","no":45,"price":4.5},{"rank":"Grand Master 2.4","no":46,"price":4.5},{"rank":"Grand Master 1.1","no":47,"price":4.5},{"rank":"Grand Master 1.2","no":48,"price":4.5},{"rank":"Grand Master 1.3","no":49,"price":4.5},{"rank":"Grand Master 1.4","no":50,"price":4.5},{"rank":"Epic 5.1","no":51,"price":5.5},{"rank":"Epic 5.2","no":52,"price":5.5},{"rank":"Epic 5.3","no":53,"price":5.5},{"rank":"Epic 5.4","no":54,"price":5.5},{"rank":"Epic 5.5","no":55,"price":5.5},{"rank":"Epic 4.1","no":56,"price":5.5},{"rank":"Epic 4.2","no":57,"price":5.5},{"rank":"Epic 4.3","no":58,"price":5.5},{"rank":"Epic 4.4","no":59,"price":5.5},{"rank":"Epic 4.5","no":60,"price":5.5},{"rank":"Epic 3.1","no":61,"price":5.5},{"rank":"Epic 3.2","no":62,"price":5.5},{"rank":"Epic 3.3","no":63,"price":5.5},{"rank":"Epic 3.4","no":64,"price":5.5},{"rank":"Epic 3.5","no":65,"price":5.5},{"rank":"Epic 2.1","no":66,"price":5.5},{"rank":"Epic 2.2","no":67,"price":5.5},{"rank":"Epic 2.3","no":68,"price":5.5},{"rank":"Epic 2.4","no":69,"price":5.5},{"rank":"Epic 2.5","no":70,"price":5.5},{"rank":"Epic 1.1","no":71,"price":5.5},{"rank":"Epic 1.2","no":72,"price":5.5},{"rank":"Epic 1.3","no":73,"price":5.5},{"rank":"Epic 1.4","no":74,"price":5.5},{"rank":"Epic 1.5","no":75,"price":5.5},{"rank":"Legend 5.1","no":76,"price":8.0},{"rank":"Legend 5.2","no":77,"price":8.0},{"rank":"Legend 5.3","no":78,"price":8.0},{"rank":"Legend 5.4","no":79,"price":8.0},{"rank":"Legend 5.5","no":80,"price":8.0},{"rank":"Legend 4.1","no":81,"price":8.0},{"rank":"Legend 4.2","no":82,"price":8.0},{"rank":"Legend 4.3","no":83,"price":8.0},{"rank":"Legend 4.4","no":84,"price":8.0},{"rank":"Legend 4.5","no":85,"price":8.0},{"rank":"Legend 3.1","no":86,"price":8.0},{"rank":"Legend 3.2","no":87,"price":8.0},{"rank":"Legend 3.3","no":88,"price":8.0},{"rank":"Legend 3.4","no":89,"price":8.0},{"rank":"Legend 3.5","no":90,"price":8.0},{"rank":"Legend 2.1","no":91,"price":8.0},{"rank":"Legend 2.2","no":92,"price":8.0},{"rank":"Legend 2.3","no":93,"price":8.0},{"rank":"Legend 2.4","no":94,"price":8.0},{"rank":"Legend 2.5","no":95,"price":8.0},{"rank":"Legend 1.1","no":96,"price":8.0},{"rank":"Legend 1.2","no":97,"price":8.0},{"rank":"Legend 1.3","no":98,"price":8.0},{"rank":"Legend 1.4","no":99,"price":8.0},{"rank":"Legend 1.5","no":100,"price":8.0},{"rank":"Mythic Calibration 1","no":101,"price":16.0},{"rank":"Mythic Calibration 2","no":102,"price":16.0},{"rank":"Mythic Calibration 3","no":103,"price":16.0},{"rank":"Mythic Calibration 4","no":104,"price":16.0},{"rank":"Mythic Calibration 5","no":105,"price":16.0},{"rank":"Mythic Calibration 6","no":106,"price":16.0},{"rank":"Mythic Calibration 7","no":107,"price":16.0},{"rank":"Mythic Calibration 8","no":108,"price":16.0},{"rank":"Mythic Calibration 9","no":109,"price":16.0},{"rank":"Mythic Calibration 10","no":110,"price":16.0},{"rank":"Mythic 16","no":111,"price":16.0},{"rank":"Mythic 17","no":112,"price":16.0},{"rank":"Mythic 18","no":113,"price":16.0},{"rank":"Mythic 19","no":114,"price":16.0},{"rank":"Mythic 20","no":115,"price":16.0},{"rank":"Mythic 21","no":116,"price":16.0},{"rank":"Mythic 22","no":117,"price":16.0},{"rank":"Mythic 23","no":118,"price":16.0},{"rank":"Mythic 24","no":119,"price":16.0},{"rank":"Mythical Honor 25","no":120,"price":18.5},{"rank":"Mythical Honor 26","no":121,"price":18.5},{"rank":"Mythical Honor 27","no":122,"price":18.5},{"rank":"Mythical Honor 28","no":123,"price":18.5},{"rank":"Mythical Honor 29","no":124,"price":18.5},{"rank":"Mythical Honor 30","no":125,"price":18.5},{"rank":"Mythical Honor 31","no":126,"price":18.5},{"rank":"Mythical Honor 32","no":127,"price":18.5},{"rank":"Mythical Honor 33","no":128,"price":18.5},{"rank":"Mythical Honor 34","no":129,"price":18.5},{"rank":"Mythical Honor 35","no":130,"price":18.5},{"rank":"Mythical Honor 36","no":131,"price":18.5},{"rank":"Mythical Honor 37","no":132,"price":18.5},{"rank":"Mythical Honor 38","no":133,"price":18.5},{"rank":"Mythical Honor 39","no":134,"price":18.5},{"rank":"Mythical Honor 40","no":135,"price":18.5},{"rank":"Mythical Honor 41","no":136,"price":18.5},{"rank":"Mythical Honor 42","no":137,"price":18.5},{"rank":"Mythical Honor 43","no":138,"price":18.5},{"rank":"Mythical Honor 44","no":139,"price":18.5},{"rank":"Mythical Honor 45","no":140,"price":18.5},{"rank":"Mythical Honor 46","no":141,"price":18.5},{"rank":"Mythical Honor 47","no":142,"price":18.5},{"rank":"Mythical Honor 48","no":143,"price":18.5},{"rank":"Mythical Honor 49","no":144,"price":18.5},{"rank":"Mythical Glory 50","no":145,"price":18.5},{"rank":"Mythical Glory 51","no":146,"price":23.5},{"rank":"Mythical Glory 52","no":147,"price":23.5},{"rank":"Mythical Glory 53","no":148,"price":23.5},{"rank":"Mythical Glory 54","no":149,"price":23.5},{"rank":"Mythical Glory 55","no":150,"price":23.5},{"rank":"Mythical Glory 56","no":151,"price":23.5},{"rank":"Mythical Glory 57","no":152,"price":23.5},{"rank":"Mythical Glory 58","no":153,"price":23.5},{"rank":"Mythical Glory 59","no":154,"price":23.5},{"rank":"Mythical Glory 60","no":155,"price":23.5},{"rank":"Mythical Glory 61","no":156,"price":23.5},{"rank":"Mythical Glory 62","no":157,"price":23.5},{"rank":"Mythical Glory 63","no":158,"price":23.5},{"rank":"Mythical Glory 64","no":159,"price":23.5},{"rank":"Mythical Glory 65","no":160,"price":23.5},{"rank":"Mythical Glory 66","no":161,"price":23.5},{"rank":"Mythical Glory 67","no":162,"price":23.5},{"rank":"Mythical Glory 68","no":163,"price":23.5},{"rank":"Mythical Glory 69","no":164,"price":23.5},{"rank":"Mythical Glory 70","no":165,"price":23.5},{"rank":"Mythical Glory 71","no":166,"price":23.5},{"rank":"Mythical Glory 72","no":167,"price":23.5},{"rank":"Mythical Glory 73","no":168,"price":23.5},{"rank":"Mythical Glory 74","no":169,"price":23.5},{"rank":"Mythical Glory 75","no":170,"price":23.5},{"rank":"Mythical Glory 76","no":171,"price":23.5},{"rank":"Mythical Glory 77","no":172,"price":23.5},{"rank":"Mythical Glory 78","no":173,"price":23.5},{"rank":"Mythical Glory 79","no":174,"price":23.5},{"rank":"Mythical Glory 80","no":175,"price":23.5},{"rank":"Mythical Glory 81","no":176,"price":23.5},{"rank":"Mythical Glory 82","no":177,"price":23.5},{"rank":"Mythical Glory 83","no":178,"price":23.5},{"rank":"Mythical Glory 84","no":179,"price":23.5},{"rank":"Mythical Glory 85","no":180,"price":23.5},{"rank":"Mythical Glory 86","no":181,"price":23.5},{"rank":"Mythical Glory 87","no":182,"price":23.5},{"rank":"Mythical Glory 88","no":183,"price":23.5},{"rank":"Mythical Glory 89","no":184,"price":23.5},{"rank":"Mythical Glory 90","no":185,"price":23.5},{"rank":"Mythical Glory 91","no":186,"price":23.5},{"rank":"Mythical Glory 92","no":187,"price":23.5},{"rank":"Mythical Glory 93","no":188,"price":23.5},{"rank":"Mythical Glory 94","no":189,"price":23.5},{"rank":"Mythical Glory 95","no":190,"price":23.5},{"rank":"Mythical Glory 96","no":191,"price":23.5},{"rank":"Mythical Glory 97","no":192,"price":23.5},{"rank":"Mythical Glory 98","no":193,"price":23.5},{"rank":"Mythical Glory 99","no":194,"price":23.5},{"rank":"Mythical Immortal 100","no":195,"price":23.5}];
 
 const text = {
  zh:{
@@ -644,20 +649,18 @@ function setLang(next){
   });
   byId("langIcon").src = lang === "zh" ? "assets/cn.svg" : "assets/en.svg";
   
-const heroBg1 = document.getElementById('heroBg1');
-const heroBg2 = document.getElementById('heroBg2');
+const heroBgs = [
+  document.getElementById('heroBg1'),
+  document.getElementById('heroBg2'),
+  document.getElementById('heroBg3')
+].filter(Boolean);
 
-let showingHero1 = true;
+let currentHeroIndex = 0;
 
 setInterval(()=>{
-  if(showingHero1){
-    heroBg1.classList.remove('active');
-    heroBg2.classList.add('active');
-  }else{
-    heroBg2.classList.remove('active');
-    heroBg1.classList.add('active');
-  }
-  showingHero1 = !showingHero1;
+  heroBgs[currentHeroIndex].classList.remove('active');
+  currentHeroIndex = (currentHeroIndex + 1) % heroBgs.length;
+  heroBgs[currentHeroIndex].classList.add('active');
 },7000);
 
 
@@ -687,20 +690,18 @@ byId("langToggle").addEventListener("click",()=>{
 });
 
 
-const heroBg1 = document.getElementById('heroBg1');
-const heroBg2 = document.getElementById('heroBg2');
+const heroBgs = [
+  document.getElementById('heroBg1'),
+  document.getElementById('heroBg2'),
+  document.getElementById('heroBg3')
+].filter(Boolean);
 
-let showingHero1 = true;
+let currentHeroIndex = 0;
 
 setInterval(()=>{
-  if(showingHero1){
-    heroBg1.classList.remove('active');
-    heroBg2.classList.add('active');
-  }else{
-    heroBg2.classList.remove('active');
-    heroBg1.classList.add('active');
-  }
-  showingHero1 = !showingHero1;
+  heroBgs[currentHeroIndex].classList.remove('active');
+  currentHeroIndex = (currentHeroIndex + 1) % heroBgs.length;
+  heroBgs[currentHeroIndex].classList.add('active');
 },7000);
 
 
