@@ -326,7 +326,7 @@
       <div class="relative z-10 max-w-7xl mx-auto px-6 w-full">
         <div class="max-w-2xl">
           <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-400/30 bg-black/24 backdrop-blur text-yellow-300 text-sm mb-7" data-i18n="heroBadge">
-            赛季上分
+            专业代打/陪玩
           </div>
 
           <h1 class="text-5xl md:text-7xl font-black leading-[0.95] tracking-tight">
@@ -443,7 +443,7 @@
     <section id="services" class="section-bg-trust py-28 border-b border-white/10" style="background-image:url('assets/section3-bg.jpg')">
       <div class="max-w-7xl mx-auto px-6">
         <div class="max-w-3xl mx-auto text-center">
-          <div class="text-yellow-400 font-semibold tracking-widest uppercase text-sm">Service Options</div>
+          <div class="text-yellow-400 font-semibold tracking-widest uppercase text-sm">Choose Your Service</div>
           <h2 class="mt-5 text-4xl md:text-5xl font-black leading-tight" data-i18n="serviceTitle">代打与陪玩 两种不同的需求</h2>
           <p class="text-white/62 leading-relaxed mt-7 text-lg" data-i18n="serviceDesc">
             代打适合希望节省时间、直接推进段位的玩家；陪玩适合希望自己参与对局、和高段位玩家一起排位的玩家。
@@ -468,7 +468,7 @@
 
     <section id="trust" class="section-bg-final py-28 bg-[#070709]" style="background-image:url('assets/section4-bg.jpg');">
       <div class="max-w-6xl mx-auto px-6 text-center">
-        <div class="text-yellow-400 font-semibold tracking-widest uppercase text-sm">Service Confidence</div>
+        <div class="text-yellow-400 font-semibold tracking-widest uppercase text-sm">Why Players Trust Us</div>
         <h2 class="mt-5 text-4xl md:text-5xl font-black leading-tight" data-i18n="trustTitle">五年持续运营，靠的不是夸张承诺</h2>
         <p class="text-white/62 leading-relaxed mt-7 text-lg max-w-3xl mx-auto" data-i18n="trustDesc">
           而是长期可信赖的服务与稳定执行。
@@ -497,6 +497,29 @@
         </div>
       </div>
     </section>
+  
+    <section id="finalContactCta" class="py-24 bg-[#070709] border-t border-white/10">
+      <div class="max-w-5xl mx-auto px-6 text-center">
+        <h2 class="text-4xl md:text-5xl font-black leading-tight" data-i18n="finalCtaTitle">准备开始上分？</h2>
+        <p class="text-white/55 leading-relaxed mt-6 text-lg max-w-2xl mx-auto" data-i18n="finalCtaDesc">
+          通过 WhatsApp 或微信联系我们，客服会根据你的段位与需求确认价格、排期与服务方式。
+        </p>
+
+        <div class="mt-10">
+          <a href="https://wa.me/+6598156385" class="inline-flex items-center justify-center bg-yellow-400 text-black font-black px-8 py-4 rounded-2xl hover:scale-[1.02] transition" data-i18n="finalWhatsappCta">
+            继续通过 WhatsApp 咨询
+          </a>
+
+          <div class="flex items-center justify-center gap-3 text-center text-white/45 text-sm mt-4">
+            <span data-i18n="finalWechatLine">客服微信：lexlu1688</span>
+            <button id="copyWechatBtnFinal" onclick="copyWechatFinal()" class="px-3 py-1 rounded-lg bg-white/8 border border-white/10 text-white/75 hover:bg-white/12 transition text-xs">
+              Copy
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <footer class="border-t border-white/10 py-8 text-center text-gray-500 text-sm">
@@ -509,7 +532,7 @@ const PRICING = [{"rank":"Warrior 3.1","no":1,"price":3.5},{"rank":"Warrior 3.2"
 const text = {
  zh:{
   navQuote:"报价", navServices:"服务", navTrust:"保障",
-  heroBadge:"赛季上分", heroTitleA:"冲上", heroTitleB:"Mythical Glory", heroTitleC:"不必独自硬扛",
+  heroBadge:"专业代打/陪玩", heroTitleA:"冲上", heroTitleB:"Mythical Glory", heroTitleC:"不必独自硬扛",
   heroDesc:"提供 MLBB 代打与高端玩家陪玩服务。无论你想快速推进段位，还是希望和更强的队友一起排位，我们都能提供更稳定、更清晰的服务流程。",
   heroCta1:"立即估算价格", heroCta2:"查看服务方式",
   calcTitle:"先选服务<br>再估算价格", calcDesc:"价格会根据当前段位、目标段位或陪玩场次自动估算。最终价格与排期会由客服在 WhatsApp / 微信中确认。",
@@ -519,11 +542,11 @@ const text = {
   boostTitle:"代打上分", boostDesc:"由高段位玩家协助完成指定段位目标，适合想更快获得赛季奖励或突破卡点的玩家。",
   duoTitle:"高端玩家陪玩", duoDesc:"与高段位玩家一起排位。胜负取决于匹配、阵容与对局情况，但我们会尽力提高胜率与体验。",
   trustTitle:"五年持续运营，靠的不是夸张承诺", trustDesc:"而是长期可信赖的服务与稳定执行。",
-  chooseCurrent:"请选择当前段位", chooseTarget:"请选择目标段位", chooseFirst:"请先选择当前段位", etaDefault:"请选择段位后自动计算", summaryDefault:"请选择服务与段位。", statYears:"持续运营经验", statPlayers:"已协助玩家", statMatches:"已完成排位服务", statSupport:"客服沟通支持"
+  chooseCurrent:"请选择当前段位", chooseTarget:"请选择目标段位", chooseFirst:"请先选择当前段位", etaDefault:"请选择段位后自动计算", summaryDefault:"请选择服务与段位。", statYears:"持续运营经验", statPlayers:"已协助玩家", statMatches:"已完成排位服务", statSupport:"客服沟通支持", finalCtaTitle:"准备开始上分？", finalCtaDesc:"通过 WhatsApp 或微信联系我们，客服会根据你的段位与需求确认价格、排期与服务方式。", finalWhatsappCta:"继续通过 WhatsApp 咨询", finalWechatLine:"客服微信：lexlu1688"
  },
  en:{
   navQuote:"Quote", navServices:"Services", navTrust:"Assurance",
-  heroBadge:"Season Rank Service · High-Rank Players", heroTitleA:"Rise to", heroTitleB:"Mythical Glory", heroTitleC:"with Great Teammate",
+  heroBadge:"Rank Boosting", heroTitleA:"Rise to", heroTitleB:"Mythical Glory", heroTitleC:"with Great Teammate",
   heroDesc:"Professional MLBB boosting and high-rank duo service for players who want clearer progress, stronger teammates and a smoother ranked experience.",
   heroCta1:"Calculate Price", heroCta2:"View Services",
   calcTitle:"Select Your Service, Get A Clear Estimate", calcDesc:"Pricing is estimated based on your current rank, target rank or number of duo matches. Final pricing and schedule will be confirmed through WhatsApp / WeChat.",
@@ -533,7 +556,7 @@ const text = {
   boostTitle:"Rank Boosting", boostDesc:"High-rank players help complete your target rank. Suitable for players who want faster seasonal progress or to break through a difficult rank.",
   duoTitle:"Play With Pro", duoDesc:"Queue together with high-rank players. Match results depend on matchmaking, draft and in-game conditions, but our players will always play to win.",
   trustTitle:"Professional Service Without Empty Promises", trustDesc:"We focus on clear communication, reasonable quotation, trackable order progress and stable high-rank execution.",
-  chooseCurrent:"Select current rank", chooseTarget:"Select desired rank", chooseFirst:"Select current rank first", etaDefault:"Select rank to calculate", summaryDefault:"Select service and rank.", statYears:"Continuous Operation", statPlayers:"Players Assisted", statMatches:"Ranked Services Completed", statSupport:"Support Availability"
+  chooseCurrent:"Select current rank", chooseTarget:"Select desired rank", chooseFirst:"Select current rank first", etaDefault:"Select rank to calculate", summaryDefault:"Select service and rank.", statYears:"Continuous Operation", statPlayers:"Players Assisted", statMatches:"Ranked Services Completed", statSupport:"Support Availability", finalCtaTitle:"Ready to rank up?", finalCtaDesc:"Contact us via WhatsApp or WeChat. Our support team will confirm pricing, schedule and service mode based on your rank and request.", finalWhatsappCta:"Continue via WhatsApp", finalWechatLine:"WeChat Support: lexlu1688"
  }
 };
 
@@ -664,6 +687,14 @@ setInterval(()=>{
 },7000);
 
 
+function copyWechatFinal(){
+  navigator.clipboard.writeText("lexlu1688");
+  const btn = document.getElementById("copyWechatBtnFinal");
+  const original = btn.innerText;
+  btn.innerText = "Copied";
+  setTimeout(()=>{ btn.innerText = original; },1500);
+}
+
 function copyWechat(){
   navigator.clipboard.writeText("lexlu1688");
   const btn = document.getElementById("copyWechatBtn");
@@ -704,6 +735,14 @@ setInterval(()=>{
   heroBgs[currentHeroIndex].classList.add('active');
 },7000);
 
+
+function copyWechatFinal(){
+  navigator.clipboard.writeText("lexlu1688");
+  const btn = document.getElementById("copyWechatBtnFinal");
+  const original = btn.innerText;
+  btn.innerText = "Copied";
+  setTimeout(()=>{ btn.innerText = original; },1500);
+}
 
 function copyWechat(){
   navigator.clipboard.writeText("lexlu1688");
