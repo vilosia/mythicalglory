@@ -3865,7 +3865,7 @@
     else if(isPend||isPartial){right='<span class="p stake">'+pxMoney(facts.stake)+'</span>';}
     else{right='<span class="p '+(facts.pnl<0?'lose':(facts.pnl>0?'win':'zero'))+'">'+(facts.pnl>0?'+':(facts.pnl<0?'−':''))+pxMoney(Math.abs(facts.pnl))+'</span>';}
     var kind=(o.state==='done')?'result':'bet',result=(o.state==='done')?(facts.pnl<0?'lose':(facts.pnl>0?'win':'zero')):'';
-    var h='<div class="px-item feeditem'+(open?' open':'')+(isFail?' execution-failed':'')+(isPartial?' execution-partial':'')+'" data-kind="'+kind+'" data-result="'+result+'" data-period="'+o.per+'" data-rounds="'+rounds+'" data-requested="'+facts.requested+'" data-submitted="'+facts.submitted+'" data-stake="'+facts.stake+'" data-attempted-stake="'+attemptedStake+'" data-pnl="'+facts.pnl+'">'
+    var h='<div class="px-item feeditem'+(open?' open':'')+(isFail?' execution-failed':'')+(isPartial?' execution-partial':'')+'" data-kind="'+kind+'" data-result="'+result+'" data-period="'+o.per+'" data-rounds="'+rounds+'" data-search="'+safeText(items.map(function(it){return it.nm||'';}).join(' '))+'" data-requested="'+facts.requested+'" data-submitted="'+facts.submitted+'" data-stake="'+facts.stake+'" data-attempted-stake="'+attemptedStake+'" data-pnl="'+facts.pnl+'">'
       +'<div class="stgact px-head" data-act="stgpx" data-arg="'+o.key+'" data-def="'+(o.def?1:0)+'">'
       +'<span class="t">'+o.t+'</span><div class="m"><b>'+title+'</b></div>'
       +right+'<span class="px-caret'+(open?' up':'')+'">⌄</span></div>';
@@ -4286,7 +4286,32 @@
   }
   function filterActiveCount(d){
     d=d||{kind:feedKind,type:feedType,result:feedResult,period:feedPeriod,round:feedRound,date:feedDate};var n=0;
-    if(d.kind!=='all')n++;if(d.type!=='all')n++;if(d.result!=='all')n++;if(d.period)n++;if(d.type!=='status'&&d.type!=='query'&&d.round!=='all')n++;if(d.date!=='today')n++;return n;
+    if(d.kind!=='all')n++;
+    else if(d.type!=='all')n++;
+    if(d.period)n++;if(d.type!=='status'&&d.round!=='all')n++;if(d.date!=='today')n++;return n;
+  }
+  function filterQuickValue(d){
+    if(d.type==='error')return 'error';
+    if(d.kind==='pending')return 'pending';
+    if(d.kind==='settled'&&d.result==='win')return 'win';
+    if(d.kind==='settled'&&d.result==='lose')return 'lose';
+    if(d.kind==='noBet')return 'noTrigger';
+    return 'all';
+  }
+  function filterConditionLabels(d){
+    var out=[];
+    if(d.kind==='settled')out.push('已结');
+    else if(d.kind==='pending')out.push('未结');
+    else if(d.type==='bet')out.push('投注记录');
+    else if(d.type==='status')out.push('设置调整');
+    if(d.type!=='status'&&(d.round==='1'||d.round==='2'||d.round==='3'))out.push('第 '+d.round+' 回');
+    else if(d.type!=='status'&&d.round==='4plus')out.push('深追');
+    if(d.period)out.push('“'+d.period+'”');
+    out.push(d.date==='custom'?(d.dateLabel||'自定义日期'):({today:'今天','7d':'最近7天',month:'本月'}[d.date]||'今天'));
+    return out;
+  }
+  function filterStateBarHtml(d,count){
+    return '<div class="feed-filter-state"><span>'+filterConditionLabels(d).join(' · ')+'，共 <b>'+count+'</b> 条</span><button data-act="feedclear">清除</button></div>';
   }
   function paintFilter(){
     var box=$('#stgFeedFilter');if(!box)return;
@@ -4302,33 +4327,27 @@
     var b=$('#stgFilterBody');if(!b)return;
     var d=filterDraft||{kind:feedKind,type:feedType,result:feedResult,period:feedPeriod,round:feedRound,roundFrom:feedRoundFrom,roundTo:feedRoundTo,date:feedDate,dateLabel:feedDateLabel};
     function chip(label,act,arg,on){return '<button class="stg-filter-chip'+(on?' on':'')+'" data-act="'+act+'" data-arg="'+arg+'">'+label+'</button>';}
-    var result=d.kind==='settled'?'<div class="stg-filter-sub"><span>结算结果</span><div>'+chip('全部结果','feedresult','all',d.result==='all')+chip('盈利','feedresult','win',d.result==='win')+chip('亏损','feedresult','lose',d.result==='lose')+chip('持平','feedresult','zero',d.result==='zero')+'</div></div>':'';
-    var customRound=d.round==='custom'?'<div class="stg-filter-range"><input class="stg-filter-num" type="number" inputmode="numeric" min="1" placeholder="起始回合" data-feed-filter="roundFrom" value="'+(d.roundFrom||'')+'"><i>至</i><input class="stg-filter-num" type="number" inputmode="numeric" min="1" placeholder="结束回合" data-feed-filter="roundTo" value="'+(d.roundTo||'')+'"></div>':'';
     var custom=d.date==='custom'?(d.dateLabel||'选择日期'):'自定义日期';
     var summary=filterSummary(d);
-    var typeLabel={all:'全部动态',bet:'投注动态',status:'策略事件',query:'指令查询',error:'执行异常'}[d.type]||'全部动态';
-    var roundLabel={all:'全部回合','1':'第 1 回合','2':'第 2 回合','3':'第 3 回合','4plus':'第 4 回合以上',custom:'自定义'}[d.round]||'全部回合';
-    var chev='<svg class="stg-filter-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>';
-    var typeOptions=d.openMore==='type'?'<div class="stg-filter-expand"><div class="stg-filter-chips">'
-      +chip('全部动态','feedtype','all',d.type==='all')+chip('投注动态','feedtype','bet',d.type==='bet')+chip('策略事件','feedtype','status',d.type==='status')+chip('指令查询','feedtype','query',d.type==='query')+chip('执行异常','feedtype','error',d.type==='error')+'</div></div>':'';
-    var roundOptions=d.type!=='status'&&d.type!=='query'&&d.openMore==='round'?'<div class="stg-filter-expand"><div class="stg-filter-chips">'
-      +chip('全部回合','feedround','all',d.round==='all')+chip('第 1 回合','feedround','1',d.round==='1')+chip('第 2 回合','feedround','2',d.round==='2')+chip('第 3 回合','feedround','3',d.round==='3')+chip('第 4 回合以上','feedround','4plus',d.round==='4plus')+chip('自定义','feedround','custom',d.round==='custom')+'</div>'+customRound+'</div>':'';
+    var isSetting=d.type==='status';
     b.innerHTML='<div class="cf-h">筛选执行动态</div>'
-      +'<div class="stg-filter-lab first">搜索期数</div><div class="stg-filter-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><input inputmode="numeric" placeholder="输入期数，例如 00090" data-feed-filter="period" value="'+(d.period||'')+'"></div>'
-      +'<div class="stg-filter-lab">执行结果</div><div class="stg-filter-chips stg-filter-primary">'
-      +chip('全部','feedkind','all',d.kind==='all')+chip('待开奖','feedkind','pending',d.kind==='pending')+chip('已结算','feedkind','settled',d.kind==='settled')+chip('未投注','feedkind','noBet',d.kind==='noBet')+'</div>'+result
-      +'<div class="stg-filter-lab">更多条件</div><div class="stg-filter-more">'
-      +'<button class="stg-filter-more-row" data-act="feedmore" data-arg="type"><b>动态类型</b><span>'+typeLabel+'</span>'+chev+'</button>'+typeOptions
-      +((d.type==='status'||d.type==='query')?'':'<button class="stg-filter-more-row" data-act="feedmore" data-arg="round"><b>回合范围</b><span>'+roundLabel+'</span>'+chev+'</button>'+roundOptions)
-      +'</div>'
+      +'<div class="stg-filter-lab first">查找记录</div><div class="stg-filter-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><input placeholder="输入期号或投注项，如冠军大小" data-feed-filter="period" value="'+(d.period||'')+'"></div>'
+      +(isSetting?'':'<div class="stg-filter-lab">结果</div><div class="stg-filter-chips stg-filter-primary">'
+      +chip('全部','feedkind','all',d.kind==='all')+chip('已结','feedkind','settled',d.kind==='settled')+chip('未结','feedkind','pending',d.kind==='pending')+'</div>')
+      +'<div class="stg-filter-lab">记录类型</div><div class="stg-filter-record">'
+      +chip('全部','feedtype','all',d.type==='all')+chip('投注记录','feedtype','bet',d.type==='bet')+chip('设置调整','feedtype','status',d.type==='status')+'</div>'
+      +(isSetting?'':'<div class="stg-filter-lab">回合</div><div class="stg-filter-round">'
+      +chip('全部','feedround','all',d.round==='all')+chip('第1回','feedround','1',d.round==='1')+chip('第2回','feedround','2',d.round==='2')+chip('第3回','feedround','3',d.round==='3')+chip('深追','feedround','4plus',d.round==='4plus')+'</div>')
       +'<div class="stg-filter-lab">时间范围</div><div class="stg-filter-chips">'
-      +chip('今天','feeddatepick','today',d.date==='today')+chip('最近 7 天','feeddatepick','7d',d.date==='7d')+chip('本月','feeddatepick','month',d.date==='month')+chip(custom,'feeddatepick','custom',d.date==='custom')+'</div>'
+      +chip('今天','feeddatepick','today',d.date==='today')+chip('最近7天','feeddatepick','7d',d.date==='7d')+chip('本月','feeddatepick','month',d.date==='month')+chip(custom,'feeddatepick','custom',d.date==='custom')+'</div>'
       +filterSummaryHtml(summary,'stg-filter-stats',countFiltered(d))
       +'<div class="stg-filter-actions"><button class="ghost" data-act="feedreset">重置</button><button class="cta" data-act="feedapply">查看 '+countFiltered(d)+' 条动态</button></div>';
   }
   function filterPeriodMatch(x,d){
-    var q=String(d.period||'').replace(/\D/g,'');if(!q)return true;
-    var p=String(x.getAttribute('data-period')||'').replace(/\D/g,'');return !!p&&p.indexOf(q)>=0;
+    var raw=String(d.period||'').trim();if(!raw)return true;
+    var q=raw.replace(/\D/g,''),hasText=/[^\d\s]/.test(raw);
+    if(!hasText){var p=String(x.getAttribute('data-period')||'').replace(/\D/g,'');return !!p&&p.indexOf(q)>=0;}
+    return (String(x.getAttribute('data-search')||'')+' '+String(x.textContent||'')).replace(/\s+/g,'').indexOf(raw.replace(/\s+/g,''))>=0;
   }
   function filterRoundMatch(x,d){
     var mode=d.round||'all';if(mode==='all')return true;
@@ -4341,12 +4360,12 @@
   }
   function filteredFeedRows(rows,d){
     /* 当前原型记录均发生在今天，因此也属于最近 7 天与本月；真实数据接入后在 base 中加入记录日期判断。 */
-    var base=function(x){return filterPeriodMatch(x,d)&&((d.type==='status'||d.type==='query')||filterRoundMatch(x,d));},settledPeriods={},resultPeriods={};
+    var base=function(x){return filterPeriodMatch(x,d)&&(d.type==='status'||filterRoundMatch(x,d));},settledPeriods={},resultPeriods={};
     rows.forEach(function(x){if(base(x)&&x.getAttribute('data-kind')==='result'){settledPeriods[x.getAttribute('data-period')]=1;if(d.result==='all'||x.getAttribute('data-result')===d.result)resultPeriods[x.getAttribute('data-period')]=1;}});
     return rows.filter(function(x){
       if(!base(x))return false;
       var kind=x.getAttribute('data-kind'),isError=x.classList.contains('execution-failed')||x.classList.contains('execution-partial');
-      if(d.type==='status'&&kind!=='status')return false;
+      if(d.type==='status'&&!x.classList.contains('event-edited'))return false;
       if(d.type==='query'&&kind!=='query')return false;
       if(d.type==='error'&&!isError)return false;
       if(d.type==='bet'&&kind!=='bet'&&kind!=='result')return false;
@@ -4360,22 +4379,31 @@
   function filterSummary(d){
     var feed=root.querySelector('#stgScroll .stg-feed');if(!feed)return null;
     var rows=filteredFeedRows([].slice.call(feed.querySelectorAll('.feeditem')),d),money=function(v){return Math.round(v*10)/10;};
+    if(d.type==='status'){
+      var latest=rows.length?(rows[0].querySelector('.t')||{}).textContent||'—':'—';
+      return {mode:'status',items:[['调整次数',rows.length],['最近调整',latest]]};
+    }
     if(d.kind==='pending'){
-      var pending=rows.filter(function(x){return x.getAttribute('data-kind')==='bet';});
-      return {mode:'pending',items:[['待开奖',pending.length],['投注注数',pending.reduce(function(s,x){return s+inum(x.getAttribute('data-submitted'),0);},0)],['累计投入',pxMoney(money(pending.reduce(function(s,x){return s+num(x.getAttribute('data-stake'),0);},0)))]]};
+      var pending=rows.filter(function(x){return x.getAttribute('data-kind')==='bet';}),pendingStake=money(pending.reduce(function(s,x){return s+num(x.getAttribute('data-stake'),0);},0));
+      return {mode:'pending',items:[['未结期数',pending.length],['累计投入',pxMoney(pendingStake)],['预计可赢',pxMoney(money(pendingStake*.99))]]};
     }
     if(d.type==='error'){
       return {mode:'error',items:[['异常期数',rows.length],['失败注数',rows.reduce(function(s,x){return s+Math.max(0,inum(x.getAttribute('data-requested'),0)-inum(x.getAttribute('data-submitted'),0));},0)],['未扣款',pxMoney(money(rows.reduce(function(s,x){return s+Math.max(0,num(x.getAttribute('data-attempted-stake'),0)-num(x.getAttribute('data-stake'),0));},0)))]]};
     }
-    if(d.kind==='noBet'||d.type==='status'||d.type==='query')return null;
+    if(d.kind==='noBet'||d.type==='query')return null;
     var settled=rows.filter(function(x){return x.getAttribute('data-kind')==='result';});
     var pnl=Math.round(settled.reduce(function(s,x){return s+num(x.getAttribute('data-pnl'),0);},0)*10)/10;
-    return {mode:'settled',items:[['已结算',settled.length],['盈利',settled.filter(function(x){return x.getAttribute('data-result')==='win';}).length],['亏损',settled.filter(function(x){return x.getAttribute('data-result')==='lose';}).length],['盈亏',(pnl>0?'+':'')+pxMoney(pnl)]]};
+    var settledStake=money(settled.reduce(function(s,x){return s+num(x.getAttribute('data-stake'),0);},0));
+    if(d.kind==='settled')return {mode:'settled',items:[['已结期数',settled.length],['累计投入',pxMoney(settledStake)],['盈亏',(pnl>0?'+':'')+pxMoney(pnl),pnl>0?'win':(pnl<0?'lose':'')]]};
+    var settledPeriods={},pendingPeriods={};
+    settled.forEach(function(x){settledPeriods[x.getAttribute('data-period')||('r'+Math.random())]=1;});
+    rows.forEach(function(x){if(x.getAttribute('data-kind')==='bet'&&!settledPeriods[x.getAttribute('data-period')])pendingPeriods[x.getAttribute('data-period')||('b'+Math.random())]=1;});
+    return {mode:'all',items:[['已结期数',Object.keys(settledPeriods).length],['未结期数',Object.keys(pendingPeriods).length],['已结盈亏',(pnl>0?'+':'')+pxMoney(pnl),pnl>0?'win':(pnl<0?'lose':'')]]};
   }
   function filterSummaryHtml(s,cls,count){
     if(!s&&cls!=='stg-filter-stats')return '';
     var match=cls==='stg-filter-stats'?'<em class="stg-filter-match">符合条件 <b>'+inum(count,0)+'</b> 条</em>':'';
-    var items=s?s.items.map(function(it,i){var c=(s.mode==='settled'&&i===1)?'win':((s.mode==='settled'&&i===2)||s.mode==='error'?'lose':'');return '<div><span>'+it[0]+'</span><b class="'+c+'">'+it[1]+'</b></div>';}).join(''):'';
+    var items=s?s.items.map(function(it){return '<div><span>'+it[0]+'</span><b class="'+(it[2]||'')+'">'+it[1]+'</b></div>';}).join(''):'';
     return '<div class="'+cls+' '+(s?s.mode:'count-only')+'">'+match+items+'</div>';
   }
   function countFiltered(d){
@@ -4394,8 +4422,10 @@
     var shown=filteredFeedRows(rows,d);rows.forEach(function(x){x.classList.toggle('feed-filter-hide',shown.indexOf(x)<0);});
     var visible=rows.filter(function(x){return !x.classList.contains('feed-filter-hide');}).length;
     var old=feed.querySelector('.feed-filter-empty');if(old)old.remove();var oldStats=feed.querySelector('.feed-filter-stats');if(oldStats)oldStats.remove();
-    var summary=filterSummary(d);if(filterActiveCount(d)>0&&summary)feed.insertAdjacentHTML('afterbegin',filterSummaryHtml(summary,'feed-filter-stats'));
-    if(!visible){feed.insertAdjacentHTML('beforeend','<div class="feed-empty feed-filter-empty"><span>没有符合筛选条件的动态</span></div>');}
+    var active=filterActiveCount(d),summary=filterSummary(d);
+    if(active>0&&summary&&visible>0)feed.insertAdjacentHTML('afterbegin',filterSummaryHtml(summary,'feed-filter-stats'));
+    if(active>0)feed.insertAdjacentHTML('afterbegin',filterStateBarHtml(d,visible));
+    if(!visible){feed.insertAdjacentHTML('beforeend','<div class="feed-empty feed-filter-empty"><b>没有符合条件的动态</b><span>试试查看全部回合，或清除当前筛选</span><button data-act="feedclear">清除筛选</button></div>');}
   }
   function openFilterSheet(){filterDraft={kind:feedKind,type:feedType,result:feedResult,period:feedPeriod,round:feedRound,roundFrom:feedRoundFrom,roundTo:feedRoundTo,date:feedDate,dateLabel:feedDateLabel,openMore:''};renderFilterSheet();var m=$('#stgFilterSheet');if(m)m.classList.add('open');}
   function closeFilterSheet(){var m=$('#stgFilterSheet');if(m)m.classList.remove('open');filterDraft=null;}
@@ -5516,7 +5546,7 @@
       return;
     }
     var fk=t.getAttribute('data-feed-filter');
-    if(fk&&filterDraft){filterDraft[fk]=fk==='period'?String(t.value||'').replace(/\D/g,''):String(t.value||'');if(fk==='period'&&t.value!==filterDraft[fk])t.value=filterDraft[fk];refreshFilterPreview();return;}
+    if(fk&&filterDraft){filterDraft[fk]=String(t.value||'');refreshFilterPreview();return;}
     var k=t.getAttribute('data-stgk');if(!k||!cur)return;
     cur[k]=(t.type==='number')?num(t.value,cur[k]):t.value;
     var s=$('#stgCurSum');if(s){s.innerHTML=sumChips(cur,Math.min(step,3));}
@@ -5613,8 +5643,24 @@
     else if(a==='stgselect'){selIdx=parseInt(arg,10)||0;renderHome();}
     else if(a==='stgfilteropen'){openFilterSheet();}
     else if(a==='stgfilterclose'){closeFilterSheet();}
-    else if(a==='feedkind'){if(filterDraft){filterDraft.kind=arg||'all';if(filterDraft.kind!=='all')filterDraft.type='bet';if(filterDraft.kind!=='settled')filterDraft.result='all';renderFilterSheet();}}
-    else if(a==='feedtype'){if(filterDraft){filterDraft.type=arg||'all';if(filterDraft.type!=='bet')filterDraft.kind='all';if(filterDraft.type==='status'||filterDraft.type==='query')filterDraft.openMore='';renderFilterSheet();}}
+    else if(a==='feedquick'){
+      if(filterDraft){
+        filterDraft.kind='all';filterDraft.type='all';filterDraft.result='all';
+        if(arg==='win'||arg==='lose'){filterDraft.kind='settled';filterDraft.type='bet';filterDraft.result=arg;}
+        else if(arg==='pending'){filterDraft.kind='pending';filterDraft.type='bet';}
+        else if(arg==='error'){filterDraft.type='error';}
+        renderFilterSheet();
+      }
+    }
+    else if(a==='feedkind'){if(filterDraft){filterDraft.kind=arg||'all';if(filterDraft.kind!=='all')filterDraft.type='bet';filterDraft.result='all';renderFilterSheet();}}
+    else if(a==='feedtype'){
+      if(filterDraft){
+        filterDraft.type=arg||'all';filterDraft.result='all';
+        if(filterDraft.type==='all'){filterDraft.kind='all';filterDraft.round='all';}
+        else if(filterDraft.type==='status'){filterDraft.kind='all';filterDraft.round='all';}
+        renderFilterSheet();
+      }
+    }
     else if(a==='feedmore'){if(filterDraft){filterDraft.openMore=filterDraft.openMore===arg?'':arg;renderFilterSheet();}}
     else if(a==='feedresult'){if(filterDraft){filterDraft.result=arg||'all';renderFilterSheet();}}
     else if(a==='feedround'){if(filterDraft){filterDraft.round=arg||'all';filterDraft.openMore=filterDraft.round==='custom'?'round':'';renderFilterSheet();}}
@@ -5624,6 +5670,10 @@
       else{filterDraft.date=arg||'today';filterDraft.dateLabel='';renderFilterSheet();}
     }
     else if(a==='feedreset'){filterDraft={kind:'all',type:'all',result:'all',period:'',round:'all',roundFrom:'',roundTo:'',date:'today',dateLabel:'',openMore:''};renderFilterSheet();}
+    else if(a==='feedclear'){
+      feedKind='all';feedType='all';feedResult='all';feedPeriod='';feedRound='all';feedRoundFrom='';feedRoundTo='';feedDate='today';feedDateLabel='';
+      closeFilterSheet();updateFeed();
+    }
     else if(a==='feedapply'){
       if(filterDraft){feedKind=filterDraft.kind;feedType=filterDraft.type||'all';feedResult=filterDraft.result;feedPeriod=filterDraft.period||'';feedRound=filterDraft.round||'all';feedRoundFrom=filterDraft.roundFrom||'';feedRoundTo=filterDraft.roundTo||'';feedDate=filterDraft.date;feedDateLabel=filterDraft.dateLabel||'';}
       closeFilterSheet();updateFeed();

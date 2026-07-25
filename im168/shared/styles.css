@@ -2249,9 +2249,13 @@ body.bustview .demo-bar.bust-demo-panel{display:flex;}
 .stg-filter-actions .ghost{background:#fff;border:1px solid #d2d2d2;color:#126BFF;}
 .stg-filter-actions .cta{border:0;background:var(--blue);color:#fff;}
 
-/* 执行动态筛选 V2：高频结果常驻，动态类型与回合按需展开 */
-.stg-filter-primary{flex-wrap:nowrap;}
-.stg-filter-primary .stg-filter-chip{flex:1;min-width:0;padding-left:8px;padding-right:8px;}
+/* 执行动态筛选：结果、记录类型、回合、时间按业务语义分组 */
+.stg-filter-primary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
+.stg-filter-primary .stg-filter-chip{width:100%;min-width:0;padding-left:6px;padding-right:6px;}
+.stg-filter-record{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
+.stg-filter-record .stg-filter-chip{width:100%;min-width:0;padding-left:6px;padding-right:6px;}
+.stg-filter-round{display:flex;gap:6px;}
+.stg-filter-round .stg-filter-chip{min-width:0;flex:1;padding-left:3px;padding-right:3px;white-space:nowrap;}
 .stg-filter-more{border-top:1px solid var(--line);}
 .stg-filter-more-row{display:grid;grid-template-columns:minmax(0,1fr) auto 15px;align-items:center;gap:8px;width:100%;padding:13px 2px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);font-family:inherit;text-align:left;cursor:pointer;}
 .stg-filter-more-row b{font-size:12px;font-weight:500;}
@@ -2265,6 +2269,15 @@ body.bustview .demo-bar.bust-demo-panel{display:flex;}
 .stg-filter-sheet .stg-filter-stats>div{display:flex;align-items:baseline;gap:4px;padding:0;border:0;text-align:left;}
 .stg-filter-sheet .stg-filter-stats span{display:inline;color:var(--muted);font-size:10px;font-weight:500;letter-spacing:0;}
 .stg-filter-sheet .stg-filter-stats b{display:inline;margin:0;font-size:12px;}
+.feed-filter-state{display:flex;align-items:center;gap:10px;margin:0 7px 8px;padding:9px 10px;border:1px solid #DCE7F8;border-radius:9px;background:#F4F8FF;color:#667085;font-size:11px;line-height:1.4;}
+.feed-filter-state span{min-width:0;flex:1;}
+.feed-filter-state b{color:var(--ink);font-family:var(--mono);font-size:12px;}
+.feed-filter-state button{flex:none;padding:3px 0;border:0;background:transparent;color:#126BFF;font:500 11px/1 var(--font);cursor:pointer;}
+.feed-filter-stats.status{grid-template-columns:repeat(2,1fr);}
+.feed-filter-empty{display:flex!important;min-height:180px;flex-direction:column;align-items:center;justify-content:center;padding:28px 16px!important;text-align:center;}
+.feed-filter-empty b{color:var(--ink);font-size:14px;font-weight:600;}
+.feed-filter-empty span{margin-top:6px;color:var(--muted);font-size:12px;}
+.feed-filter-empty button{margin-top:14px;padding:7px 12px;border:1px solid #C9D9F3;border-radius:8px;background:#fff;color:#126BFF;font:500 12px/1 var(--font);}
 /* 卡片带分页圆点 */
 .stg-dotsrow{display:flex;justify-content:center;gap:5px;margin:8px 0 0;}
 .stg-dotsrow span{width:5px;height:5px;border-radius:3px;background:#DADADA;transition:all .2s;}
@@ -7980,6 +7993,26 @@ body.auth-locked>.demo-bar{visibility:hidden!important;}
   cursor:pointer;
 }
 .access-card button:active{background:#075AD8;}
+
+/* 查爆仓首次空态：整体提升一级字号，保持标题、说明、标签与快捷条件的层级差。 */
+.view-bust .bq-history-empty{padding-top:30px;}
+.view-bust .bq-empty-title{font-size:18px;font-weight:600;line-height:1.35;}
+.view-bust .bq-empty-copy{max-width:300px;margin-top:9px;font-size:14px;line-height:1.55;}
+.view-bust .bq-empty-points{gap:8px;margin-top:17px;}
+.view-bust .bq-empty-points span{padding:7px 10px;font-size:11px;}
+.view-bust .bq-empty-quick{max-width:310px;margin-top:19px;padding:0 13px;}
+.view-bust .bq-empty-quickhead{padding:12px 0 8px;}
+.view-bust .bq-empty-quickhead b{font-size:14px;}
+.view-bust .bq-empty-quickhead span{font-size:11px;}
+.view-bust .bq-empty-quick>button{padding:12px 0;}
+.view-bust .bq-empty-quick>button b{font-size:13px;line-height:1.35;}
+.view-bust .bq-empty-quick>button small{margin-top:4px;font-size:11px;line-height:1.4;}
+.view-bust .bq-example-link{margin-top:13px;font-size:13px;}
+
+/* 用户钱包 · 历史投注：未结/已结共用聊天室的浅灰数据区底色，注单继续使用白卡。 */
+.view-bets,
+.view-bets>.scroll2,
+.view-bets .btabpanel{background:#FAFBFC!important;}
 
 /* 自动投底部仅保留快捷入口与指令输入；策略设置值使用常规字重。 */
 .stg-commandbar .field{padding-left:12px;}
