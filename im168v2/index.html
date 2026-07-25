@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IM168 · 游戏厅 v0.2（合并原型）</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared/styles.css?v=20260725-ds21-type-color">
+<!-- 样式已迁至 shared/styles.css（2026-07-09 拆分）；新增样式请直接写入该文件 -->
+</head>
+<body class="auth-locked">
+  <div class="access-gate" id="accessGate" role="dialog" aria-modal="true" aria-labelledby="accessTitle">
+    <form class="access-card" id="accessForm" novalidate>
+      <span class="access-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      </span>
+      <h1 id="accessTitle">IM168 原型预览</h1>
+      <p>请输入访问账号后继续查看</p>
+      <label><span>用户名</span><input id="accessUser" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="请输入用户名"></label>
+      <label><span>密码</span><input id="accessPass" name="password" type="password" autocomplete="current-password" placeholder="请输入密码"></label>
+      <div class="access-error" id="accessError" aria-live="polite"></div>
+      <button type="submit">进入原型</button>
+    </form>
+  </div>
+  <div class="stage">
+    <div class="phone" data-game="pk">
+      <div class="screen">
+        <div class="statusbar"><span class="sb-time">9:41</span><span class="sb-ico">
+          <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor" aria-hidden="true"><rect x="0" y="8" width="3.2" height="4" rx="1"/><rect x="4.9" y="5.5" width="3.2" height="6.5" rx="1"/><rect x="9.8" y="3" width="3.2" height="9" rx="1"/><rect x="14.7" y="0.5" width="3.2" height="11.5" rx="1"/></svg>
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor" aria-hidden="true"><path d="M8 2.6c2.3 0 4.4.85 6 2.25l1.5-1.6A11.4 11.4 0 0 0 8 .4 11.4 11.4 0 0 0 .5 3.25l1.5 1.6A9 9 0 0 1 8 2.6z"/><path d="M8 6.1c1.35 0 2.6.5 3.55 1.35l1.5-1.6A8 8 0 0 0 8 3.7a8 8 0 0 0-5.05 2.15l1.5 1.6A5.3 5.3 0 0 1 8 6.1z"/><path d="M8 9.6l2.05-2.2A4 4 0 0 0 8 6.6a4 4 0 0 0-2.05.8L8 9.6z"/></svg>
+          <svg width="26" height="13" viewBox="0 0 26 13" fill="none" aria-hidden="true"><rect x="1" y="1" width="21" height="11" rx="3" stroke="currentColor" stroke-opacity=".45" stroke-width="1.2"/><rect x="2.8" y="2.8" width="14.5" height="7.4" rx="1.5" fill="currentColor"/><path d="M23.5 4.5a2 2 0 0 1 0 4z" fill="currentColor" fill-opacity=".5"/></svg>
+        </span></div>
+
+        <!-- 游戏厅 chrome：四 Tab（2026-07-11 新增 查爆仓） -->
+        <div class="ghead chrome" data-mainviews="bet autos chat bust">
+          <div class="gtop">
+            <span class="gback" data-act="show" data-arg="groups"><svg class="icx" viewBox="25.0 51.0 11.0 17.0" fill="none"><path d="M34 66L27 59.5L34 53" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span class="gtitle" data-act="gameheadmenu" role="button" aria-label="切换游戏" aria-haspopup="menu" aria-expanded="false" tabindex="0">
+              <b class="gname gname-pk">SG飞艇</b><b class="gname gname-pk10">PK10</b><b class="gname gname-ssc">极速时时彩</b><b class="gname gname-soon">游戏厅</b><i class="tcaret"><svg class="icx" viewBox="371.3 56.9 12.6 7.4" fill="none"><path d="M321.5 47.5L326 52L321.5 56.5" stroke="currentColor" stroke-width="1.8px" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="rotate(90 377.57 60.64) matrix(1.1661579810495626 0 0 1.1661579810495626 0 0.00044415087462888964)"/></svg></i>
+              <small>幸运组·游戏厅</small>
+            </span>
+            <span class="sp"></span>
+            <span class="bal" data-act="show" data-arg="wallet"><svg class="wic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"/><path d="M3 8V6a2 2 0 0 1 2-2h10"/><circle cx="16.5" cy="12.5" r="1.3" fill="currentColor" stroke="none"/></svg><b>240,000.00</b></span>
+            <button class="bet-head-more" data-act="betheadmore" aria-label="更多投注信息" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></button>
+            <span class="chat-head-actions">
+              <button class="chat-head-action search" data-act="show" data-arg="chatsearch" aria-label="搜索当前聊天室的聊天记录"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg></button>
+              <button class="chat-head-action more" data-act="show" data-arg="chatdetail" aria-label="查看当前聊天室群信息"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></button>
+            </span>
+          </div>
+          <div class="tabs">
+            <div class="tab on" data-v="bet" data-act="show" data-arg="bet">投注</div>
+            <div class="tab" data-v="autos" data-act="show" data-arg="autos">自动投</div>
+            <div class="tab" data-v="chat" data-act="show" data-arg="chat">聊天室</div>
+            <div class="tab" data-v="bust" data-act="show" data-arg="bust">查爆仓</div>
+          </div>
+          <div class="roundbar">
+            <div class="ri-line1">
+              <span class="rper"><b>00089期</b></span>
+              <span class="sealgrp">
+                <svg class="sealpie" viewBox="0 0 20 20" aria-hidden="true"><circle class="track" cx="10" cy="10" r="8"/><circle class="prog" cx="10" cy="10" r="8"/></svg>
+                <span class="rseal-lab">投注时间还剩</span><span class="rseal">0分48秒</span>
+              </span>
+            </div>
+            <div class="ri-line2" data-act="results">
+              <span class="rlastlab"><b>00088期</b></span>
+              <span class="rballs2"><i class="bb c1">3</i><i class="bb c2">7</i><i class="bb c3">1</i><i class="bb c4">9</i><i class="bb c5">5</i><i class="bb c6">2</i><i class="bb c7">10</i><i class="bb c8">4</i><i class="bb c9">6</i><i class="bb c10">8</i></span>
+              <span class="rcaret">⌄</span>
+            </div>
+            <div class="resultpanel">
+              <div class="histrow"><span>00087期</span><span class="histballs"><i class="bb c6">6</i><i class="bb c2">2</i><i class="bb c8">8</i><i class="bb c1">1</i><i class="bb c4">4</i><i class="bb c5">5</i><i class="bb c10">10</i><i class="bb c3">3</i><i class="bb c9">9</i><i class="bb c7">7</i></span></div>
+              <div class="histrow"><span>00086期</span><span class="histballs"><i class="bb c9">9</i><i class="bb c3">3</i><i class="bb c5">5</i><i class="bb c10">10</i><i class="bb c1">1</i><i class="bb c4">4</i><i class="bb c7">7</i><i class="bb c2">2</i><i class="bb c8">8</i><i class="bb c6">6</i></span></div>
+              <div class="streakbox">
+                <div class="streaktitle">当前长龙</div>
+                <div class="streakchips"><span>冠军 大 · 4期</span><span>冠亚和 单 · 3期</span><span>第5名 小 · 3期</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="game-head-menu" id="gameHeadMenu" role="menu" aria-label="选择游戏" aria-hidden="true">
+          <button role="menuitemradio" aria-checked="false" data-game-option="pk10" data-act="gameheadpick" data-arg="pk10"><span>PK10</span><i>✓</i></button>
+          <button role="menuitemradio" aria-checked="false" data-game-option="ssc" data-act="gameheadpick" data-arg="ssc"><span>极速时时彩</span><i>✓</i></button>
+          <button class="on" role="menuitemradio" aria-checked="true" data-game-option="pk" data-act="gameheadpick" data-arg="pk"><span>SG飞艇</span><i>✓</i></button>
+        </div>
+        <div class="bet-head-menu" id="betHeadMenu" role="menu" aria-hidden="true">
+          <button role="menuitem" data-act="betplayintro">玩法介绍</button>
+          <button role="menuitem" data-act="betlimitinfo">投注限额</button>
+        </div>
+        <div class="bet-info-modal" id="betInfoModal" aria-hidden="true">
+          <div class="bet-info-backdrop" data-act="betinfoclose"></div>
+          <section class="bet-info-sheet" role="dialog" aria-modal="true" aria-labelledby="betInfoTitle">
+            <div class="bet-info-head"><b id="betInfoTitle">玩法介绍</b><button data-act="betinfoclose" aria-label="关闭">×</button></div>
+            <div class="bet-info-body" id="betInfoBody"></div>
+            <button class="bet-info-ok" data-act="betinfoclose">我知道了</button>
+          </section>
+        </div>
+
+        <div class="body">
+          <!-- 页面内容由 views/*.js 提供，shared/app.js 启动时按原顺序注入此容器 -->
+        </div>
+        <!-- 长龙快投 Drawer -->
+        <div class="streak-drawer">
+          <div class="sd-backdrop" data-act="sdcancel"></div>
+          <div class="sd-sheet">
+            <div class="sd-handle"><i></i></div>
+            <div class="sd-head">
+              <div class="sd-title">长龙快投</div>
+              <div class="sd-sub">确认后加入注单 · 第 <b class="sd-period">00089</b> 期</div>
+              <div class="sd-badge">
+                <span class="sd-dot"></span>
+                <span class="sd-badge-txt"></span>
+              </div>
+            </div>
+            <div class="sd-section">
+              <div class="sd-label">投注</div>
+              <div class="sd-toggle-row">
+                <div class="sd-tbtn sel-follow" data-act="sddir" data-arg="follow"></div>
+                <div class="sd-tbtn" data-act="sddir" data-arg="against"></div>
+              </div>
+            </div>
+            <div class="sd-section">
+              <div class="sd-label">金额</div>
+              <div class="sd-amt-row">
+                <span class="sd-amt-label">每注</span>
+                <input class="sd-amt-input" type="number" inputmode="numeric" placeholder="最低1 - 最高100K">
+              </div>
+              <div class="sd-amt-err">单笔范围 1 - 100K</div>
+              <div class="sd-pills">
+                <div class="sd-pill mm" data-act="sdpill" data-arg="min">最低</div>
+                <div class="sd-pill" data-act="sdpill" data-arg="30">30</div>
+                <div class="sd-pill" data-act="sdpill" data-arg="60">60</div>
+                <div class="sd-pill" data-act="sdpill" data-arg="90">90</div>
+                <div class="sd-pill" data-act="sdpill" data-arg="180">180</div>
+                <div class="sd-pill" data-act="sdpill" data-arg="360">360</div>
+                <div class="sd-pill mm" data-act="sdpill" data-arg="max">最高</div>
+              </div>
+            </div>
+            <div class="sd-section" style="padding-bottom:2px;">
+              <div class="sd-footrow">
+                <div class="sd-finfo">
+                  <div class="f1">共 <b>1</b> 注</div>
+                  <div class="f2">可赢 <span class="sd-win"></span></div>
+                </div>
+                <button class="ghost" data-act="sdcancel">取消</button>
+                <button class="cta" data-act="sdsubmit">加入注单</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== 底部导航（外壳级：资讯 · 聊天 · 消息 · 我的）===== -->
+        <nav class="tabbar" data-navviews="news groups home me">
+          <div class="nav" data-act="show" data-arg="news"><svg class="icx ic-off" viewBox="0 0 52 30" fill="none">
+<g clip-path="url(#clip0_40008731_35691)">
+<path d="M24.202 4.91874C25.2344 4.02709 26.7652 4.02709 27.7977 4.91874L37.4901 13.2898C37.8032 13.5606 37.8378 14.0341 37.5672 14.3474C37.2965 14.6607 36.823 14.6951 36.5096 14.4246L34.7498 12.9041V22.0574C34.7497 24.1283 33.0708 25.8073 30.9998 25.8074H20.9998C18.9288 25.8074 17.2499 24.1284 17.2498 22.0574V12.9041L15.4901 14.4246C15.1767 14.6952 14.7032 14.6606 14.4324 14.3474C14.1617 14.034 14.1962 13.5606 14.5096 13.2898L24.202 4.91874ZM26.8172 6.0535C26.3479 5.64821 25.6517 5.64821 25.1824 6.0535L18.7498 11.6092V22.0574C18.7499 23.3 19.7572 24.3074 20.9998 24.3074H23.9998V19.0574C23.9998 18.5051 24.4475 18.0574 24.9998 18.0574H26.9998C27.552 18.0575 27.9998 18.5052 27.9998 19.0574V24.3074H30.9998C32.2423 24.3073 33.2497 23.2999 33.2498 22.0574V11.6092L26.8172 6.0535Z" fill="currentColor"/>
+<path d="M24.202 4.91874C25.2344 4.02709 26.7652 4.02709 27.7977 4.91874L37.4901 13.2898C37.8032 13.5606 37.8378 14.0341 37.5672 14.3474C37.2965 14.6607 36.823 14.6951 36.5096 14.4246L34.7498 12.9041V22.0574C34.7497 24.1283 33.0708 25.8073 30.9998 25.8074H20.9998C18.9288 25.8074 17.2499 24.1284 17.2498 22.0574V12.9041L15.4901 14.4246C15.1767 14.6952 14.7032 14.6606 14.4324 14.3474C14.1617 14.034 14.1962 13.5606 14.5096 13.2898L24.202 4.91874ZM26.8172 6.0535C26.3479 5.64821 25.6517 5.64821 25.1824 6.0535L18.7498 11.6092V22.0574C18.7499 23.3 19.7572 24.3074 20.9998 24.3074H23.9998V19.0574C23.9998 18.5051 24.4475 18.0574 24.9998 18.0574H26.9998C27.552 18.0575 27.9998 18.5052 27.9998 19.0574V24.3074H30.9998C32.2423 24.3073 33.2497 23.2999 33.2498 22.0574V11.6092L26.8172 6.0535Z" fill="black" fill-opacity="0.2"/>
+</g>
+<defs>
+<clipPath id="clip0_40008731_35691">
+<rect width="52" height="30" fill="white"/>
+</clipPath>
+</defs>
+</svg><svg class="icx ic-on" viewBox="0 0 52 30" fill="none">
+<path d="M24.202 4.91874C25.2344 4.02709 26.7652 4.02709 27.7977 4.91874L37.4901 13.2898C37.8032 13.5606 37.8378 14.0341 37.5672 14.3474C37.2965 14.6607 36.823 14.6951 36.5096 14.4246L34.7498 12.9041V22.0574C34.7497 24.1283 33.0708 25.8073 30.9998 25.8074H20.9998C18.9288 25.8074 17.2499 24.1284 17.2498 22.0574V12.9041L15.4901 14.4246C15.1767 14.6952 14.7032 14.6606 14.4324 14.3474C14.1617 14.034 14.1962 13.5606 14.5096 13.2898L24.202 4.91874ZM24.9998 18.0574C24.4475 18.0574 23.9998 18.5051 23.9998 19.0574V24.3074H27.9998V19.0574C27.9998 18.5052 27.552 18.0575 26.9998 18.0574H24.9998Z" fill="currentColor"/>
+</svg><span>资讯</span></div>
+          <div class="nav" data-act="show" data-arg="groups"><svg class="icx ic-off" viewBox="0 0 52 30" fill="none">
+<g clip-path="url(#clip0_40008731_35855)">
+<mask id="path-1-inside-1_40008731_35855" fill="white">
+<path d="M26.2482 4.93164C31.667 4.93164 36.0596 9.3244 36.0597 14.7432C36.0597 20.162 31.667 24.5547 26.2482 24.5547C24.387 24.5547 22.6469 24.0368 21.1642 23.1367L17.6007 24.8213C16.7024 25.2457 15.7374 24.3763 16.0656 23.4385L17.5324 19.2471C16.8338 17.898 16.4367 16.3672 16.4367 14.7432C16.4368 9.32443 20.8294 4.93169 26.2482 4.93164Z"/>
+</mask>
+<path d="M26.2482 4.93164V3.43164H26.2482L26.2482 4.93164ZM36.0597 14.7432H37.5597V14.7431L36.0597 14.7432ZM26.2482 24.5547L26.2482 26.0547H26.2482V24.5547ZM21.1642 23.1367L21.9426 21.8545C21.5118 21.593 20.9786 21.5653 20.5231 21.7806L21.1642 23.1367ZM17.6007 24.8213L18.2414 26.1776L18.2418 26.1774L17.6007 24.8213ZM16.0656 23.4385L14.6498 22.943L14.6497 22.943L16.0656 23.4385ZM17.5324 19.2471L18.9482 19.7425C19.0846 19.3528 19.0543 18.9241 18.8644 18.5574L17.5324 19.2471ZM16.4367 14.7432L14.9367 14.7431V14.7432H16.4367ZM26.2482 4.93164V6.43164C30.8385 6.43164 34.5596 10.1528 34.5597 14.7432L36.0597 14.7432L37.5597 14.7431C37.5596 8.49599 32.4954 3.43164 26.2482 3.43164V4.93164ZM36.0597 14.7432H34.5597C34.5597 19.3336 30.8386 23.0547 26.2482 23.0547V24.5547V26.0547C32.4955 26.0547 37.5597 20.9905 37.5597 14.7432H36.0597ZM26.2482 24.5547L26.2482 23.0547C24.669 23.0547 23.1971 22.616 21.9426 21.8545L21.1642 23.1367L20.3858 24.419C22.0967 25.4575 24.105 26.0547 26.2482 26.0547L26.2482 24.5547ZM21.1642 23.1367L20.5231 21.7806L16.9596 23.4652L17.6007 24.8213L18.2418 26.1774L21.8053 24.4928L21.1642 23.1367ZM17.6007 24.8213L16.96 23.465C17.2662 23.3204 17.5925 23.6165 17.4814 23.9339L16.0656 23.4385L14.6497 22.943C13.8823 25.136 16.1387 27.1709 18.2414 26.1776L17.6007 24.8213ZM16.0656 23.4385L17.4814 23.9339L18.9482 19.7425L17.5324 19.2471L16.1165 18.7516L14.6498 22.943L16.0656 23.4385ZM17.5324 19.2471L18.8644 18.5574C18.2728 17.4147 17.9367 16.1198 17.9367 14.7432H16.4367H14.9367C14.9367 16.6147 15.3949 18.3812 16.2003 19.9368L17.5324 19.2471ZM16.4367 14.7432L17.9367 14.7432C17.9367 10.1528 21.6579 6.43168 26.2482 6.43164L26.2482 4.93164L26.2482 3.43164C20.001 3.4317 14.9368 8.49601 14.9367 14.7431L16.4367 14.7432Z" fill="currentColor" mask="url(#path-1-inside-1_40008731_35855)"/>
+<path d="M26.2482 4.93164V3.43164H26.2482L26.2482 4.93164ZM36.0597 14.7432H37.5597V14.7431L36.0597 14.7432ZM26.2482 24.5547L26.2482 26.0547H26.2482V24.5547ZM21.1642 23.1367L21.9426 21.8545C21.5118 21.593 20.9786 21.5653 20.5231 21.7806L21.1642 23.1367ZM17.6007 24.8213L18.2414 26.1776L18.2418 26.1774L17.6007 24.8213ZM16.0656 23.4385L14.6498 22.943L14.6497 22.943L16.0656 23.4385ZM17.5324 19.2471L18.9482 19.7425C19.0846 19.3528 19.0543 18.9241 18.8644 18.5574L17.5324 19.2471ZM16.4367 14.7432L14.9367 14.7431V14.7432H16.4367ZM26.2482 4.93164V6.43164C30.8385 6.43164 34.5596 10.1528 34.5597 14.7432L36.0597 14.7432L37.5597 14.7431C37.5596 8.49599 32.4954 3.43164 26.2482 3.43164V4.93164ZM36.0597 14.7432H34.5597C34.5597 19.3336 30.8386 23.0547 26.2482 23.0547V24.5547V26.0547C32.4955 26.0547 37.5597 20.9905 37.5597 14.7432H36.0597ZM26.2482 24.5547L26.2482 23.0547C24.669 23.0547 23.1971 22.616 21.9426 21.8545L21.1642 23.1367L20.3858 24.419C22.0967 25.4575 24.105 26.0547 26.2482 26.0547L26.2482 24.5547ZM21.1642 23.1367L20.5231 21.7806L16.9596 23.4652L17.6007 24.8213L18.2418 26.1774L21.8053 24.4928L21.1642 23.1367ZM17.6007 24.8213L16.96 23.465C17.2662 23.3204 17.5925 23.6165 17.4814 23.9339L16.0656 23.4385L14.6497 22.943C13.8823 25.136 16.1387 27.1709 18.2414 26.1776L17.6007 24.8213ZM16.0656 23.4385L17.4814 23.9339L18.9482 19.7425L17.5324 19.2471L16.1165 18.7516L14.6498 22.943L16.0656 23.4385ZM17.5324 19.2471L18.8644 18.5574C18.2728 17.4147 17.9367 16.1198 17.9367 14.7432H16.4367H14.9367C14.9367 16.6147 15.3949 18.3812 16.2003 19.9368L17.5324 19.2471ZM16.4367 14.7432L17.9367 14.7432C17.9367 10.1528 21.6579 6.43168 26.2482 6.43164L26.2482 4.93164L26.2482 3.43164C20.001 3.4317 14.9368 8.49601 14.9367 14.7431L16.4367 14.7432Z" fill="black" fill-opacity="0.2" mask="url(#path-1-inside-1_40008731_35855)"/>
+<circle cx="21.8438" cy="14.75" r="1.25" fill="currentColor"/>
+<circle cx="21.8438" cy="14.75" r="1.25" fill="black" fill-opacity="0.2"/>
+<circle cx="26.5088" cy="14.75" r="1.25" fill="currentColor"/>
+<circle cx="26.5088" cy="14.75" r="1.25" fill="black" fill-opacity="0.2"/>
+<circle cx="31.1748" cy="14.75" r="0.900097" fill="currentColor"/>
+<circle cx="31.1748" cy="14.75" r="0.900097" fill="black" fill-opacity="0.2"/>
+<circle cx="31.1748" cy="14.75" r="0.900097" stroke="currentColor" stroke-width="0.699805"/>
+<circle cx="31.1748" cy="14.75" r="0.900097" stroke="black" stroke-opacity="0.2" stroke-width="0.699805"/>
+</g>
+<defs>
+<clipPath id="clip0_40008731_35855">
+<rect width="52" height="30" fill="white"/>
+</clipPath>
+</defs>
+</svg><svg class="icx ic-on" viewBox="0 0 52 30" fill="none">
+<path d="M26.2482 4.93164C31.667 4.93164 36.0596 9.3244 36.0597 14.7432C36.0597 20.162 31.667 24.5547 26.2482 24.5547C24.387 24.5547 22.6469 24.0367 21.1642 23.1367L17.6007 24.8213C16.7024 25.2456 15.7374 24.3762 16.0656 23.4385L17.5324 19.2471C16.8338 17.898 16.4366 16.3672 16.4366 14.7432C16.4368 9.32444 20.8294 4.9317 26.2482 4.93164ZM21.8439 13.501C21.1537 13.5012 20.5939 14.0607 20.5939 14.751C20.5941 15.441 21.1538 16.0008 21.8439 16.001C22.5341 16.001 23.0936 15.4411 23.0939 14.751C23.0939 14.0606 22.5342 13.501 21.8439 13.501ZM26.5099 13.501C25.8195 13.501 25.2599 14.0606 25.2599 14.751C25.2602 15.4411 25.8197 16.001 26.5099 16.001C27.1999 16.0008 27.7596 15.441 27.7599 14.751C27.7599 14.0607 27.2001 13.5011 26.5099 13.501ZM31.1749 13.501C30.4846 13.501 29.9249 14.0606 29.9249 14.751C29.9252 15.4411 30.4848 16.001 31.1749 16.001C31.8651 16.001 32.4247 15.4411 32.4249 14.751C32.4249 14.0606 31.8653 13.501 31.1749 13.501Z" fill="currentColor"/>
+</svg><span>聊天</span></div>
+          <div class="nav on" data-act="show" data-arg="home"><svg class="icx ic-off ic-stroke" viewBox="0 0 52 30" fill="none">
+<g clip-path="url(#clip0_40008731_35857)">
+<path d="M29.9523 21.7692V22.6154C29.9523 23.513 29.5886 24.3739 28.9413 25.0087C28.294 25.6434 27.4161 26 26.5006 26C25.5852 26 24.7073 25.6434 24.06 25.0087C23.4127 24.3739 23.049 23.513 23.049 22.6154V21.7692M35.7596 20.0468C34.3746 18.3846 33.3969 17.5385 33.3969 12.956C33.3969 8.75962 31.2116 7.26457 29.4129 6.53846C29.174 6.44221 28.9491 6.22115 28.8763 5.98053C28.5608 4.9276 27.6764 4 26.5006 4C25.3249 4 24.4399 4.92813 24.1277 5.98159C24.0548 6.22486 23.83 6.44221 23.591 6.53846C21.7903 7.26562 19.6071 8.75538 19.6071 12.956C19.6044 17.5385 18.6266 18.3846 17.2417 20.0468C16.6678 20.7353 17.1705 21.7692 18.1742 21.7692H34.8325C35.8308 21.7692 36.3302 20.7322 35.7596 20.0468Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M29.9523 21.7692V22.6154C29.9523 23.513 29.5886 24.3739 28.9413 25.0087C28.294 25.6434 27.4161 26 26.5006 26C25.5852 26 24.7073 25.6434 24.06 25.0087C23.4127 24.3739 23.049 23.513 23.049 22.6154V21.7692M35.7596 20.0468C34.3746 18.3846 33.3969 17.5385 33.3969 12.956C33.3969 8.75962 31.2116 7.26457 29.4129 6.53846C29.174 6.44221 28.9491 6.22115 28.8763 5.98053C28.5608 4.9276 27.6764 4 26.5006 4C25.3249 4 24.4399 4.92813 24.1277 5.98159C24.0548 6.22486 23.83 6.44221 23.591 6.53846C21.7903 7.26562 19.6071 8.75538 19.6071 12.956C19.6044 17.5385 18.6266 18.3846 17.2417 20.0468C16.6678 20.7353 17.1705 21.7692 18.1742 21.7692H34.8325C35.8308 21.7692 36.3302 20.7322 35.7596 20.0468Z" stroke="black" stroke-opacity="0.2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<clipPath id="clip0_40008731_35857">
+<rect width="52" height="30" fill="white"/>
+</clipPath>
+</defs>
+</svg><svg class="icx ic-on" viewBox="0 0 52 30" fill="none">
+<g clip-path="url(#clip0_40008731_35858)">
+<path d="M35.7596 20.0468C34.3746 18.3846 33.3969 17.5385 33.3969 12.956C33.3969 8.75962 31.2116 7.26457 29.4129 6.53846C29.174 6.44221 28.9491 6.22115 28.8763 5.98053C28.5608 4.9276 27.6764 4 26.5006 4C25.3249 4 24.4399 4.92813 24.1277 5.98159C24.0548 6.22486 23.83 6.44221 23.591 6.53846C21.7903 7.26562 19.6071 8.75538 19.6071 12.956C19.6044 17.5385 18.6266 18.3846 17.2417 20.0468C16.6678 20.7353 17.1705 21.7692 18.1742 21.7692H34.8325C35.8308 21.7692 36.3302 20.7322 35.7596 20.0468ZM29.9523 21.7692V22.6154C29.9523 23.513 29.5886 24.3739 28.9413 25.0087C28.294 25.6434 27.4161 26 26.5006 26C25.5852 26 24.7073 25.6434 24.06 25.0087C23.4127 24.3739 23.049 23.513 23.049 22.6154V21.7692" fill="currentColor"/>
+<path d="M29.9523 21.7692V22.6154C29.9523 23.513 29.5886 24.3739 28.9413 25.0087C28.294 25.6434 27.4161 26 26.5006 26C25.5852 26 24.7073 25.6434 24.06 25.0087C23.4127 24.3739 23.049 23.513 23.049 22.6154V21.7692M35.7596 20.0468C34.3746 18.3846 33.3969 17.5385 33.3969 12.956C33.3969 8.75962 31.2116 7.26457 29.4129 6.53846C29.174 6.44221 28.9491 6.22115 28.8763 5.98053C28.5608 4.9276 27.6764 4 26.5006 4C25.3249 4 24.4399 4.92813 24.1277 5.98159C24.0548 6.22486 23.83 6.44221 23.591 6.53846C21.7903 7.26562 19.6071 8.75538 19.6071 12.956C19.6044 17.5385 18.6266 18.3846 17.2417 20.0468C16.6678 20.7353 17.1705 21.7692 18.1742 21.7692H34.8325C35.8308 21.7692 36.3302 20.7322 35.7596 20.0468Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<clipPath id="clip0_40008731_35858">
+<rect width="52" height="30" fill="white"/>
+</clipPath>
+</defs>
+</svg><i class="nav-alert" aria-label="有未读消息"></i><span>消息</span></div>
+          <div class="nav" data-act="show" data-arg="me"><svg class="icx ic-off" viewBox="0 0 52 30" fill="none">
+<path d="M25.9583 16.6797C28.8349 16.6797 30.8963 17.5361 32.3519 18.7041C33.7956 19.8626 34.5969 21.2895 35.0316 22.3701C35.2962 23.0283 35.1663 23.6997 34.7835 24.1914C34.4095 24.6717 33.8136 24.9619 33.1615 24.9619H18.7552C18.1031 24.9619 17.5072 24.6718 17.1332 24.1914C16.7504 23.6997 16.6205 23.0283 16.8851 22.3701C17.3198 21.2895 18.1211 19.8626 19.5648 18.7041C21.0204 17.5361 23.0818 16.6797 25.9583 16.6797ZM25.9583 18.1797C23.4026 18.1797 21.6778 18.9324 20.5042 19.874C19.3192 20.825 18.6475 22.0087 18.2767 22.9307C18.2203 23.0712 18.2474 23.1814 18.3167 23.2705C18.395 23.3707 18.5467 23.4619 18.7552 23.4619H33.1615C33.37 23.4619 33.5217 23.3707 33.5999 23.2705C33.6693 23.1814 33.6964 23.0713 33.64 22.9307C33.2692 22.0087 32.5976 20.825 31.4124 19.874C30.2388 18.9324 28.5141 18.1797 25.9583 18.1797ZM25.9583 5.16406C28.447 5.16414 30.3363 7.37572 30.3363 9.93652C30.3359 12.497 28.4467 14.7079 25.9583 14.708C23.4699 14.708 21.5808 12.497 21.5804 9.93652C21.5804 7.37568 23.4696 5.16406 25.9583 5.16406ZM25.9583 6.66406C24.4399 6.66406 23.0804 8.05482 23.0804 9.93652C23.0808 11.8178 24.4401 13.208 25.9583 13.208C27.4765 13.2079 28.8359 11.8177 28.8363 9.93652C28.8363 8.05487 27.4768 6.66415 25.9583 6.66406Z" fill="currentColor"/>
+<path d="M25.9583 16.6797C28.8349 16.6797 30.8963 17.5361 32.3519 18.7041C33.7956 19.8626 34.5969 21.2895 35.0316 22.3701C35.2962 23.0283 35.1663 23.6997 34.7835 24.1914C34.4095 24.6717 33.8136 24.9619 33.1615 24.9619H18.7552C18.1031 24.9619 17.5072 24.6718 17.1332 24.1914C16.7504 23.6997 16.6205 23.0283 16.8851 22.3701C17.3198 21.2895 18.1211 19.8626 19.5648 18.7041C21.0204 17.5361 23.0818 16.6797 25.9583 16.6797ZM25.9583 18.1797C23.4026 18.1797 21.6778 18.9324 20.5042 19.874C19.3192 20.825 18.6475 22.0087 18.2767 22.9307C18.2203 23.0712 18.2474 23.1814 18.3167 23.2705C18.395 23.3707 18.5467 23.4619 18.7552 23.4619H33.1615C33.37 23.4619 33.5217 23.3707 33.5999 23.2705C33.6693 23.1814 33.6964 23.0713 33.64 22.9307C33.2692 22.0087 32.5976 20.825 31.4124 19.874C30.2388 18.9324 28.5141 18.1797 25.9583 18.1797ZM25.9583 5.16406C28.447 5.16414 30.3363 7.37572 30.3363 9.93652C30.3359 12.497 28.4467 14.7079 25.9583 14.708C23.4699 14.708 21.5808 12.497 21.5804 9.93652C21.5804 7.37568 23.4696 5.16406 25.9583 5.16406ZM25.9583 6.66406C24.4399 6.66406 23.0804 8.05482 23.0804 9.93652C23.0808 11.8178 24.4401 13.208 25.9583 13.208C27.4765 13.2079 28.8359 11.8177 28.8363 9.93652C28.8363 8.05487 27.4768 6.66415 25.9583 6.66406Z" fill="black" fill-opacity="0.2"/>
+</svg><svg class="icx ic-on" viewBox="0 0 52 30" fill="none">
+<g clip-path="url(#clip0_40008731_35860)">
+<path d="M25.9583 16.6797C28.8349 16.6797 30.8963 17.5361 32.3519 18.7041C33.7956 19.8626 34.5969 21.2895 35.0316 22.3701C35.2962 23.0283 35.1663 23.6997 34.7835 24.1914C34.4095 24.6717 33.8136 24.9619 33.1615 24.9619H18.7552C18.1031 24.9619 17.5072 24.6718 17.1332 24.1914C16.7504 23.6997 16.6205 23.0283 16.8851 22.3701C17.3198 21.2895 18.1211 19.8626 19.5648 18.7041C21.0204 17.5361 23.0818 16.6797 25.9583 16.6797ZM25.9583 5.16406C28.447 5.16414 30.3363 7.37572 30.3363 9.93652C30.3359 12.497 28.4467 14.7079 25.9583 14.708C23.4699 14.708 21.5808 12.497 21.5804 9.93652C21.5804 7.37568 23.4696 5.16406 25.9583 5.16406Z" fill="currentColor"/>
+</g>
+<defs>
+<clipPath id="clip0_40008731_35860">
+<rect width="52" height="30" fill="white"/>
+</clipPath>
+</defs>
+</svg><span>我的</span></div>
+        </nav>
+
+        <!-- ===== 侧边抽屉 side menu（我的群组）===== -->
+        <div class="drawer" id="drawer">
+          <div class="dw-back" data-act="drawerclose"></div>
+          <div class="dw-panel">
+            <div class="dw-head"><b>我的群组</b></div>
+            <div class="dw-filters">
+              <div class="dw-filter"><span class="di"><svg class="icx" viewBox="40.8 151.2 24.4 24.4" fill="none"><path d="M35.5713 106.018C35.9421 106.018 36.2431 106.318 36.2432 106.688V111.225L38.6895 113.8C38.9405 114.064 38.9407 114.478 38.6895 114.742C38.42 115.025 37.9687 115.025 37.6992 114.742L34.9277 111.832L34.9004 111.803V106.688C34.9005 106.318 35.2006 106.018 35.5713 106.018Z" fill="currentColor" stroke="currentColor" stroke-width="0.2px" stroke-linecap="butt" stroke-linejoin="miter" transform="matrix(1.470559512867647 0 0 1.470559512867647 0 0.011431525735327982)"></path><path d="M36 103.018C37.6019 103.018 39.168 103.492 40.5 104.382C41.832 105.272 42.8703 106.537 43.4834 108.018C44.0964 109.498 44.2568 111.126 43.9443 112.697C43.6318 114.269 42.8603 115.712 41.7275 116.845C40.5947 117.978 39.1513 118.749 37.5801 119.062C36.0089 119.374 34.3804 119.214 32.9004 118.601C31.4203 117.988 30.1547 116.949 29.2646 115.617C28.482 114.446 28.0208 113.093 27.9209 111.694C27.8941 111.318 28.2022 111.018 28.5703 111.018C28.9433 111.018 29.2353 111.319 29.2646 111.681C29.3767 113.058 29.9097 114.372 30.7969 115.443C31.8043 116.659 33.2056 117.484 34.7578 117.774C36.3101 118.065 37.9151 117.802 39.2939 117.032C40.6727 116.262 41.7383 115.034 42.3057 113.561C42.8731 112.087 42.907 110.461 42.4004 108.965C41.8938 107.469 40.8784 106.198 39.5322 105.372C38.1861 104.547 36.593 104.219 35.0303 104.445C33.5435 104.661 32.1741 105.366 31.1348 106.445H33.1426C33.5134 106.445 33.8145 106.746 33.8145 107.117C33.8145 107.488 33.5134 107.789 33.1426 107.789H29.8232C29.3922 107.789 29.043 107.439 29.043 107.008V103.688C29.043 103.318 29.3433 103.018 29.7139 103.018C30.0846 103.018 30.3857 103.318 30.3857 103.688V105.296C31.1015 104.601 31.9395 104.043 32.8594 103.654C33.8531 103.234 34.921 103.018 36 103.018Z" fill="currentColor" stroke="currentColor" stroke-width="0.2px" stroke-linecap="butt" stroke-linejoin="miter" transform="matrix(1.470559512867647 0 0 1.470559512867647 0 0.011431525735327982)"></path></svg></span>最近</div>
+            </div>
+            <div class="dw-groups imlist">
+              <div class="imrow" data-act="show" data-arg="groups"><div class="sq sq-game"><svg viewBox="0 0 24 24"><path d="M5 8h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z"/><path d="M7 12v3M5.5 13.5h3"/><path d="M15.5 13h.01M17.5 15h.01"/></svg></div><div class="gx"><b>幸运组</b></div><span class="dw-dots" data-act="grpmenu"><svg class="icx" width="15" height="15" viewBox="362.0 328.0 4.7 23.0" fill="none"><circle cx="1.55833" cy="1.55833" r="1.1" transform="matrix(-6.428021353914459e-8 -1.470559512867647 -1.470559512867647 0 366.6237300305682 350.9604502960163)" fill="currentColor" stroke="currentColor" stroke-width="0.916667px" stroke-linecap="butt" stroke-linejoin="miter"></circle><circle cx="1.55833" cy="1.55833" r="1.1" transform="matrix(-6.428021353914459e-8 -1.470559512867647 -1.470559512867647 0 366.6237300305682 341.7959313103381)" fill="currentColor" stroke="currentColor" stroke-width="0.916667px" stroke-linecap="butt" stroke-linejoin="miter"></circle><circle cx="1.55833" cy="1.55833" r="1.1" transform="matrix(-6.428021353914459e-8 -1.470559512867647 -1.470559512867647 0 366.6237300305682 332.62847282123914)" fill="currentColor" stroke="currentColor" stroke-width="0.916667px" stroke-linecap="butt" stroke-linejoin="miter"></circle></svg></span></div>
+              <div class="imrow"><div class="sq sq-vip"><svg viewBox="0 0 24 24"><path d="M4 8l4 3 4-6 4 6 4-3-1.5 10h-13z"/></svg></div><div class="gx"><b>VIP 大厅</b></div><span class="dw-dots" data-act="grpmenu"><svg class="icx" width="15" height="15" viewBox="362.0 328.0 4.7 23.0" fill="none"><circle cx="1.55833" cy="1.55833" r="1.1" transform="matrix(-6.428021353914459e-8 -1.470559512867647 -1.470559512867647 0 366.6237300305682 350.9604502960163)" fill="currentColor" stroke="currentColor" stroke-width="0.916667px" stroke-linecap="butt" stroke-linejoin="miter"></circle><circle cx="1.55833" cy="1.55833" r="1.1" transform="matrix(-6.428021353914459e-8 -1.470559512867647 -1.470559512867647 0 366.6237300305682 341.7959313103381)" fill="currentColor" stroke="currentColor" stroke-width="0.916667px" stroke-linecap="butt" stroke-linejoin="miter"></circle><circle cx="1.55833" cy="1.55833" r="1.1" transform="matrix(-6.428021353914459e-8 -1.470559512867647 -1.470559512867647 0 366.6237300305682 332.62847282123914)" fill="currentColor" stroke="currentColor" stroke-width="0.916667px" stroke-linecap="butt" stroke-linejoin="miter"></circle></svg></span></div>
+              <div class="imrow"><div class="sq sq-fast"><svg viewBox="0 0 24 24"><path d="M13 3L5 13h5l-1 8 8-11h-5z"/></svg></div><div class="gx"><b>极速专区</b></div><span class="dw-dots" data-act="grpmenu"><svg class="icx" width="15" height="15" viewBox="362.0 328.0 4.7 23.0" fill="none"><circle cx="1.55833" cy="1.55833" r="1.1" transform="matrix(-6.428021353914459e-8 -1.470559512867647 -1.470559512867647 0 366.6237300305682 350.9604502960163)" fill="currentColor" stroke="currentColor" stroke-width="0.916667px" stroke-linecap="butt" stroke-linejoin="miter"></circle><circle cx="1.55833" cy="1.55833" r="1.1" transform="matrix(-6.428021353914459e-8 -1.470559512867647 -1.470559512867647 0 366.6237300305682 341.7959313103381)" fill="currentColor" stroke="currentColor" stroke-width="0.916667px" stroke-linecap="butt" stroke-linejoin="miter"></circle><circle cx="1.55833" cy="1.55833" r="1.1" transform="matrix(-6.428021353914459e-8 -1.470559512867647 -1.470559512867647 0 366.6237300305682 332.62847282123914)" fill="currentColor" stroke="currentColor" stroke-width="0.916667px" stroke-linecap="butt" stroke-linejoin="miter"></circle></svg></span></div>
+            </div>
+            <div class="dw-newgrp dw-intro" data-act="autointro"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7.5v.01"/></svg>自动投介绍</div>
+            <div class="dw-newgrp" data-act="drawerclose"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>新增群组</div>
+          </div>
+        </div>
+
+        <!-- 急停/重启/删除 二次确认弹窗（屏幕级 · 全部计划 + 仪表盘共用） -->
+        <div class="plan-modal" id="planModal">
+          <div class="pm-backdrop" data-act="pmclose"></div>
+          <div class="pm-sheet">
+            <div class="pm-h" id="pmTitle">确认</div>
+            <div class="pm-body" id="pmBody"></div>
+            <div class="pm-btns" id="pmBtns"></div>
+          </div>
+        </div>
+
+        <!-- 自动投 · 启动确认（预算透明） -->
+        <div class="start-modal" id="startModal">
+          <div class="sm-backdrop" data-act="tplcancel"></div>
+          <div class="sm-sheet">
+            <div class="sm-h">启动「小本试水」</div>
+            <div class="sm-sub">启动后每期自动下注，你随时可以急停</div>
+            <div class="srow"><span>玩法</span><b>两面 · 跟投</b></div>
+            <div class="srow"><span>每期投入</span><b>10 起 · 倍投最高 40</b></div>
+            <div class="srow"><span>最坏情况</span><b class="rd">−100 自动停止</b></div>
+            <div class="srow"><span>达到止盈</span><b class="gn">+100 自动停止</b></div>
+            <div class="srow"><span>占用预算</span><b>100 <small>/ 余额 400</small></b></div>
+            <div class="sm-note"><i><svg class="icx" viewBox="355.8 52.9 22.2 22.2" fill="none"><circle cx="344" cy="60" r="9" stroke="currentColor" stroke-width="1.5px" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="matrix(1.0666458333333333 0 0 1.0666458333333333 0 0.008197916666639004)"></circle><path d="M344.135 65.3424C343.731 65.3517 343.398 65.0263 343.398 64.6217L343.398 59.3993C343.398 59.0011 343.721 58.6784 344.119 58.6784C344.517 58.6784 344.84 59.0012 344.84 59.3993L344.84 62.0023L344.84 64.6217C344.84 65.0133 344.527 65.3333 344.135 65.3424ZM344.119 54.9994C344.425 54.9994 344.688 55.1092 344.908 55.3288C345.128 55.5484 345.237 55.8115 345.237 56.118C345.237 56.4246 345.128 56.6877 344.908 56.9073C344.688 57.1269 344.425 57.2366 344.119 57.2366C343.812 57.2366 343.549 57.1269 343.329 56.9073C343.11 56.6877 343 56.4246 343 56.118C343 55.915 343.052 55.7286 343.155 55.5587C343.255 55.3889 343.39 55.2521 343.559 55.1486C343.725 55.0491 343.912 54.9994 344.119 54.9994Z" fill="currentColor" transform="matrix(1.0666458333333333 0 0 1.0666458333333333 0 0.008197916666639004)"></path></svg></i><span>预算从余额中预留，本轮运行结束后未用部分自动退回。</span></div>
+            <div class="sm-btns"><button class="ghost" data-act="tpladjust">调整设置</button><button class="cta" data-act="tplconfirm">确认启动</button></div>
+          </div>
+        </div>
+
+        <!-- 自动投 · 使用指南弹窗（占位框架，暂不跳转页面，内容待后续补充） -->
+        <div class="tpl-modal" id="guideModal">
+          <div class="cf-backdrop" data-act="guideclose"></div>
+          <div class="cf-sheet">
+            <div class="cf-h">使用指南</div>
+            <div class="guide-empty">内容规划中，敬请期待</div>
+          </div>
+        </div>
+
+        <!-- 自动投 · 首次引导 Drawer（3 页 · 每会话首次进入自动投自动弹出一次） -->
+        <div class="ob-drawer" id="obDrawer">
+          <div class="ob-backdrop" data-act="obclose"></div>
+          <div class="ob-sheet">
+            <div class="ob-top">
+              <button type="button" class="ob-skip" data-act="obclose">跳过</button>
+            </div>
+            <div class="ob-page on" data-ob="1">
+              <div class="ob-img"><img src="shared/auto-guide/01.png" alt="" onerror="this.remove()"></div>
+              <div class="ob-body">
+                <div class="ob-title">让系统帮你盯盘看走势</div>
+                <div class="ob-copy">按设定规则自动下注，实时追踪，随时急停。</div>
+              </div>
+              <div class="ob-dots"><span class="on"></span><span></span><span></span></div>
+              <div class="ob-ftr"><button class="pri" data-act="obnext">下一步</button></div>
+            </div>
+            <div class="ob-page" data-ob="2">
+              <div class="ob-img"><img src="shared/auto-guide/02.png" alt="" onerror="this.remove()"></div>
+              <div class="ob-body">
+                <div class="ob-title">你的策略设置</div>
+                <div class="ob-copy">玩家设定触发条件、金额、倍数、止盈止损，系统只按规则执行。</div>
+              </div>
+              <div class="ob-dots"><span></span><span class="on"></span><span></span></div>
+              <div class="ob-ftr"><button class="ghost" data-act="obprev">上一步</button><button class="pri" data-act="obnext">下一步</button></div>
+            </div>
+            <div class="ob-page" data-ob="3">
+              <div class="ob-img"><img src="shared/auto-guide/04.png" alt="" onerror="this.remove()"></div>
+              <div class="ob-body">
+                <div class="ob-title">结果一目了然</div>
+                <div class="ob-copy">实时报告命中、盈亏，并可随时急停或修改。</div>
+              </div>
+              <div class="ob-dots"><span></span><span></span><span class="on"></span></div>
+              <div class="ob-ftr"><button class="ghost" data-act="obprev">上一步</button><button class="pri" data-act="obclose">立即体验</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 自动投 · 轻提示 Toast -->
+        <div class="dashtoast" id="dashToast"></div>
+
+        <div class="quickslip" aria-hidden="true" inert>
+          <div class="quicktop"><span>长龙下注</span><b class="quickpick">冠军 大</b><button data-act="quickclose"><svg class="icx" viewBox="348.1 671.0 17.4 17.4" fill="none"><path d="M352.114 654.324C352.545 653.892 353.244 653.892 353.676 654.324C354.108 654.755 354.108 655.454 353.676 655.886L348.562 660.999L353.676 666.114C354.108 666.545 354.108 667.244 353.676 667.676C353.244 668.108 352.545 668.108 352.114 667.676L346.999 662.562L341.886 667.676C341.454 668.108 340.755 668.108 340.324 667.676C339.892 667.244 339.892 666.545 340.324 666.114L345.437 660.999L340.324 655.886C339.892 655.454 339.892 654.755 340.324 654.324C340.755 653.892 341.454 653.892 341.886 654.324L346.999 659.437L352.114 654.324Z" fill="currentColor" transform="matrix(1.0282575514138816 0 0 1.0282575514138816 0 0.006989074550144833)"></path></svg></button></div>
+          <div class="quickamt"><span>每注</span><input class="qamtin" type="number" value="30" inputmode="numeric"><div class="qchips"><span class="qamtchip on">30</span><span class="qamtchip">60</span><span class="qamtchip">90</span><span class="qamtchip">180</span></div></div>
+          <div class="quickfoot"><span>已选 1 注</span><button>确认下注</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+<script>
+(function(){
+  var gate=document.getElementById('accessGate'),form=document.getElementById('accessForm');
+  function authorized(){try{return sessionStorage.getItem('im168_client_access')==='ok';}catch(e){return false;}}
+  function unlock(goNews){
+    if(goNews&&location.hash!=='#news'){location.hash='news';}
+    document.body.classList.remove('auth-locked');gate.setAttribute('hidden','');
+  }
+  if(authorized()){unlock(false);}
+  else{requestAnimationFrame(function(){document.getElementById('accessUser').focus();});}
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    var user=document.getElementById('accessUser'),pass=document.getElementById('accessPass'),error=document.getElementById('accessError');
+    if(user.value.trim()==='client'&&pass.value==='msgw'){
+      try{sessionStorage.setItem('im168_client_access','ok');}catch(ignore){}
+      error.textContent='';unlock(true);return;
+    }
+    error.textContent='用户名或密码不正确';
+    pass.value='';pass.focus();
+  });
+})();
+</script>
+<script src="views/news.js?v=20260724-shell-pages"></script>
+<script src="views/groups.js?v=20260725-client-access"></script>
+<script src="views/me.js?v=20260724-shell-pages"></script>
+<script src="views/game-bet.js?v=20260724-month-filter"></script>
+<script src="views/game-autos.js?v=20260725-copy-light-surfaces"></script>
+<script src="views/game-chat.js?v=20260725-client-access"></script>
+<script src="views/game-bust.js?v=20260725-bust-copy-unified"></script>
+<script src="views/wallet.js?v=20260724-period-summary"></script>
+<script src="views/admin.js?v=20260725-admin-credit-detail"></script>
+<script src="shared/app.js?v=20260725-ds21-type-color"></script>
+</body>
+</html>

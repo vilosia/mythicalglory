@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh"><head><meta charset="utf-8"><title>管理中心 · 审批队列</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="admin.css?v=20260724ds2"></head>
+<body>
+<div>
+<div class="phone">
+  <div class="head">
+    <div class="status"><span>9:41</span><span>▮▮▮ ⏻</span></div>
+    <div class="bar"><a class="back" href="home.html">‹</a><b>待审批</b><span class="grp">额度 3 · 入群 1</span></div>
+  </div>
+  <div class="body">
+
+    <!-- 常驻池状态条：全局问题只说一次 -->
+    <div class="poolbar"><div class="in">
+      可分配 <b class="num">240.00</b><span class="r">通过后实时扣减</span>
+    </div></div>
+
+    <div class="sec">额度申请 · 可批在前</div>
+
+    <!-- 可批 -->
+    <div class="card apc">
+      <div class="top"><div class="av b">王</div>
+        <span><div class="who">王哥申请上分 <span class="amt num">200.00</span></div><div class="tm num">2026/07/07 09:48</div></span>
+      </div>
+      <div class="acts"><button class="btn danger wide">拒绝</button><button class="btn pri wide">通过</button></div>
+    </div>
+
+    <!-- 不足：给出路，不做死按钮 -->
+    <div class="card apc">
+      <div class="top"><div class="av p">刘</div>
+        <span><div class="who">刘姐申请上分 <span class="amt num">600.00</span></div><div class="tm num">2026/07/07 09:30</div></span>
+      </div>
+      <div class="lack">ⓘ 可分配额度不足 <b class="num">360.00</b>：
+        <div class="plan">
+          <span>李姐 · 剩余额度 <span class="num">300.00</span></span>
+          <span>吴先生 · 剩余额度 <span class="num">80.00</span></span>
+        </div>
+      </div>
+      <div class="acts">
+        <button class="btn danger wide">拒绝</button>
+        <button class="btn ghost wide">下分后通过</button>
+      </div>
+    </div>
+
+    <div class="card apc">
+      <div class="top"><div class="av e">周</div>
+        <span><div class="who">周先生申请上分 <span class="amt num">400.00</span></div><div class="tm num">2026/07/07 08:55</div></span>
+      </div>
+      <div class="lack">ⓘ 可分配额度不足 <b class="num">160.00</b></div>
+      <div class="acts">
+        <button class="btn danger wide">拒绝</button>
+        <button class="btn ghost wide">下分后通过</button>
+      </div>
+    </div>
+
+    <div class="sec">入群申请</div>
+    <div class="card apc">
+      <div class="top"><div class="av g">陈</div>
+        <span><div class="who">陈小姐申请入群</div><div class="tm">邀请人 王哥 · <span class="num">2026/07/07 08:12</span></div></span>
+      </div>
+      <div class="acts"><button class="btn danger wide">拒绝</button><button class="btn pri wide">通过</button></div>
+    </div>
+
+    <!-- 完成态示例：原位替换，不跳转 -->
+    <div class="card apc" style="opacity:.75">
+      <div class="top"><div class="av v">杨</div>
+        <span><div class="who">杨姐申请上分 <span class="amt num">150.00</span></div><div class="tm num">2026/07/07 08:40</div></span>
+      </div>
+      <div class="done">✓ 已通过 · 到账后立即可用</div>
+    </div>
+
+    <a class="row" href="#" style="justify-content:center;color:var(--muted);font-size:13px;border:0">查看已处理记录 ›</a>
+
+  </div>
+</div>
+<div class="pagenote">02 · 审批队列 — 池状态置顶常驻；不足卡给「回收后批准」出路；批/拒仍走二次确认</div>
+</div>
+</body></html>
