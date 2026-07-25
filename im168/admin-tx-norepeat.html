@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>交易行 · 去掉重复的「上分／下分」</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared/styles.css?v=20260714e">
+<style>
+  body{margin:0;background:#EEF1F6;font-family:"Noto Sans SC",-apple-system,"PingFang SC",sans-serif;color:#1B2330;}
+  .wrap{max-width:1180px;margin:0 auto;padding:26px 16px 70px;}
+  h1{font-size:18px;font-weight:700;text-align:center;margin:0 0 4px;}
+  .sub{text-align:center;font-size:12.5px;color:#6b7488;margin:0 0 22px;line-height:1.7;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:18px;align-items:start;}
+  .col{background:#fff;border:1px solid #DCE2EE;border-radius:16px;overflow:hidden;}
+  .col.rec{border-color:#126BFF;box-shadow:0 0 0 3px rgba(18,107,255,.12);}
+  .col h2{font-size:13.5px;font-weight:700;margin:0;padding:14px 16px 4px;display:flex;align-items:center;gap:8px;}
+  .tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;}
+  .tag.now{background:#EEF1F6;color:#5a6480;}
+  .tag.new{background:#E7F0FF;color:#0B52CC;}
+  .tag.min{background:#EEFBF4;color:#0E7C4A;}
+  .col .why{font-size:11px;color:#7a8296;line-height:1.65;padding:0 16px 12px;margin:0;}
+  .col .why b{color:#1B2330;}
+  /* mini 筛选条，还原截图上下文 */
+  .ctlbar{display:flex;align-items:center;gap:6px;padding:10px 14px 12px;border-bottom:1px solid #F0F1F3;}
+  .fchip{font-size:11px;padding:5px 11px;border-radius:99px;border:1px solid #D7DDE8;color:#5a6480;background:#fff;}
+  .fchip.on{background:#E7F0FF;border-color:#BBD4FF;color:#0B52CC;font-weight:500;}
+  .fchip.spacer{margin-left:auto;border:none;color:#9CA3AF;padding-right:0;}
+  .list{border-top:none;}
+
+  /* ── Option E：方向图标 + 姓名（去掉「上分／下分 ·」文字）── */
+  .txlist.tx-icon .bi{align-items:center;gap:10px;padding:11px 14px;}
+  .txlist.tx-icon .bi .dir{width:32px;height:32px;border-radius:10px;flex:none;display:flex;align-items:center;justify-content:center;}
+  .txlist.tx-icon .bi .dir svg{width:16px;height:16px;stroke-width:2.4;fill:none;}
+  .txlist.tx-icon .bi .dir.up{background:#EEF1F6;color:#5a6480;}   /* 上分（出） */
+  .txlist.tx-icon .bi .dir.dn{background:#E7F7EE;color:#16A34A;}   /* 下分（入） */
+  .txlist.tx-icon .bi .q b{display:block;}
+  .txlist.tx-icon .bi .q .txtm{display:block;font-size:10.5px;font-weight:400;color:#9CA3AF;margin-top:3px;}
+  .txlist.tx-icon .bi .r{display:flex;flex-direction:column;align-items:flex-end;gap:0;}
+  .txlist.tx-icon .bi .r .txst{display:inline-flex;align-items:center;gap:5px;margin-top:4px;font-size:11px;font-weight:500;line-height:1;}
+  .txlist.tx-icon .bi .r .txst::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:currentColor;}
+  .txlist.tx-icon .bi .r .txst.pd{color:var(--blue);}
+  .txlist.tx-icon .bi .r .txst.no{color:#9CA3AF;}
+  .txlist.tx-icon .bi.rej{opacity:.6;}
+  .txlist.tx-icon .bi.rej .dir{filter:grayscale(1);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>交易记录 · 去掉每行重复的「上分／下分」</h1>
+  <p class="sub">方向本来就有两处在说：顶部筛选（全部／上分／下分）＋ 金额的正负与颜色（绿色＋＝下分，深色−＝上分）。<br>所以每行再写一遍词是多余的。以下用「图3（D版）」为底改。</p>
+
+  <div class="grid">
+
+    <!-- 参照：当前 D 版 -->
+    <div class="col">
+      <h2>图 3 · 当前（D 版） <span class="tag now">现状</span></h2>
+      <p class="why">每行都以 <b>「上分 ·／下分 ·」</b> 开头，词重复 12 次，姓名被挤到第二位。</p>
+      <div class="ctlbar"><span class="fchip on">全部</span><span class="fchip">上分</span><span class="fchip">下分</span><span class="fchip spacer">全部时间 ▾</span></div>
+      <div class="list"><div class="blist txlist tx-quiet" style="border:none;border-radius:0;">
+        <div class="bi"><div class="q"><b>上分 · 王哥</b><span class="txtm">今天 09:48</span></div><div class="r"><b>−20,000.00</b><span class="txst pd">处理中</span></div></div>
+        <div class="bi"><div class="q"><b>下分 · 吴先生</b><span class="txtm">今天 09:12</span></div><div class="r"><b class="win">+80,000.00</b></div></div>
+        <div class="bi"><div class="q"><b>上分 · 杨姐</b><span class="txtm">今天 08:35</span></div><div class="r"><b>−15,000.00</b></div></div>
+        <div class="bi"><div class="q"><b>下分 · 孙姐</b><span class="txtm">昨天 21:15</span></div><div class="r"><b class="win">+12,000.00</b></div></div>
+        <div class="bi rej"><div class="q"><b>上分 · 周先生</b><span class="txtm">07-05 16:30</span></div><div class="r"><b>−8,000.00</b><span class="txst no">已拒绝</span></div></div>
+        <div class="bi"><div class="q"><b>上分 · 刘姐</b><span class="txtm">07-03 15:20</span></div><div class="r"><b>−30,000.00</b></div></div>
+      </div></div>
+    </div>
+
+    <!-- Option E：方向图标 + 姓名 -->
+    <div class="col rec">
+      <h2>E · 方向图标 ＋ 姓名 <span class="tag new">推荐</span></h2>
+      <p class="why">词换成 <b>左侧方向图标</b>（↑ 上分 / ↓ 下分），标题只留姓名 → <b>姓名升为主视觉</b>，一眼看清「谁」。图标 + 金额颜色双重编码方向，且与「待审批」卡片的头像栏视觉一致。</p>
+      <div class="ctlbar"><span class="fchip on">全部</span><span class="fchip">上分</span><span class="fchip">下分</span><span class="fchip spacer">全部时间 ▾</span></div>
+      <div class="list"><div class="blist txlist tx-icon" style="border:none;border-radius:0;">
+        <div class="bi"><span class="dir up"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M12 19V5M6 11l6-6 6 6"/></svg></span><div class="q"><b>王哥</b><span class="txtm">今天 09:48</span></div><div class="r"><b>−20,000.00</b><span class="txst pd">处理中</span></div></div>
+        <div class="bi"><span class="dir dn"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M12 5v14M6 13l6 6 6-6"/></svg></span><div class="q"><b>吴先生</b><span class="txtm">今天 09:12</span></div><div class="r"><b class="win">+80,000.00</b></div></div>
+        <div class="bi"><span class="dir up"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M12 19V5M6 11l6-6 6 6"/></svg></span><div class="q"><b>杨姐</b><span class="txtm">今天 08:35</span></div><div class="r"><b>−15,000.00</b></div></div>
+        <div class="bi"><span class="dir dn"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M12 5v14M6 13l6 6 6-6"/></svg></span><div class="q"><b>孙姐</b><span class="txtm">昨天 21:15</span></div><div class="r"><b class="win">+12,000.00</b></div></div>
+        <div class="bi rej"><span class="dir up"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M12 19V5M6 11l6-6 6 6"/></svg></span><div class="q"><b>周先生</b><span class="txtm">07-05 16:30</span></div><div class="r"><b>−8,000.00</b><span class="txst no">已拒绝</span></div></div>
+        <div class="bi"><span class="dir up"><svg viewBox="0 0 24 24" stroke="currentColor"><path d="M12 19V5M6 11l6-6 6 6"/></svg></span><div class="q"><b>刘姐</b><span class="txtm">07-03 15:20</span></div><div class="r"><b>−30,000.00</b></div></div>
+      </div></div>
+    </div>
+
+    <!-- Option F：纯姓名 -->
+    <div class="col">
+      <h2>F · 纯姓名（最简） <span class="tag min">极简</span></h2>
+      <p class="why">连图标也去掉，方向<b>只靠金额正负＋颜色</b>。最干净，但快速扫「谁充谁提」时完全依赖颜色，异常/色弱场景略弱。</p>
+      <div class="ctlbar"><span class="fchip on">全部</span><span class="fchip">上分</span><span class="fchip">下分</span><span class="fchip spacer">全部时间 ▾</span></div>
+      <div class="list"><div class="blist txlist tx-quiet" style="border:none;border-radius:0;">
+        <div class="bi"><div class="q"><b>王哥</b><span class="txtm">今天 09:48</span></div><div class="r"><b>−20,000.00</b><span class="txst pd">处理中</span></div></div>
+        <div class="bi"><div class="q"><b>吴先生</b><span class="txtm">今天 09:12</span></div><div class="r"><b class="win">+80,000.00</b></div></div>
+        <div class="bi"><div class="q"><b>杨姐</b><span class="txtm">今天 08:35</span></div><div class="r"><b>−15,000.00</b></div></div>
+        <div class="bi"><div class="q"><b>孙姐</b><span class="txtm">昨天 21:15</span></div><div class="r"><b class="win">+12,000.00</b></div></div>
+        <div class="bi rej"><div class="q"><b>周先生</b><span class="txtm">07-05 16:30</span></div><div class="r"><b>−8,000.00</b><span class="txst no">已拒绝</span></div></div>
+        <div class="bi"><div class="q"><b>刘姐</b><span class="txtm">07-03 15:20</span></div><div class="r"><b>−30,000.00</b></div></div>
+      </div></div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
