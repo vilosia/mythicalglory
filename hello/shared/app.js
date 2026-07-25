@@ -1537,7 +1537,7 @@
       h+='<div class="reccard"><div class="ribbon">新手推荐</div><div class="pch"><span class="rtag2">官方</span><b style="font-size:14px">小本试水</b></div>'
         +'<div class="psub">每期 10 · 倍投 2×（上限3）</div>'
         +'<div class="rsafe">亏到 −100 自动停 · 赚到 +100 自动停</div>'
-        +'<div class="rusers"><span class="avs"><i style="background:#D6E4FF;color:#126BFF">王</i><i style="background:#F7D9E2;color:#B03A5B">李</i><i style="background:#DDEFE0;color:#1FA971">陈</i></span><span class="ru"><b>128</b> 人用过 · 本周 <b>36</b> 人在用</span></div>'
+        +'<div class="rusers"><span class="avs"><i style="background:#D6E4FF;color:var(--blue)">王</i><i style="background:#F7D9E2;color:#B03A5B">李</i><i style="background:#DDEFE0;color:#1FA971">陈</i></span><span class="ru"><b>128</b> 人用过 · 本周 <b>36</b> 人在用</span></div>'
         +'<div class="rbtns"><span class="rbtn-p" data-act="tplstart">使用</span></div></div>';
       h+='<div class="tplnew" data-act="customauto" style="margin:9px 0 0;">＋ 自定义新建策略</div>';
       if(strip){strip.style.display='none';}
@@ -1799,7 +1799,7 @@
     if(!file||!chatJoined)return;
     var list=root.querySelector('#chatMessageList');if(!list)return;
     var time=chatNow(),msg=document.createElement('div');msg.className='msg me';
-    var av=document.createElement('div');av.className='av';av.style.background='#126BFF';av.style.color='#fff';av.textContent='我';
+    var av=document.createElement('div');av.className='av';av.style.background='var(--blue)';av.style.color='#fff';av.textContent='我';
     var bubble=document.createElement('div');bubble.className='bubble chat-attachment-bubble';
     var nm=document.createElement('div');nm.className='nm';nm.appendChild(document.createTextNode('我 '));
     var stamp=document.createElement('span');stamp.textContent=time;nm.appendChild(stamp);bubble.appendChild(nm);
@@ -1831,7 +1831,7 @@
     closeChatComposerPanels();
     var list=root.querySelector('#chatMessageList');if(!list)return;
     var time=chatNow(),msg=document.createElement('div');msg.className='msg me';
-    var av=document.createElement('div');av.className='av';av.style.background='#126BFF';av.style.color='#fff';av.textContent='我';
+    var av=document.createElement('div');av.className='av';av.style.background='var(--blue)';av.style.color='#fff';av.textContent='我';
     var bubble=document.createElement('div');bubble.className='bubble';
     var nm=document.createElement('div');nm.className='nm';nm.appendChild(document.createTextNode('我 '));
     var stamp=document.createElement('span');stamp.textContent=time;nm.appendChild(stamp);bubble.appendChild(nm);bubble.appendChild(document.createTextNode(text));
@@ -2138,7 +2138,7 @@
                   var mr=document.createElement('div'); mr.className='mrow tap';
                   mr.setAttribute('data-st','act');mr.setAttribute('data-bet','0');mr.setAttribute('data-credit',String(wAmt));mr.setAttribute('data-join','0');mr.setAttribute('data-name','王志明');
                   mr.setAttribute('data-act','show');mr.setAttribute('data-arg','member');
-                  mr.innerHTML='<span class="av" style="background:#DCEBFF;color:#126BFF">王</span><div class="mtx"><b>王志明</b><span>尚未投注</span></div><span class="qt2">'+wAmt.toLocaleString()+'.00</span><i>›</i>';
+                  mr.innerHTML='<span class="av" style="background:#DCEBFF;color:var(--blue)">王</span><div class="mtx"><b>王志明</b><span>尚未投注</span></div><span class="qt2">'+wAmt.toLocaleString()+'.00</span><i>›</i>';
                   ros.insertBefore(mr,ros.firstChild);
                   renderPage('pl-members');
                   var mc=root.querySelector('#memHomeCnt'); if(mc){mc.textContent=(parseInt(mc.textContent,10)||0)+1;}
@@ -2615,7 +2615,7 @@
           apCard.setAttribute('data-typ',apDir==='up'?'上分申请':'下分申请');
           apCard.setAttribute('data-amt',String(apAmt));
           apCard.setAttribute('data-days','0');
-          apCard.innerHTML='<div class="apr-r1"><span class="av" style="background:#DCEBFF;color:#126BFF">王</span><span class="apr-who"><b>王志明</b><span class="apr-wait">2026/07/07 14:32 • 已申请: 1次</span></span><span class="apr-side"><em class="amt">'+apAmt.toLocaleString()+'.00</em><span class="apr-credit">当前额度: 0</span></span></div><div class="apc-btns"><span class="abtn stop" data-act="aprno">拒绝</span><span class="abtn pri2" data-act="aprok">通过</span></div>';
+          apCard.innerHTML='<div class="apr-r1"><span class="av" style="background:#DCEBFF;color:var(--blue)">王</span><span class="apr-who"><b>王志明</b><span class="apr-wait">2026/07/07 14:32 • 已申请: 1次</span></span><span class="apr-side"><em class="amt">'+apAmt.toLocaleString()+'.00</em><span class="apr-credit">当前额度: 0</span></span></div><div class="apc-btns"><span class="abtn stop" data-act="aprno">拒绝</span><span class="abtn pri2" data-act="aprok">通过</span></div>';
           apnl.insertBefore(apCard,apnl.firstChild);
           var apCt=root.querySelector('.fg-btabs .btab[data-arg="'+(apDir==='up'?'apup':'apdown')+'"] .cnt');
           if(apCt){apCt.textContent=apnl.querySelectorAll('.apr-card').length; apCt.style.display='';}
@@ -3224,12 +3224,11 @@
   /* 官方卡「玩家人均盈利」（全体玩家平均，非个人）——未启动时展示以吸引玩家 */
   TPLS.trial.avg=85; TPLS.reverse.avg=142;
   TPLS.trial.avgPct=34; TPLS.reverse.avgPct=41; /* 均盈利改百分比展示 */
-  /* 执行动态合并筛选：按玩家任务组织（状态、期数、包含回合、时间），不是数据库事件类型。 */
+  /* 执行动态筛选：先决定记录内容，再按内容显示适用条件；策略变更不套用结算与回合。 */
   var feedKind='all',feedType='all',feedResult='all';
   var feedPeriod='',feedRound='all',feedRoundFrom='',feedRoundTo='';
-  /* 演示数据均为今天；最近 7 天与本月自然包含今天，自定义日期由全局日期 Drawer 回填标签。 */
-  var feedDate='today',feedDateLabel='';
-  var FEED_DATES=[['today','今天'],['7d','最近 7 天'],['month','本月'],['custom','自定义日期']];
+  /* 默认看本月；自定义日期由全局日期 Drawer 回填标签。 */
+  var feedDate='month',feedDateLabel='';
   var filterDraft=null;
   /* 跨 IIFE 桥接：全局 #dtSheet 的 dtapply 在主模块 IIFE，应用自定义日期时回调这里 */
   window.__im168StgDate=function(stF,enF){
@@ -3437,7 +3436,7 @@
     var recent=af?af.recent:(p.shareRecent||[]).slice(-10);
     if(!recent.length&&settled>0){var pattern=['win','win','lose','win','win','lose','win','win','win','lose'];recent=pattern.slice(Math.max(0,10-Math.min(10,settled)));}
     var monitored=p.shareObservedPeriods!=null?inum(p.shareObservedPeriods,0):(af?af.monitored:inum(p.shareMonitored,p.demoPeriods||0));
-    return {pnl:af?af.pnl:num(p.runPnl,0),stake:af?af.stake:num(p.shareRunStake,p.runStake||0),triggered:triggered,settled:settled,pending:pending,recent:recent,duration:shareDurationLabel(p),users:inum(p.shareUsers,86),reason:p.shareReason||'',startAt:p.shareStartAt||'2026/07/07 20:00',monitored:monitored,totalPeriods:inum(p.shareTotalPeriods,p.rounds||0),maxLoss:inum(p.shareMaxLoss,0),drawdown:num(p.shareDrawdown,0)};
+    return {pnl:af?af.pnl:num(p.runPnl,0),stake:af?af.stake:num(p.shareRunStake,p.runStake||0),pendingStake:num(p.sharePendingStake,pending*num(p.amount,0)),triggered:triggered,settled:settled,pending:pending,recent:recent,duration:shareDurationLabel(p),users:inum(p.shareUsers,86),reason:p.shareReason||'',startAt:p.shareStartAt||'2026/07/07 20:00',monitored:monitored,totalPeriods:inum(p.shareTotalPeriods,p.rounds||0),maxLoss:inum(p.shareMaxLoss,0),drawdown:num(p.shareDrawdown,0)};
   }
   function shareFacts(entry){return entry&&entry.snapshot&&entry.snapshot.facts?entry.snapshot.facts:calcShareFacts(sharePlan(entry));}
   var SHARE_MIN_OBSERVED_PERIODS=10;
@@ -3472,20 +3471,24 @@
     var trigger=p.mode==='定位'?('冷热号 '+p.hot+' / '+p.cold):((p.dir==='反投'?'单跳':'连开')+' '+p.minS+'–'+p.maxS+' 期触发');
     return (p.dir||p.mode)+' · '+trigger+' · '+(p.style==='倍投'?'倍投':'固定金额');
   }
-  function shareUseLabel(){return '套用此策略';}
-  function shareAuxLabel(state){return state==='running'?'执行动态':(state==='settling'?'查看结算状态':'查看本轮报告');}
-  function shareAudienceLabel(state,f){return f.users+'人'+(state==='running'?'使用中':'查看过');}
+  function shareUseLabel(state){return state==='ended'?'基于此策略创建':'套用策略';}
+  function shareAudienceLabel(state,f){return f.users+'人'+(state==='ended'?'使用过':'使用中');}
   function shareCardHtml(entry,idx){
     var p=shareCfg(entry),f=shareFacts(entry),state=shareState(entry),sm=shareStatusMeta(state,entry),pc=f.pnl>0?'win':(f.pnl<0?'lose':'zero'),appliedIdx=exactAppliedIndex(entry);
     var isMine=entry&&((entry.isMine===true)||entry.owner==='我');
-    var body='<div class="lss-glance"><div><span>'+(state==='ended'?'最终盈亏':'当前盈亏')+'</span><strong class="'+pc+'">'+shareMoney(f.pnl,true)+'</strong></div><span class="lss-trigger">本轮触发 <b>'+f.triggered+' 次</b></span></div>';
-    var context=state==='running'?'<span class="lss-duration">持续运行 '+safeText(f.duration)+'</span>':(state==='settling'?'<span class="lss-duration">等待未结注单开奖</span>':'<span class="lss-duration">'+(p.complete?'完成方式 ':'停止原因 ')+safeText(f.reason||(p.complete?'正常完成':'作者急停'))+'</span>');
+    var note=state==='running'?'正在实时更新':(state==='settling'?(f.pending+'注待开奖 · 结果尚未确认'):(p.complete?'已按计划完成 · 数据已固定':'创建者提前停止 · 数据已固定'));
+    var metric1Label=state==='running'?'当前盈亏':(state==='settling'?'暂计盈亏':'最终盈亏');
+    var metric2Label=state==='running'?'触发':(state==='settling'?'待结':'累计投入');
+    var metric2Value=state==='running'?(f.triggered+'次'):(state==='settling'?shareMoney(f.pendingStake,false):shareMoney(f.stake,false));
+    var body='<div class="lss-state-note"><i></i><span>'+note+'</span></div>'
+      +'<div class="lss-glance"><div><span>'+metric1Label+'</span><strong class="'+pc+'">'+shareMoney(f.pnl,true)+'</strong></div><div><span>'+metric2Label+'</span><strong>'+metric2Value+'</strong></div></div>';
+    var context='<span class="lss-duration">'+(state==='ended'?'共运行':'已运行')+safeText(f.duration)+'</span>';
     var audience='<span class="lss-users"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>'+shareAudienceLabel(state,f)+'</span>';
-    return '<div class="lss-v2 state-'+sm[1]+'"><div class="lss-card-content" data-act="stgshareview" data-arg="'+idx+'">'
-      +'<div class="lss-compact-head"><div class="lss-author"><i>'+safeText((entry.owner||'我').slice(0,1))+'</i><span>'+safeText(entry.owner||'我')+' · 分享策略</span></div><span class="lss-compact-state"><i></i>'+sm[0]+'</span></div>'
+    return '<div class="lss-v2 state-'+sm[1]+'"><div class="lss-card-content">'
+      +'<div class="lss-compact-head"><div class="lss-author"><i>'+safeText((entry.owner||'我').slice(0,1))+'</i><span>'+safeText(entry.owner||'我')+' · 分享策略</span></div><div class="lss-head-actions"><span class="lss-compact-state"><i></i>'+sm[0]+'</span><button class="lss-detail-arrow" data-act="'+(state==='ended'?'stgsharereport':'stgshareview')+'" data-arg="'+idx+'" aria-label="查看策略详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div></div>'
       +'<div class="lss-title"><b>'+safeText(dispName(p)||p.name)+'</b><span>SG飞艇</span></div>'+body
       +'<div class="lss-context">'+context+audience+'</div></div>'
-      +'<div class="lss-actions"><button class="lss-aux" data-act="'+(state==='ended'?'stgsharereport':'stgshareview')+'" data-arg="'+idx+'">'+shareAuxLabel(state)+'</button><button class="lss-primary" data-act="'+(appliedIdx>=0?'stgshareexisting':'stgshareapply')+'" data-arg="'+idx+'">'+(appliedIdx>=0?'查看我的策略':shareUseLabel(state))+'</button></div>'
+      +'<div class="lss-actions"><button class="lss-primary" data-act="'+(appliedIdx>=0?'stgshareexisting':'stgshareapply')+'" data-arg="'+idx+'">'+(appliedIdx>=0?'查看我的策略':shareUseLabel(state))+'</button></div>'
       +(isMine?'<div class="lss-owner-visibility"><b>仅你可见</b><span>群成员可查看本轮运行状态和汇总数据</span></div>':'')+'</div>';
   }
   function appendShareCard(entry,idx){
@@ -3650,7 +3653,7 @@
     var b=$('#stgSheetBody');if(!b)return;var reportSheet=$('#stgSheet');if(reportSheet)reportSheet.classList.remove('activity-page','share-detail-drawer');
     var sm=shareStatusMeta(state,entry);
     b.innerHTML='<div class="lss-detail-v2"><div class="lss-detail-head"><div><div class="cf-h">本轮运行报告</div><div class="cf-meta">'+safeText(dispName(p)||p.name)+' · '+safeText(entry.owner||'玩家')+'</div></div><span class="lss-detail-tag '+sm[1]+'">'+sm[0]+'</span></div>'
-      +'<div class="lss-report-hero"><span>本轮最终盈亏</span><strong class="'+pc+'">'+shareMoney(f.pnl,true)+'</strong><em>'+safeText(f.reason||(p.complete?'正常完成':'作者急停'))+'</em></div>'
+      +'<div class="lss-report-hero"><span>本轮最终盈亏</span><strong class="'+pc+'">'+shareMoney(f.pnl,true)+'</strong><em>'+safeText(f.reason||(p.complete?'正常完成':'创建者急停'))+'</em></div>'
       +'<div class="lss-report-grid"><div><span>本轮触发</span><b>'+f.triggered+'次</b></div><div><span>已监测</span><b>'+(f.monitored||f.triggered)+'期</b></div><div><span>最大连续亏损</span><b>'+f.maxLoss+'次</b></div><div><span>最大回撤</span><b class="lose">'+shareMoney(f.drawdown,true)+'</b></div></div>'+shareResultsHtml(f)
       +'<div class="cf-btns lss-detail-actions"><button class="ghost" data-act="stguseedit" data-arg="'+idx+'">编辑后使用</button><button class="cta" data-act="stgusedirect" data-arg="'+idx+'">直接套用</button></div></div>';
     var m=$('#stgSheet');if(m)m.classList.add('open');
@@ -3691,14 +3694,14 @@
     sharePendingIdx=idx;sheetMode='sharedirect';
     var b=$('#stgSheetBody');if(!b)return;var directSheet=$('#stgSheet');if(directSheet)directSheet.classList.remove('activity-page','share-detail-drawer');
     var nextSlot=stgPlans.length+1,free=3-stgPlans.length,defaultName=uniqueName(dispName(p)||p.name||'分享策略'),sameCount=sameSourcePlans(entry).length;
-    b.innerHTML='<div class="cf-h">保存为我的策略</div><div class="cf-meta">最后确认策略名称、卡位和启用方式</div>'
+    b.innerHTML='<div class="cf-head-nav"><button class="stg-preview-back" data-act="stgdirectback" aria-label="返回查看套用设置"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><div class="cf-head-nav-tx"><div class="cf-h">保存为我的策略</div><div class="cf-meta">最后确认策略名称、卡位和启用方式</div></div></div>'
       +'<div class="stg-lab share-direct-label">策略名称</div><div class="stg-name"><input id="shareDirectName" type="text" maxlength="12" value="'+safeText(defaultName)+'" placeholder="输入 2–12 个字"><span class="pen"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span></div>'
       +'<div class="share-capacity"><div><span>策略卡位</span><b>'+stgPlans.length+' / 3</b></div><strong>可保存至第 '+nextSlot+' 个卡位</strong><small>当前还有 '+free+' 个空位；保存后不会影响现有策略。</small></div>'
       +'<div class="share-direct-source"><span>策略来源</span><b>'+safeText(entry.owner||'玩家')+' · '+safeText(dispName(p)||p.name)+'</b></div>'
       +(sameCount?'<div class="share-source-notice">你已有 '+sameCount+' 张来自此分享的改编策略；本次将按当前规则另存。</div>':'')
       +shareSettingsHtml(p)
       +'<div class="share-apply-note">只复制策略规则，本轮盈亏、触发次数和运行进度不会带入。选择“保存并启用”后，将从下一期开始监测。</div>'
-      +'<div class="cf-btns lss-apply-actions"><button class="ghost" data-act="stgdirectsave" data-arg="'+idx+'">仅保存</button><button class="cta" data-act="stgdirectstart" data-arg="'+idx+'">保存并启用</button></div><div class="stg-backlink" data-act="stgdirectback"><svg class="ui-icon ui-icon-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 4-8 8 8 8"/></svg>返回查看设置</div>';
+      +'<div class="cf-btns lss-apply-actions"><button class="ghost" data-act="stgdirectsave" data-arg="'+idx+'">仅保存</button><button class="cta" data-act="stgdirectstart" data-arg="'+idx+'">保存并启用</button></div>';
     var m=$('#stgSheet');if(m)m.classList.add('open');
   }
   function completeDirectShareApply(idx,start){
@@ -4183,7 +4186,7 @@
     var lead=root.querySelector('#shareDemoLead'),reply=root.querySelector('#shareDemoReply');if(!lead||!reply)return;
     var mine=state==='mine',leadAv=lead.querySelector('.av'),leadName=lead.querySelector('.nm b'),leadCopy=lead.querySelector('.bubble p'),replyCopy=reply.querySelector('.bubble p');
     lead.classList.toggle('me',mine);
-    if(leadAv){leadAv.textContent=mine?'我':'H';leadAv.style.background=mine?'#126BFF':'';leadAv.style.color=mine?'#fff':'';}
+    if(leadAv){leadAv.textContent=mine?'我':'H';leadAv.style.background=mine?'var(--blue)':'';leadAv.style.color=mine?'#fff':'';}
     if(leadName){leadName.textContent=mine?'我':'Henry';}
     if(leadCopy){leadCopy.textContent=mine?'我把「长龙反打」本轮运行分享到群里，群成员可查看运行状态和汇总数据。':'「长龙反打」刚开始这一轮，满足条件后会自动反向投注。';}
     if(replyCopy){
@@ -4197,9 +4200,9 @@
     var p=tplCfg('reverse');p.name='长龙反打';p.tplKey='';p.official=false;p.runId='share-'+state;p.rounds=3;p.shareUsers=86;p.shareTotalPeriods=15;p.shareActivity=[['14:32','20260721058','win',40,40],['14:26','20260721057','lose',-20,20],['14:20','20260721056','none',0,0],['14:14','20260721055','lose',-10,10],['14:08','20260721054','win',20,20],['14:02','20260721053','lose',-10,10],['13:56','20260721052','win',10,10],['13:50','20260721051','win',40,40],['13:44','20260721050','lose',-20,20],['13:38','20260721049','lose',-10,10]];
     if(state==='running'||state==='mine'){p.status='run';p.runPnl=40;p.shareTriggered=9;p.shareRunStake=180;p.shareDuration='3小时42分';p.shareActivityFull=true;}
     if(state==='runningzero'){p.status='run';p.runPnl=0;p.shareTriggered=0;p.shareSettled=0;p.sharePending=0;p.shareMonitored=10;p.shareObservedPeriods=10;p.shareRunStake=0;p.shareDuration='58分钟';p.shareRecent=[];p.shareActivity=[];}
-    if(state==='settling'){p.status='stop';p.settled=false;p.runPnl=-1250;p.shareTriggered=18;p.sharePending=1;p.shareSettled=17;p.shareDuration='2小时18分';p.shareRecent=['lose','lose','lose','lose','win','lose'];p.shareReason='作者急停';p.shareMonitored=42;p.shareMaxLoss=5;p.shareDrawdown=-1680;}
-    if(state==='stopped'){p.status='stop';p.settled=true;p.runPnl=-1250;p.shareTriggered=18;p.shareSettled=18;p.shareDuration='2小时18分';p.shareRecent=['lose','lose','lose','lose','win','lose'];p.shareReason='作者急停';p.shareMonitored=42;p.shareMaxLoss=5;p.shareDrawdown=-1680;}
-    if(state==='completed'){p.status='stop';p.settled=true;p.complete=true;p.runPnl=2480;p.shareTriggered=12;p.shareSettled=12;p.shareDuration='4小时36分';p.shareRecent=['win','win','win','win','lose','win'];p.shareReason='达到止盈目标';p.shareMonitored=36;p.shareMaxLoss=2;p.shareDrawdown=-420;}
+    if(state==='settling'){p.status='stop';p.settled=false;p.runPnl=26;p.shareRunStake=500;p.shareTriggered=18;p.sharePending=2;p.sharePendingStake=80;p.shareSettled=17;p.shareDuration='4小时05分';p.shareUsers=92;p.shareRecent=['lose','lose','lose','lose','win','lose'];p.shareReason='创建者急停';p.shareMonitored=42;p.shareMaxLoss=5;p.shareDrawdown=-1680;}
+    if(state==='stopped'){p.status='stop';p.settled=true;p.runPnl=18;p.shareRunStake=420;p.shareTriggered=18;p.shareSettled=18;p.shareDuration='4小时18分';p.shareUsers=126;p.shareRecent=['lose','lose','lose','lose','win','lose'];p.shareReason='创建者急停';p.shareMonitored=42;p.shareMaxLoss=5;p.shareDrawdown=-1680;}
+    if(state==='completed'){p.status='stop';p.settled=true;p.complete=true;p.runPnl=78;p.shareRunStake=580;p.shareTriggered=12;p.shareSettled=12;p.shareDuration='6小时20分';p.shareUsers=154;p.shareRecent=['win','win','win','win','lose','win'];p.shareReason='达到止盈目标';p.shareMonitored=36;p.shareMaxLoss=2;p.shareDrawdown=-420;}
     var mine=state==='mine';
     sharedStgs[0]={plan:p,owner:mine?'我':'Henry',isMine:mine,runId:p.runId,active:state==='running'||state==='mine'||state==='settling',demo:true};
     var card=root.querySelector('.live-strategy-share[data-share-idx="0"]');if(card)card.innerHTML=shareCardHtml(sharedStgs[0],0);
@@ -4329,9 +4332,9 @@
   }
   function filterActiveCount(d){
     d=d||{kind:feedKind,type:feedType,result:feedResult,period:feedPeriod,round:feedRound,date:feedDate};var n=0;
+    if(d.type!=='all')n++;
     if(d.kind!=='all')n++;
-    else if(d.type!=='all')n++;
-    if(d.period)n++;if(d.type!=='status'&&d.round!=='all')n++;if(d.date!=='today')n++;return n;
+    if(d.period)n++;if(d.type!=='status'&&d.round!=='all')n++;if(d.date!=='month')n++;return n;
   }
   function filterQuickValue(d){
     if(d.type==='error')return 'error';
@@ -4343,14 +4346,15 @@
   }
   function filterConditionLabels(d){
     var out=[];
+    if(d.type==='bet')out.push('投注记录');
+    else if(d.type==='status')out.push('策略变更');
     if(d.kind==='settled')out.push('已结');
     else if(d.kind==='pending')out.push('未结');
-    else if(d.type==='bet')out.push('投注记录');
-    else if(d.type==='status')out.push('设置调整');
-    if(d.type!=='status'&&(d.round==='1'||d.round==='2'||d.round==='3'))out.push('第 '+d.round+' 回');
-    else if(d.type!=='status'&&d.round==='4plus')out.push('深追');
+    if(d.type!=='status'&&d.round!=='all'){
+      out.push(d.round==='1'?'第1回':(d.round==='2-3'?'第2–3回':(d.round==='4-6'?'第4–6回':'第7回+')));
+    }
     if(d.period)out.push('“'+d.period+'”');
-    out.push(d.date==='custom'?(d.dateLabel||'自定义日期'):({today:'今天','7d':'最近7天',month:'本月'}[d.date]||'今天'));
+    out.push(d.date==='custom'?(d.dateLabel||'自定义日期'):({today:'今天','7d':'最近7天',month:'本月'}[d.date]||'本月'));
     return out;
   }
   function filterStateBarHtml(d,count){
@@ -4360,7 +4364,7 @@
     var box=$('#stgFeedFilter');if(!box)return;
     var feed=root.querySelector('#stgScroll .stg-feed');
     var total=feed?feed.querySelectorAll('.feeditem').length:0;
-    if(total===0&&feedDate==='today'){box.innerHTML='';return;}
+    if(total===0&&feedDate==='month'){box.innerHTML='';return;}
     var n=filterActiveCount();
     box.innerHTML='<span class="ff-chip'+(n?' on':'')+'" data-act="stgfilteropen" role="button" aria-label="筛选执行动态记录">'
       +'<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18M6 12h12M10 19h4"/></svg>'
@@ -4374,17 +4378,16 @@
     var summary=filterSummary(d);
     var isSetting=d.type==='status';
     b.innerHTML='<div class="cf-h">筛选执行动态</div>'
-      +'<div class="stg-filter-lab first">查找记录</div><div class="stg-filter-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><input placeholder="输入期号或投注项，如冠军大小" data-feed-filter="period" value="'+(d.period||'')+'"></div>'
-      +(isSetting?'':'<div class="stg-filter-lab">结果</div><div class="stg-filter-chips stg-filter-primary">'
+      +'<div class="stg-filter-lab first">记录内容</div><div class="stg-filter-record">'
+      +chip('全部动态','feedtype','all',d.type==='all')+chip('投注记录','feedtype','bet',d.type==='bet')+chip('策略变更','feedtype','status',d.type==='status')+'</div>'
+      +(isSetting?'':'<div class="stg-filter-lab stg-filter-lab-help">结算状态<span>仅作用于投注记录</span></div><div class="stg-filter-chips stg-filter-primary">'
       +chip('全部','feedkind','all',d.kind==='all')+chip('已结','feedkind','settled',d.kind==='settled')+chip('未结','feedkind','pending',d.kind==='pending')+'</div>')
-      +'<div class="stg-filter-lab">记录类型</div><div class="stg-filter-record">'
-      +chip('全部','feedtype','all',d.type==='all')+chip('投注记录','feedtype','bet',d.type==='bet')+chip('设置调整','feedtype','status',d.type==='status')+'</div>'
-      +(isSetting?'':'<div class="stg-filter-lab">回合</div><div class="stg-filter-round">'
-      +chip('全部','feedround','all',d.round==='all')+chip('第1回','feedround','1',d.round==='1')+chip('第2回','feedround','2',d.round==='2')+chip('第3回','feedround','3',d.round==='3')+chip('深追','feedround','4plus',d.round==='4plus')+'</div>')
-      +'<div class="stg-filter-lab">时间范围</div><div class="stg-filter-chips">'
+      +(isSetting?'':'<div class="stg-filter-lab">包含回合</div><div class="stg-filter-round">'
+      +chip('全部','feedround','all',d.round==='all')+chip('1','feedround','1',d.round==='1')+chip('2–3','feedround','2-3',d.round==='2-3')+chip('4–6','feedround','4-6',d.round==='4-6')+chip('7+','feedround','7plus',d.round==='7plus')+'</div>')
+      +'<div class="stg-filter-lab">时间</div><div class="stg-filter-chips stg-filter-time">'
       +chip('今天','feeddatepick','today',d.date==='today')+chip('最近7天','feeddatepick','7d',d.date==='7d')+chip('本月','feeddatepick','month',d.date==='month')+chip(custom,'feeddatepick','custom',d.date==='custom')+'</div>'
-      +filterSummaryHtml(summary,'stg-filter-stats',countFiltered(d))
-      +'<div class="stg-filter-actions"><button class="ghost" data-act="feedreset">重置</button><button class="cta" data-act="feedapply">查看 '+countFiltered(d)+' 条动态</button></div>';
+      +(summary?'<div class="stg-filter-stat-title">当前筛选内的投注统计</div>':'')+filterSummaryHtml(summary,'stg-filter-stats',countFiltered(d))
+      +'<div class="stg-filter-actions"><button class="ghost" data-act="feedreset">重置</button><button class="cta" data-act="feedapply">查看 '+countFiltered(d)+' 条记录</button></div>';
   }
   function filterPeriodMatch(x,d){
     var raw=String(d.period||'').trim();if(!raw)return true;
@@ -4396,7 +4399,9 @@
     var mode=d.round||'all';if(mode==='all')return true;
     var lo=inum(d.roundFrom,0),hi=inum(d.roundTo,0);if(mode==='custom'&&!lo&&!hi)return true;
     var vals=String(x.getAttribute('data-rounds')||'').split(',').map(function(v){return inum(v,0);}).filter(Boolean);if(!vals.length)return false;
-    if(mode==='4plus')return vals.some(function(v){return v>=4;});
+    if(mode==='2-3')return vals.some(function(v){return v>=2&&v<=3;});
+    if(mode==='4-6')return vals.some(function(v){return v>=4&&v<=6;});
+    if(mode==='7plus')return vals.some(function(v){return v>=7;});
     if(mode!=='custom')return vals.indexOf(inum(mode,0))>=0;
     if(!lo)lo=hi;if(!hi)hi=lo;if(lo>hi){var tmp=lo;lo=hi;hi=tmp;}
     return vals.some(function(v){return v>=lo&&v<=hi;});
@@ -4408,7 +4413,7 @@
     return rows.filter(function(x){
       if(!base(x))return false;
       var kind=x.getAttribute('data-kind'),isError=x.classList.contains('execution-failed')||x.classList.contains('execution-partial');
-      if(d.type==='status'&&!x.classList.contains('event-edited'))return false;
+      if(d.type==='status'&&kind!=='status')return false;
       if(d.type==='query'&&kind!=='query')return false;
       if(d.type==='error'&&!isError)return false;
       if(d.type==='bet'&&kind!=='bet'&&kind!=='result')return false;
@@ -4422,10 +4427,8 @@
   function filterSummary(d){
     var feed=root.querySelector('#stgScroll .stg-feed');if(!feed)return null;
     var rows=filteredFeedRows([].slice.call(feed.querySelectorAll('.feeditem')),d),money=function(v){return Math.round(v*10)/10;};
-    if(d.type==='status'){
-      var latest=rows.length?(rows[0].querySelector('.t')||{}).textContent||'—':'—';
-      return {mode:'status',items:[['调整次数',rows.length],['最近调整',latest]]};
-    }
+    /* 策略变更不是投注结果，不展示盈亏或用 0.00 伪装成统计。 */
+    if(d.type==='status')return null;
     if(d.kind==='pending'){
       var pending=rows.filter(function(x){return x.getAttribute('data-kind')==='bet';}),pendingStake=money(pending.reduce(function(s,x){return s+num(x.getAttribute('data-stake'),0);},0));
       return {mode:'pending',items:[['未结期数',pending.length],['累计投入',pxMoney(pendingStake)],['预计可赢',pxMoney(money(pendingStake*.99))]]};
@@ -4456,7 +4459,7 @@
   function refreshFilterPreview(){
     if(!filterDraft)return;var b=$('#stgFilterBody');if(!b)return;
     var s=b.querySelector('.stg-filter-stats'),html=filterSummaryHtml(filterSummary(filterDraft),'stg-filter-stats',countFiltered(filterDraft));if(s){if(html)s.outerHTML=html;else s.remove();}else if(html){var acts=b.querySelector('.stg-filter-actions');if(acts)acts.insertAdjacentHTML('beforebegin',html);}
-    var a=b.querySelector('[data-act="feedapply"]');if(a)a.textContent='查看 '+countFiltered(filterDraft)+' 条动态';
+    var a=b.querySelector('[data-act="feedapply"]');if(a)a.textContent='查看 '+countFiltered(filterDraft)+' 条记录';
   }
   function applyFeedFilters(){
     var feed=root.querySelector('#stgScroll .stg-feed');if(!feed)return;
@@ -4974,7 +4977,8 @@
     var main=shareApplySource?'套用策略':(setupMode==='custom'?'新建策略':TPLS[setupMode].label);
     var restore=editIdx>=0&&stgPlans[editIdx]&&stgPlans[editIdx].tplKey
       ?'<button class="stg-restore" data-act="stgrestoreofficial">恢复官方设置</button>':'';
-    return dots()+'<div class="stg-edit-head"><div class="cf-h">'+main+'<span class="cf-hsub"> · '+STEP_NAMES[step]+'</span></div>'+restore+'</div>';
+    var back=step===4?'<button class="stg-preview-back" data-act="stgprev" aria-label="返回上一步"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>':'';
+    return dots()+'<div class="stg-edit-head">'+back+'<div class="cf-h">'+main+'<span class="cf-hsub"> · '+STEP_NAMES[step]+'</span></div>'+restore+'</div>';
   }
   function qBtn(k){return '<i class="stg-q'+(qOpen[k]?' on':'')+'" data-act="stgq" data-arg="'+k+'" aria-label="查看说明">?</i>';}
   function qTip(k){if(!qOpen[k])return '';return '<div class="stg-qtip">'+QTIPS[k].map(function(x){return '<div><b>'+x[0]+'</b><span>'+x[1]+'</span></div>';}).join('')+'</div>';}
@@ -5183,9 +5187,13 @@
   }
   function footer(){
     if(step===4){
-      var lab=editIdx>=0?['保存修改','保存并启用']:['保存策略','保存并启动'];
-      return '<div class="cf-btns" style="margin-top:14px;"><button class="ghost" data-act="stgsave">'+lab[0]+'</button><button class="cta" data-act="stgsavestart">'+lab[1]+'</button></div>'
-        +'<div class="stg-backlink" data-act="stgprev"><svg class="ui-icon ui-icon-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 4-8 8 8 8"/></svg>返回修改风控</div>';
+      var existing=editIdx>=0&&stgPlans[editIdx],isRunning=existing&&existing.status==='run';
+      if(isRunning){
+        return '<div class="stg-save-note"><b>保存后从下一回合生效</b><span>本轮继续按当前设置运行，不会中断策略</span></div>'
+          +'<div class="cf-btns"><button class="ghost" data-act="stgclose">取消</button><button class="cta" data-act="stgsave">保存修改</button></div>';
+      }
+      var startLabel=existing&&existing.status==='stop'?'保存并重新启用':'保存并启用';
+      return '<div class="cf-btns"><button class="ghost" data-act="stgsave">仅保存</button><button class="cta" data-act="stgsavestart">'+startLabel+'</button></div>';
     }
     return '<div class="cf-btns" style="margin-top:14px;"><button class="ghost" data-act="'+(step===0?'stgclose':'stgprev')+'">'+(step===0?'取消':'上一步')+'</button><button class="cta" data-act="stgnext">下一步</button></div>';
   }
@@ -5695,12 +5703,11 @@
         renderFilterSheet();
       }
     }
-    else if(a==='feedkind'){if(filterDraft){filterDraft.kind=arg||'all';if(filterDraft.kind!=='all')filterDraft.type='bet';filterDraft.result='all';renderFilterSheet();}}
+    else if(a==='feedkind'){if(filterDraft){filterDraft.kind=arg||'all';filterDraft.result='all';renderFilterSheet();}}
     else if(a==='feedtype'){
       if(filterDraft){
         filterDraft.type=arg||'all';filterDraft.result='all';
-        if(filterDraft.type==='all'){filterDraft.kind='all';filterDraft.round='all';}
-        else if(filterDraft.type==='status'){filterDraft.kind='all';filterDraft.round='all';}
+        if(filterDraft.type==='status'){filterDraft.kind='all';filterDraft.round='all';}
         renderFilterSheet();
       }
     }
@@ -5712,9 +5719,9 @@
       if(arg==='custom'){if(window.__im168DtOpen){window.__im168DtOpen('stgfeeddate');}}
       else{filterDraft.date=arg||'today';filterDraft.dateLabel='';renderFilterSheet();}
     }
-    else if(a==='feedreset'){filterDraft={kind:'all',type:'all',result:'all',period:'',round:'all',roundFrom:'',roundTo:'',date:'today',dateLabel:'',openMore:''};renderFilterSheet();}
+    else if(a==='feedreset'){filterDraft={kind:'all',type:'all',result:'all',period:'',round:'all',roundFrom:'',roundTo:'',date:'month',dateLabel:'',openMore:''};renderFilterSheet();}
     else if(a==='feedclear'){
-      feedKind='all';feedType='all';feedResult='all';feedPeriod='';feedRound='all';feedRoundFrom='';feedRoundTo='';feedDate='today';feedDateLabel='';
+      feedKind='all';feedType='all';feedResult='all';feedPeriod='';feedRound='all';feedRoundFrom='';feedRoundTo='';feedDate='month';feedDateLabel='';
       closeFilterSheet();updateFeed();
     }
     else if(a==='feedapply'){

@@ -168,7 +168,7 @@
                 </div>
 
                 <div class="apr-card" data-pool="-50000" data-nm="杨姐" data-amt="50000" data-days="0" data-typ="上分申请">
-                  <div class="apr-r1"><span class="av" style="background:#FFE9A0;color:#9A6C00">杨</span><span class="apr-who"><b>杨姐</b><span class="apr-wait">2026/07/07 06:26 • 已申请: 1次</span></span><span class="apr-side"><em class="amt">50,000.00</em><span class="apr-credit">当前额度: 80</span></span></div>
+                  <div class="apr-r1"><span class="av" style="background:#FFE9A0;color:var(--warning)">杨</span><span class="apr-who"><b>杨姐</b><span class="apr-wait">2026/07/07 06:26 • 已申请: 1次</span></span><span class="apr-side"><em class="amt">50,000.00</em><span class="apr-credit">当前额度: 80</span></span></div>
                   <div class="apc-btns"><span class="abtn stop" data-act="aprno">拒绝</span><span class="abtn pri2" data-act="aprok">通过</span></div>
                 </div>
 
@@ -236,11 +236,11 @@
 
               <div class="memroster pagelist" id="pl-members" data-size="5">
                 <div class="mrow tap" data-st="act" data-bet="0" data-credit="80000" data-join="40" data-name="吴先生" data-mid="88201" data-act="show" data-arg="member"><span class="av" style="background:#E3DBFF;color:#5A3FC0">吴</span><div class="mtx"><b>吴先生</b><span>2026/07/07 09:20 投注</span></div><i>›</i></div>
-                <div class="mrow tap" data-st="act" data-bet="0" data-credit="30000" data-join="120" data-name="李姐" data-mid="88202" data-act="show" data-arg="member"><span class="av" style="background:#D6E4FF;color:#126BFF">李</span><div class="mtx"><b>李姐</b><span>2026/07/07 08:35 投注</span></div><i>›</i></div>
+                <div class="mrow tap" data-st="act" data-bet="0" data-credit="30000" data-join="120" data-name="李姐" data-mid="88202" data-act="show" data-arg="member"><span class="av" style="background:#D6E4FF;color:var(--blue)">李</span><div class="mtx"><b>李姐</b><span>2026/07/07 08:35 投注</span></div><i>›</i></div>
                 <div class="mrow tap" data-st="act" data-bet="0" data-credit="19000" data-join="34" data-name="王哥" data-mid="88213" data-act="show" data-arg="member"><span class="av">王</span><div class="mtx"><b>王哥</b><span>2026/07/07 07:58 投注</span></div><i>›</i></div>
                 <div class="mrow tap" data-st="act" data-bet="1" data-credit="6000" data-join="88" data-name="刘姐" data-mid="88204" data-act="show" data-arg="member"><span class="av" style="background:#FDE8D2;color:#B4640A">刘</span><div class="mtx"><b>刘姐</b><span>2026/07/06 21:15 投注</span></div><i>›</i></div>
                 <div class="mrow tap" data-st="fz" data-bet="3" data-credit="20000" data-join="200" data-name="陈生" data-mid="88205" data-act="show" data-arg="member"><span class="av" style="background:#F7D9E2;color:#C2337E">陈</span><div class="mtx"><b>陈生<em class="stchip fz">已停用</em></b><span>3 天前投注</span></div><i>›</i></div>
-                <div class="mrow tap" data-st="idle" data-bet="22" data-credit="15000" data-join="150" data-name="杨姐" data-mid="88206" data-act="show" data-arg="member"><span class="av" style="background:#FFE9A0;color:#9A6C00">杨</span><div class="mtx"><b>杨姐</b><span>22 天前投注</span></div><i>›</i></div>
+                <div class="mrow tap" data-st="idle" data-bet="22" data-credit="15000" data-join="150" data-name="杨姐" data-mid="88206" data-act="show" data-arg="member"><span class="av" style="background:#FFE9A0;color:var(--warning)">杨</span><div class="mtx"><b>杨姐</b><span>22 天前投注</span></div><i>›</i></div>
                 <div class="mrow tap" data-st="idle" data-bet="35" data-credit="0" data-join="300" data-name="周先生" data-mid="88207" data-act="show" data-arg="member"><span class="av" style="background:#DDEFE0;color:#1FA971">周</span><div class="mtx"><b>周先生</b><span>超过 30 天未投注</span></div><i>›</i></div>
                 <div class="mrow tap" data-st="idle" data-bet="999" data-credit="0" data-join="3" data-name="林仔" data-mid="88209" data-act="show" data-arg="member"><span class="av" style="background:#D9F0E5;color:#0B7A4B">林</span><div class="mtx"><b>林仔</b><span>尚无投注</span></div><i>›</i></div>
               </div>

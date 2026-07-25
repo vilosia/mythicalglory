@@ -76,7 +76,7 @@
             <div class="planpreview-hint">向下滚动查看全部设置，以上策略预览与总投入始终固定显示</div>
             <div class="scroll2">
               <div class="monitor">
-                <div class="mh"><span class="live"><i></i>运行中</span><span style="font-size:12px;color:#CFE0FF">跟投模式</span></div>
+                <div class="mh"><span class="live"><i></i>运行中</span><span style="font-size:12px;color:var(--blue-line-2)">跟投模式</span></div>
                 <div class="pnl">+120 <small>当前盈亏</small></div>
                 <div class="mstat"><div>已进行<b>3 期</b></div><div>累计投注<b>240</b></div><div>距止盈<b>80</b></div></div>
                 <div class="mbar"><i></i></div>
@@ -159,7 +159,7 @@
               <div class="frow"><div class="lt"><b>恢复后回合是否继续</b><i class="finfo" data-tip="开启：恢复投注后接续暂停前的执行进度。关闭：恢复后重新开始计数。">i</i><span>承接暂停前进度继续执行</span></div><div class="toggle sm off"></div></div>
               <div class="tipline"></div>
 
-              <div class="frow" style="background:var(--tint);border-color:#BBD4FF;"><div class="lt"><b style="color:#126BFF">提示</b><span style="color:#126BFF;display:block;line-height:1.6;">玩家设定完成后，可保存为常用模板，下次一键启用。<br>自动投注前，建议弹窗再次确认玩法、金额、回合与止盈止损。<br>如达到止损、止盈、暂停时段或回合结束，系统应立即停止投注并提示结果。</span></div></div>
+              <div class="frow" style="background:var(--tint);border-color:var(--blue-line);"><div class="lt"><b style="color:var(--blue)">提示</b><span style="color:var(--blue);display:block;line-height:1.6;">玩家设定完成后，可保存为常用模板，下次一键启用。<br>自动投注前，建议弹窗再次确认玩法、金额、回合与止盈止损。<br>如达到止损、止盈、暂停时段或回合结束，系统应立即停止投注并提示结果。</span></div></div>
             </div>
             <div class="ftcta"><button class="ghost" data-act="show" data-arg="autos">保存</button><button class="cta" data-act="saveplan"><span class="t-new">启动策略</span><span class="t-edit">保存修改</span></button></div>
           </div>
@@ -244,8 +244,8 @@
             <div class="subhead"><span class="bk" data-act="show" data-arg="autos"><svg class="icx" viewBox="25.0 51.0 11.0 17.0" fill="none"><path d="M34 66L27 59.5L34 53" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>新建策略 · 选模板</b><span class="rt"></span></div>
             <div class="scroll2">
               <div class="sectit">官方模板 · 点「试用」载入后可微调</div>
-              <div class="tpl"><div class="tplh"><b>小本试水</b><span class="tplapply" data-act="stgnew">试用</span></div><div class="tplsum">基础 10 · 倍投 2×（上限3）· 止盈+100/止损−100</div><div class="tplmeta">官方推荐 · 适合新手</div><div class="rusers"><span class="avs"><i style="background:#D6E4FF;color:#126BFF">王</i><i style="background:#F7D9E2;color:#B03A5B">李</i><i style="background:#DDEFE0;color:#1FA971">陈</i></span><span class="ru"><b>128</b> 人用过 · 本周 <b>36</b> 人在用</span></div></div>
-              <div class="tpl"><div class="tplh"><b>反投策略</b><span class="tplapply" data-act="stgnew">试用</span></div><div class="tplsum">反投 · 冠军大小 · 倍投 2×（上限5）· 止盈+200/止损−300</div><div class="tplmeta">稳健 · 近 7 日命中 62%</div><div class="rusers"><span class="avs"><i style="background:#DDEFE0;color:#1FA971">周</i><i style="background:#FFEBC7;color:#9A6C00">刘</i></span><span class="ru"><b>86</b> 人用过 · 本周 <b>21</b> 人在用</span></div></div>
+              <div class="tpl"><div class="tplh"><b>小本试水</b><span class="tplapply" data-act="stgnew">试用</span></div><div class="tplsum">基础 10 · 倍投 2×（上限3）· 止盈+100/止损−100</div><div class="tplmeta">官方推荐 · 适合新手</div><div class="rusers"><span class="avs"><i style="background:#D6E4FF;color:var(--blue)">王</i><i style="background:#F7D9E2;color:#B03A5B">李</i><i style="background:#DDEFE0;color:#1FA971">陈</i></span><span class="ru"><b>128</b> 人用过 · 本周 <b>36</b> 人在用</span></div></div>
+              <div class="tpl"><div class="tplh"><b>反投策略</b><span class="tplapply" data-act="stgnew">试用</span></div><div class="tplsum">反投 · 冠军大小 · 倍投 2×（上限5）· 止盈+200/止损−300</div><div class="tplmeta">稳健 · 近 7 日命中 62%</div><div class="rusers"><span class="avs"><i style="background:#DDEFE0;color:#1FA971">周</i><i style="background:#FFEBC7;color:var(--warning)">刘</i></span><span class="ru"><b>86</b> 人用过 · 本周 <b>21</b> 人在用</span></div></div>
               <div class="tpl"><div class="tplh"><b>跟投策略</b><span class="tplapply" data-act="stgnew">试用</span></div><div class="tplsum">跟投 · 冠军大小 · 倍投 3×（上限7）· 止盈+500/止损−800</div><div class="tplmeta">高风险 · 适合老手</div><div class="rusers"><span class="avs"><i style="background:#E3DBFF;color:#5A3FC0">赵</i></span><span class="ru"><b>42</b> 人用过 · 本周 <b>9</b> 人在用</span></div></div>
               <div class="sectit">我的模板</div>
               <div class="tpl"><div class="tplh"><b>我的反投改</b><span class="tplapply" data-act="stgnew">试用</span></div><div class="tplsum">反投 · 冠军大小 · 倍投 2× · 止盈+300/止损−300</div><div class="tplmeta">上次使用 今天</div></div>

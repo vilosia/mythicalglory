@@ -3,7 +3,7 @@
  * Single source of truth for the member app and operator surfaces.
  * v2.1 (2026-07-25): 字号底线 12px（唯一例外：数字角标 11px）；
  *   --muted 加深到 4.5:1 达标；新增 --faint / --fill / --line-strong；
- *   删除 --fs-micro 层级。
+ *   删除 Micro（10px）字号层级。
  */
 :root {
   color-scheme: light;

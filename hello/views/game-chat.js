@@ -9,10 +9,10 @@
             <div class="scroll" id="chatMessageList" aria-live="polite">
               <div class="sys chat-day">今天</div>
               <div class="msg" id="shareDemoLead"><div class="av">H</div><div class="bubble"><div class="nm"><b>Henry</b> <span>09:33</span></div><p>「长龙反打」刚开始这一轮，满足条件后会自动反向投注。</p></div></div>
-              <div class="msg" id="chatMsgLi"><div class="av" style="background:#D6E4FF;color:#126BFF">李</div><div class="bubble"><div class="nm">李姐 <span>09:35</span></div>我先看这轮触发表现，稳定的话再套用。</div></div>
+              <div class="msg" id="chatMsgLi"><div class="av" style="background:#D6E4FF;color:var(--blue)">李</div><div class="bubble"><div class="nm">李姐 <span>09:35</span></div>我先看这轮触发表现，稳定的话再套用。</div></div>
               <div class="betmsg stg live-strategy-share" id="chatMsgStrategy" data-share-idx="0"></div>
               <div class="msg" id="shareDemoReply"><div class="av" style="background:#E8F5EE;color:#14875A">陈</div><div class="bubble"><div class="nm">陈生 <span>09:37</span></div><p>最近触发结果不错，我去看一下执行动态和风控设置。</p></div></div>
-              <div class="msg me" id="chatMsgMine"><div class="av" style="background:#126BFF;color:#fff">我</div><div class="bubble"><div class="nm">我 <span>09:38</span></div>我先观察，开奖前不临时加注。</div></div>
+              <div class="msg me" id="chatMsgMine"><div class="av" style="background:var(--blue);color:#fff">我</div><div class="bubble"><div class="nm">我 <span>09:38</span></div>我先观察，开奖前不临时加注。</div></div>
             </div>
             <div class="inputbar chat-inputbar">
               <div class="field ph" contenteditable="true" role="textbox" aria-label="发送群消息" data-placeholder="发送群消息">发送群消息</div>
