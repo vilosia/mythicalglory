@@ -431,6 +431,173 @@
       height:34px;padding:0 25px 0 9px;border:1px solid #c8d4e6;border-radius:9px;
       background:#fff;color:var(--ink);font-size:11px;font-weight:700;
     }
+    .analysis-action{
+      align-self:stretch;width:78px;border:0;border-left:1px solid #dbe2ee;
+      background:#fff;color:var(--blue);font-size:11px;font-weight:900;
+    }
+    .quick-strategy.active{background:var(--blue);border-color:var(--blue)}
+    .quick-strategy.active .quick-title{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);color:#fff}
+    .quick-strategy.active .mini-adjust+.mini-adjust{border-color:rgba(255,255,255,.25)}
+    .quick-strategy.active .mini-adjust>span,.quick-strategy.active .mini-adjust>b{color:#fff}
+    .quick-strategy.active .mini-adjust button{background:rgba(255,255,255,.18);color:#fff}
+    .quick-strategy.active .analysis-action{background:#fff;border-color:#fff;color:var(--blue-700)}
+    .market-legend{display:inline-flex;align-items:center;gap:3px;color:var(--muted);font-size:10px;font-style:normal;white-space:nowrap}
+    .market-legend b{margin-right:2px;color:var(--blue-700);font-size:10px}
+    .legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+    .legend-dot.red{background:var(--red)}
+    .legend-dot.blue{background:var(--blue)}
+    /* v7：悬浮策略栏 + 克制的 Trigger 呼吸提示 */
+    .road-wall>.section-head{display:none}
+    .sticky-actions{
+      background:transparent!important;border:0!important;box-shadow:none!important;
+      backdrop-filter:none!important;padding:0 12px calc(10px + env(safe-area-inset-bottom));
+      pointer-events:none;
+    }
+    .sticky-actions .quick-strategy{
+      pointer-events:auto;border-radius:16px;box-shadow:0 12px 30px rgba(24,38,68,.22);
+    }
+    .quick-strategy.active .analysis-action{
+      background:rgba(10,55,160,.28);border-color:rgba(255,255,255,.3);color:#fff;
+    }
+    .compact-road .road-dot.trigger{z-index:2;box-shadow:0 0 0 2px var(--green)}
+    .compact-road .road-dot.trigger::after{
+      content:"";right:-3px;bottom:-3px;width:6px;height:6px;border:1px solid #fff;
+      background:var(--green);border-radius:50%;
+    }
+    .compact-road .road-dot.latest-trigger::before{
+      content:"";position:absolute;inset:-5px;border:2px solid rgba(19,166,106,.72);
+      border-radius:50%;animation:trigger-breathe 1.55s ease-out infinite;pointer-events:none;
+    }
+    @keyframes trigger-breathe{
+      0%{transform:scale(.72);opacity:.9}
+      70%,100%{transform:scale(1.32);opacity:0}
+    }
+    @media (prefers-reduced-motion:reduce){
+      .compact-road .road-dot.latest-trigger::before{animation:none;opacity:.55}
+    }
+    /* v8：静态刻度 Trigger + 白色分析中策略卡 */
+    .quick-strategy.active{
+      background:#fff;border-color:#b9d8c8;
+      box-shadow:0 12px 30px rgba(24,38,68,.2),0 0 0 1px rgba(19,166,106,.08);
+    }
+    .quick-strategy.active .quick-title{
+      background:var(--green-50);border-color:#cce8da;color:var(--green);
+    }
+    .quick-strategy.active .mini-adjust+.mini-adjust{border-color:var(--line)}
+    .quick-strategy.active .mini-adjust>span{color:var(--green)}
+    .quick-strategy.active .mini-adjust>b{color:var(--ink)}
+    .quick-strategy.active .mini-adjust button{background:#eef1f6;color:#536078}
+    .quick-strategy.active .analysis-action{
+      background:#172033;border-color:#172033;color:#fff;
+    }
+    .compact-road .road-dot.trigger{box-shadow:none}
+    .compact-road .road-dot.trigger::after{
+      content:"";left:3px;right:3px;bottom:-5px;width:auto;height:2px;border:0;
+      border-radius:2px;background:var(--green);
+    }
+    .compact-road .road-dot.latest-trigger::after{left:0;right:0;height:3px}
+    .compact-road .road-dot.latest-trigger::before{display:none;animation:none}
+    /* v9：Trigger 格子底色 + 无状态换肤策略栏 */
+    .compact-road .road-grid{
+      grid-template-rows:repeat(6,23px);
+      grid-template-columns:repeat(var(--cols),minmax(23px,1fr));gap:2px;
+    }
+    .road-cell{
+      width:23px;height:23px;display:grid;place-items:center;justify-self:center;
+      border-radius:5px;position:relative;
+    }
+    .road-cell.trigger{background:#e4f4ec}
+    .road-cell.latest-trigger{background:#c6ead7}
+    .road-cell .road-dot{position:static}
+    .quick-strategy.active{
+      background:#fff;border-color:#dbe2ee;
+      box-shadow:0 12px 30px rgba(24,38,68,.22);
+    }
+    .quick-strategy.active .quick-title{
+      background:#fff;border-color:var(--line);color:var(--ink);
+    }
+    .quick-strategy.active .mini-adjust+.mini-adjust{border-color:var(--line)}
+    .quick-strategy.active .mini-adjust>span{color:var(--blue-700)}
+    .quick-strategy.active .mini-adjust>b{color:var(--ink)}
+    .quick-strategy.active .mini-adjust button{background:#e9eef7;color:#536078}
+    .quick-strategy.active .analysis-action{
+      background:#fff;border-color:#172033;color:#172033;
+      box-shadow:inset 0 0 0 1px #172033;
+    }
+    .analysis-status-dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:block;margin:0 auto 2px}
+    /* v10：短暂闪烁后，以等尺寸外圈标记 Trigger */
+    .road-cell.trigger,.road-cell.latest-trigger{background:transparent}
+    .road-cell.trigger::after{
+      content:"";position:absolute;left:50%;top:50%;width:18px;height:18px;
+      box-sizing:border-box;border:1.5px solid var(--green);border-radius:50%;
+      transform:translate(-50%,-50%);pointer-events:none;
+    }
+    .road-cell.latest-trigger::after{border-width:2px}
+    .road-cell.trigger .road-dot{width:8px;height:8px;border:0}
+    #roadList.trigger-intro .road-cell.trigger{animation:trigger-intro-flash .34s ease-in-out 4}
+    @keyframes trigger-intro-flash{
+      0%,100%{opacity:1;transform:scale(1)}
+      50%{opacity:.22;transform:scale(.82)}
+    }
+    #roadList.trigger-refresh .road-cell.trigger::after{
+      animation:trigger-refresh-ring .38s ease-out 3;
+    }
+    #roadList.trigger-refresh .road-cell.trigger .road-dot{
+      animation:trigger-refresh-dot .38s ease-out 3;
+    }
+    .compact-road{position:relative}
+    .road-list.recalculating .compact-road::after{
+      content:"加载中";position:absolute;inset:0;z-index:5;display:grid;place-items:center;
+      background:rgba(247,249,252,.88);color:#536078;font-size:11px;font-weight:800;
+      backdrop-filter:blur(1px);animation:card-loading-pulse .7s ease-in-out infinite alternate;
+    }
+    @keyframes card-loading-pulse{
+      from{opacity:.72}
+      to{opacity:1}
+    }
+    @keyframes trigger-refresh-ring{
+      0%,100%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+      50%{opacity:.18;transform:translate(-50%,-50%) scale(1.32)}
+    }
+    @keyframes trigger-refresh-dot{
+      0%,100%{opacity:1;transform:scale(1)}
+      50%{opacity:.35;transform:scale(.7)}
+    }
+
+    /* 已开启分析：浅色确认态；Drawer 展开时整栏进入内部 Header */
+    .sticky-actions{
+      transition:bottom .32s cubic-bezier(.22,.8,.24,1),transform .32s cubic-bezier(.22,.8,.24,1);
+      will-change:bottom,transform;
+    }
+    .quick-strategy.active{
+      background:#f3f5f9;border-color:#bac5d8;
+      box-shadow:0 12px 30px rgba(24,38,68,.2),inset 0 3px 0 #52627f;
+    }
+    .quick-strategy.active .quick-title{
+      background:#e7ebf2;border-color:#cbd3e1;color:#263249;
+    }
+    .quick-strategy.active .mini-adjust+.mini-adjust{border-color:#cbd3e1}
+    .quick-strategy.active .mini-adjust>span{color:#52627f}
+    .quick-strategy.active .mini-adjust>b{color:#172033}
+    .quick-strategy.active .mini-adjust button{background:#fff;color:#45536c;box-shadow:0 1px 3px rgba(24,38,68,.12)}
+    .quick-strategy.active .analysis-action{
+      background:#344563;border-color:#344563;color:#fff;box-shadow:none;
+    }
+    .quick-strategy.active .analysis-status-dot{background:#607497}
+    body.analysis-drawer-open .sticky-actions{
+      bottom:calc(min(86vh,720px) - 62px)!important;z-index:56;padding:0 12px;
+    }
+    body.analysis-drawer-open #controlSheet .sheet{padding-top:68px}
+    body.analysis-drawer-open #controlSheet .sheet>.handle,
+    body.analysis-drawer-open #controlSheet .sheet>.sheet-title{display:none}
+    body.analysis-drawer-open #controlSheet .drawer-range{display:none}
+    @media (prefers-reduced-motion:reduce){
+      #roadList.trigger-intro .road-cell.trigger{animation:none}
+      #roadList.trigger-refresh .road-cell.trigger::after,
+      #roadList.trigger-refresh .road-cell.trigger .road-dot{animation:none}
+      .road-list.recalculating .compact-road::after{animation:none}
+      .sticky-actions{transition:none}
+    }
     @media (max-width:360px){
       .inline-ranks{grid-template-columns:repeat(4,minmax(0,1fr))}
       .road-group-title{top:220px}
@@ -472,8 +639,8 @@
 
     <section class="section road-wall">
       <header class="section-head">
-        <div><h2>Road Wall</h2><p id="triggerExplain">绿色 T = S2 开始观察，连续满足 M4 时触发</p></div>
-        <div class="head-side"><span class="condition" id="conditionTop">S2 · M4</span><br><span id="historyTop">近 50 期</span></div>
+        <div><h2>Road Wall</h2><p id="triggerExplain">完整开奖结果</p></div>
+        <div class="head-side"><span class="condition" id="conditionTop">未分析</span><br><span id="historyTop">近 50 期</span></div>
       </header>
       <nav class="play-tabs" aria-label="玩法切换">
         <button class="play-tab on" data-play="大小">大小</button>
@@ -520,15 +687,15 @@
       </header>
       <div class="settings">
         <div class="setting sm-setting">
-          <div class="setting-label"><b>最低长龙</b><span>达到该连续期数后开始触发</span></div>
+          <div class="setting-label"><b>触发下限</b><span>达到该连续期数后开始触发</span></div>
           <div class="segment" data-setting="s">
             <button data-value="1">1 期</button><button class="on" data-value="2">2 期</button><button data-value="3">3 期</button><button data-value="4">4 期</button>
           </div>
         </div>
         <div class="setting sm-setting">
-          <div class="setting-label"><b>最高长龙</b><span>超过该连续期数后停止触发</span></div>
+          <div class="setting-label"><b>追击上限</b><span>超过该连续期数后停止触发</span></div>
           <div class="segment" data-setting="m">
-            <button data-value="2">2 期</button><button data-value="3">3 期</button><button class="on" data-value="4">4 期</button><button data-value="5">5 期</button><button data-value="6">6 期</button>
+            <button data-value="1">1 期</button><button data-value="2">2 期</button><button data-value="3">3 期</button><button class="on" data-value="4">4 期</button><button data-value="5">5 期</button><button data-value="6">6 期</button>
           </div>
         </div>
         <div class="setting">
@@ -579,11 +746,11 @@
   </main>
 
   <div class="sticky-actions">
-    <div class="quick-strategy" aria-label="快速策略设置">
-      <div class="quick-title">策略<br>设置</div>
-      <div class="mini-adjust"><span>最低<br>长龙</span><button data-sm-key="s" data-sm-delta="-1" aria-label="减少最低长龙">−</button><b id="quickS">2</b><button data-sm-key="s" data-sm-delta="1" aria-label="增加最低长龙">＋</button></div>
-      <div class="mini-adjust"><span>最高<br>长龙</span><button data-sm-key="m" data-sm-delta="-1" aria-label="减少最高长龙">−</button><b id="quickM">4</b><button data-sm-key="m" data-sm-delta="1" aria-label="增加最高长龙">＋</button></div>
-      <button class="drawer-arrow" id="openOverview" aria-label="展开策略筛选与设置">⌃</button>
+    <div class="quick-strategy" aria-label="快速分析设置">
+      <div class="quick-title">分析<br>设置</div>
+      <div class="mini-adjust"><span>触发<br>下限</span><button data-sm-key="s" data-sm-delta="-1" aria-label="减少触发下限">−</button><b id="quickS">2</b><button data-sm-key="s" data-sm-delta="1" aria-label="增加触发下限">＋</button></div>
+      <div class="mini-adjust"><span>追击<br>上限</span><button data-sm-key="m" data-sm-delta="-1" aria-label="减少追击上限">−</button><b id="quickM">4</b><button data-sm-key="m" data-sm-delta="1" aria-label="增加追击上限">＋</button></div>
+      <button class="analysis-action" id="analysisAction">开始分析</button>
     </div>
   </div>
 
@@ -633,8 +800,8 @@
       <div class="control-pane" id="overviewPane"></div>
       <div class="control-pane on" id="settingsPane">
         <div class="drawer-range quick-strategy" aria-label="长龙范围">
-          <div class="mini-adjust"><span>最低<br>长龙</span><button data-sm-key="s" data-sm-delta="-1" aria-label="减少最低长龙">−</button><b id="drawerQuickS">2</b><button data-sm-key="s" data-sm-delta="1" aria-label="增加最低长龙">＋</button></div>
-          <div class="mini-adjust"><span>最高<br>长龙</span><button data-sm-key="m" data-sm-delta="-1" aria-label="减少最高长龙">−</button><b id="drawerQuickM">4</b><button data-sm-key="m" data-sm-delta="1" aria-label="增加最高长龙">＋</button></div>
+          <div class="mini-adjust"><span>触发<br>下限</span><button data-sm-key="s" data-sm-delta="-1" aria-label="减少触发下限">−</button><b id="drawerQuickS">2</b><button data-sm-key="s" data-sm-delta="1" aria-label="增加触发下限">＋</button></div>
+          <div class="mini-adjust"><span>追击<br>上限</span><button data-sm-key="m" data-sm-delta="-1" aria-label="减少追击上限">−</button><b id="drawerQuickM">4</b><button data-sm-key="m" data-sm-delta="1" aria-label="增加追击上限">＋</button></div>
         </div>
         <div id="strategyParamsMount"></div>
         <div id="historyResultMount"></div>
@@ -658,6 +825,9 @@
       applied:{s:2,m:4,round:3,baseBet:100,direction:"跟投",history:50,stakeMode:"fixed",multiplier:2,takeProfit:500,stopLoss:500},
       draft:{s:2,m:4,round:3,baseBet:100,direction:"跟投",history:50,stakeMode:"fixed",multiplier:2,takeProfit:500,stopLoss:500},
       runAfterSave:true,
+      analysisStarted:false,
+      smRefreshTimer:null,
+      smFlashTimer:null,
       variant:0
     };
 
@@ -727,13 +897,16 @@
           const card=document.createElement("article");card.className="compact-road";
           const data=roadData(name,play);
           const road=buildRoadCells(data);
-          const minWidth=Math.max(100,road.columns*21);
+          const minWidth=Math.max(100,road.columns*25);
+          const legend=play==="大小"?["大","小"]:play==="单双"?["单","双"]:["龙","虎"];
+          const analyzed=state.analysisStarted;
+          const lastTriggerIndex=analyzed?road.cells.reduce((last,d)=>d.trigger?d.index:last,-1):-1;
           card.innerHTML=`
             <div class="compact-head">
-              <div class="head-main"><b>${name}</b><i class="play-badge">${play}</i>${stats.current?'<i class="live-dot" title="当前触发"></i>':''}</div>
-              <div class="head-stats"><b>触发 ${stats.triggered}</b><span class="hit">中 ${stats.hit}</span></div>
+              <div class="head-main"><b>${name}</b><i class="market-legend"><b>${play}</b><em class="legend-dot red"></em>${legend[0]}<em class="legend-dot blue"></em>${legend[1]}</i>${analyzed&&stats.current?'<i class="live-dot" title="当前触发"></i>':''}</div>
+              <div class="head-stats"><b>触发 ${analyzed?stats.triggered:"--"}</b><span class="hit">中 ${analyzed?stats.hit:"--"}</span></div>
             </div>
-            <div class="road-scroll"><div class="road-grid" style="--cols:${road.columns};min-width:${minWidth}px">${road.cells.map(d=>`<i class="road-dot ${d.value?'a':'b'} ${d.trigger?'trigger':''} ${d.pending?'pending':''}" style="grid-row:${d.row+1};grid-column:${d.column+1}" title="第 ${d.issue} 期 · ${d.label} · 连续 ${d.streak} 期${d.trigger?' · Trigger':''}" aria-label="第 ${d.issue} 期，${d.label}，连续 ${d.streak} 期${d.trigger?'，Trigger':''}"></i>`).join("")}</div></div>
+            <div class="road-scroll"><div class="road-grid" style="--cols:${road.columns};min-width:${minWidth}px">${road.cells.map(d=>`<span class="road-cell ${analyzed&&d.trigger?'trigger':''} ${analyzed&&d.index===lastTriggerIndex?'latest-trigger':''} ${analyzed&&d.pending?'pending':''}" style="grid-row:${d.row+1};grid-column:${d.column+1}" title="第 ${d.issue} 期 · ${d.label} · 连续 ${d.streak} 期${analyzed&&d.trigger?' · Trigger':''}" aria-label="第 ${d.issue} 期，${d.label}，连续 ${d.streak} 期${analyzed&&d.trigger?'，Trigger':''}"><i class="road-dot ${d.value?'a':'b'}"></i></span>`).join("")}</div></div>
             `;
           list.appendChild(card);
         });
@@ -760,19 +933,19 @@
 
     function syncAppliedText(){
       const a=state.applied;
-      $("#conditionTop").textContent=`长龙 ${a.s}–${a.m} 期`;
-      $("#triggerExplain").textContent=`绿色 T = 连续达到 ${a.s}–${a.m} 期时触发`;
-      $("#drawerCondition").textContent=`当前 Trigger：最低长龙 ${a.s} 期 · 最高长龙 ${a.m} 期`;
+      $("#conditionTop").textContent=state.analysisStarted?`触发 ${a.s}–${a.m} 期`:"未分析";
+      $("#triggerExplain").textContent=state.analysisStarted?`绿色 T = 连续达到 ${a.s}–${a.m} 期时触发`:"完整开奖结果";
+      $("#drawerCondition").textContent=`当前条件：触发下限 ${a.s} 期 · 追击上限 ${a.m} 期`;
       $("#historyTop").textContent=`近 ${a.history} 期`;
       $("#simulationSubtitle").textContent=`完整策略应用于过去 ${a.history} 期的即时验证`;
       $("#overviewHistory").textContent=`近 ${a.history} 期`;
-      $("#overviewCondition").textContent=`最低 ${a.s} 期 · 最高 ${a.m} 期`;
+      $("#overviewCondition").textContent=`触发下限 ${a.s} 期 · 追击上限 ${a.m} 期`;
       $("#overviewBet").textContent=`${a.direction} · Round ${a.round} · ${a.stakeMode==="fixed"?"固定金额":"倍投 "+a.multiplier+"×"} · 底注 ${a.baseBet}`;
       $("#quickS").textContent=a.s;
       $("#quickM").textContent=a.m;
       $("#drawerQuickS").textContent=a.s;
       $("#drawerQuickM").textContent=a.m;
-      $("#saveCondition").textContent=`长龙 ${a.s}–${a.m} 期`;
+      $("#saveCondition").textContent=`触发 ${a.s}–${a.m} 期`;
       $("#saveExecution").textContent=`Round ${a.round} · 底注 ${a.baseBet}`;
       $("#saveDirection").textContent=`${a.direction} · 近 ${a.history} 期`;
     }
@@ -809,19 +982,31 @@
       if(id==="rankSheet") $$("[data-rank]").forEach(b=>b.classList.toggle("on",state.selectedRanks.has(b.dataset.rank)));
       if(id==="playSheet") $$("[data-play-option]").forEach(b=>b.classList.toggle("on",state.selectedPlays.has(b.dataset.playOption)));
       if(id==="saveSheet") syncAppliedText();
-      $("#"+id).classList.add("show"); document.body.style.overflow="hidden";
+      document.body.classList.toggle("analysis-drawer-open",id==="controlSheet");
+      $("#"+id).classList.add("show"); document.body.style.overflow="hidden";syncAnalysisUI();
     }
     function showControlPane(id){
       $$(".control-tab").forEach(b=>b.classList.toggle("on",b.dataset.controlTab===id));
       $$(".control-pane").forEach(p=>p.classList.toggle("on",p.id===id));
     }
-    function closeSheets(){ $$(".sheet-wrap").forEach(s=>s.classList.remove("show")); document.body.style.overflow=""; }
+    function syncAnalysisUI(){
+      const validating=document.body.classList.contains("analysis-drawer-open");
+      $(".sticky-actions .quick-strategy").classList.toggle("active",state.analysisStarted);
+      $(".sticky-actions .quick-title").innerHTML=state.analysisStarted?'<i class="analysis-status-dot"></i>分析中':'分析<br>设置';
+      $("#analysisAction").textContent=validating?"回路子图":state.analysisStarted?"开始验证":"开始分析";
+    }
+    function closeSheets(){
+      $$(".sheet-wrap").forEach(s=>s.classList.remove("show"));
+      document.body.classList.remove("analysis-drawer-open");
+      document.body.style.overflow="";
+      syncAnalysisUI();
+    }
     function toast(text){const t=$("#toast");t.textContent=text;t.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove("show"),2600)}
 
     $("#strategyParamsMount").appendChild($(".validation-settings"));
     $("#historyResultMount").appendChild($(".result-overview"));
     $("#drawerActions").appendChild($(".next-actions"));
-    makeOptions(); updateScopeText(); syncDraftControls(); syncAppliedText(); renderRoads();
+    makeOptions(); updateScopeText(); syncDraftControls(); syncAnalysisUI(); syncAppliedText(); renderRoads();
 
     $$("[data-open]").forEach(b=>b.addEventListener("click",()=>openSheet(b.dataset.open)));
     $$("[data-close]").forEach(b=>b.addEventListener("click",closeSheets));
@@ -847,10 +1032,10 @@
       const raw=state.applied[key]+Number(button.dataset.smDelta);
       const next=key==="s"
         ?Math.max(1,Math.min(state.applied.m,4,raw))
-        :Math.max(state.applied.s,2,Math.min(6,raw));
+        :Math.max(state.applied.s,1,Math.min(6,raw));
       if(next===state.applied[key])return;
       state.applied[key]=next;state.draft[key]=next;
-      syncDraftControls();syncAppliedText();renderRoads();
+      syncDraftControls();syncAppliedText();refreshSMResults();
       $("#dirtyBar").classList.remove("show");
     }));
     $("#inlineRanks").addEventListener("click",e=>{
@@ -882,16 +1067,35 @@
     function clearFilters(){state.filters.clear();$$("[data-filter]").forEach(b=>b.classList.remove("on"));renderRoads()}
     $("#clearFilters").addEventListener("click",clearFilters); $("#clearEmpty").addEventListener("click",clearFilters);
     $("#roadList").addEventListener("click",e=>{
-      const trigger=e.target.closest(".road-dot.trigger");
+      const trigger=e.target.closest(".road-cell.trigger");
       if(trigger)toast(trigger.title);
     });
+    function refreshSMResults(){
+      const roadList=$("#roadList");
+      clearTimeout(state.smRefreshTimer);
+      clearTimeout(state.smFlashTimer);
+      roadList.classList.add("recalculating");
+      roadList.setAttribute("aria-busy","true");
+      roadList.classList.remove("trigger-refresh");
+      state.smRefreshTimer=setTimeout(()=>{
+        renderRoads();
+        roadList.classList.remove("recalculating");
+        roadList.setAttribute("aria-busy","false");
+        if(state.analysisStarted){
+          requestAnimationFrame(()=>roadList.classList.add("trigger-refresh"));
+          state.smFlashTimer=setTimeout(()=>roadList.classList.remove("trigger-refresh"),1250);
+        }
+      },420);
+    }
     $$("[data-setting] button").forEach(btn=>btn.addEventListener("click",()=>{
       const group=btn.closest("[data-setting]"),key=group.dataset.setting;
       state.draft[key]=["direction","stakeMode"].includes(key)?btn.dataset.value:Number(btn.dataset.value);
       if(key==="s"&&state.draft.s>state.draft.m)state.draft.m=state.draft.s;
       if(key==="m"&&state.draft.m<state.draft.s)state.draft.s=state.draft.m;
       state.applied={...state.draft};
-      syncDraftControls();syncAppliedText();renderRoads();
+      syncDraftControls();syncAppliedText();
+      if(key==="s"||key==="m")refreshSMResults();
+      else renderRoads();
     }));
     const applyNumericStrategy=()=>{
       state.draft.baseBet=Math.max(1,Number($("#baseBet").value)||1);
@@ -911,9 +1115,24 @@
       markDirty(); const l=$("#loading");$("#loadingText").textContent=`正在根据 S${state.draft.s} · M${state.draft.m} 重新计算 Road…`;l.classList.add("show");
       setTimeout(()=>{state.applied={...state.draft};state.variant++;syncAppliedText();renderRoads();$("#dirtyBar").classList.remove("show");l.classList.remove("show");toast("已应用新参数，Road 与结果概览已同步更新")},700);
     });
-    $("#openOverview").addEventListener("click",()=>{showControlPane("settingsPane");openSheet("controlSheet")});
+    $("#analysisAction").addEventListener("click",()=>{
+      if(!state.analysisStarted){
+        state.analysisStarted=true;syncAnalysisUI();syncAppliedText();renderRoads();
+        const roadList=$("#roadList");
+        roadList.classList.remove("trigger-intro");
+        requestAnimationFrame(()=>roadList.classList.add("trigger-intro"));
+        setTimeout(()=>roadList.classList.remove("trigger-intro"),1500);
+        toast("分析完成，已标记 Trigger 与历史命中结果");
+        return;
+      }
+      if(document.body.classList.contains("analysis-drawer-open")){
+        closeSheets();
+        return;
+      }
+      showControlPane("settingsPane");openSheet("controlSheet");
+    });
     $$("[data-demo]").forEach(b=>b.addEventListener("click",()=>{
-      const a=state.applied; toast(`Demo Session 已创建 · S${a.s} / M${a.m} / Round ${a.round}，等待下期开奖`);
+      window.location.href="demo-progress.html";
     }));
     $$("[data-run]").forEach(b=>b.addEventListener("click",()=>{
       state.runAfterSave=b.dataset.run==="true";$$("[data-run]").forEach(x=>x.classList.toggle("on",x===b));
