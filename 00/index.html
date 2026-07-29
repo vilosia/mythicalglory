@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IM168 · 游戏厅 v0.2（合并原型）</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared/styles.css?v=20260721g">
+<!-- 样式已迁至 shared/styles.css（2026-07-09 拆分）；新增样式请直接写入该文件 -->
+</head>
+<body>
+  <div class="stage">
+    <div class="phone" data-game="pk">
+      <div class="screen">
+        <div class="statusbar"><span class="sb-time">9:41</span><span class="sb-ico">
+          <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor" aria-hidden="true"><rect x="0" y="8" width="3.2" height="4" rx="1"/><rect x="4.9" y="5.5" width="3.2" height="6.5" rx="1"/><rect x="9.8" y="3" width="3.2" height="9" rx="1"/><rect x="14.7" y="0.5" width="3.2" height="11.5" rx="1"/></svg>
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor" aria-hidden="true"><path d="M8 2.6c2.3 0 4.4.85 6 2.25l1.5-1.6A11.4 11.4 0 0 0 8 .4 11.4 11.4 0 0 0 .5 3.25l1.5 1.6A9 9 0 0 1 8 2.6z"/><path d="M8 6.1c1.35 0 2.6.5 3.55 1.35l1.5-1.6A8 8 0 0 0 8 3.7a8 8 0 0 0-5.05 2.15l1.5 1.6A5.3 5.3 0 0 1 8 6.1z"/><path d="M8 9.6l2.05-2.2A4 4 0 0 0 8 6.6a4 4 0 0 0-2.05.8L8 9.6z"/></svg>
+          <svg width="26" height="13" viewBox="0 0 26 13" fill="none" aria-hidden="true"><rect x="1" y="1" width="21" height="11" rx="3" stroke="currentColor" stroke-opacity=".45" stroke-width="1.2"/><rect x="2.8" y="2.8" width="14.5" height="7.4" rx="1.5" fill="currentColor"/><path d="M23.5 4.5a2 2 0 0 1 0 4z" fill="currentColor" fill-opacity=".5"/></svg>
+        </span></div>
+
+        <!-- 游戏厅 chrome：四 Tab（2026-07-11 新增 查爆仓） -->
+        <div class="ghead chrome" data-mainviews="bet autos chat bust">
+          <div class="gtop">
+            <span class="gback" data-act="show" data-arg="groups">‹</span>
+            <span class="gtitle" data-act="show" data-arg="lobby">
+              <b class="gname gname-pk">PK10</b><b class="gname gname-ssc">时时彩</b><b class="gname gname-soon">游戏厅</b><i class="tcaret">▾</i>
+              <small>幸运组</small>
+            </span>
+            <span class="sp"></span>
+            <span class="bal" data-act="show" data-arg="wallet"><svg class="wic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"/><path d="M3 8V6a2 2 0 0 1 2-2h10"/><circle cx="16.5" cy="12.5" r="1.3" fill="currentColor" stroke="none"/></svg><b>240,000.00</b></span>
+          </div>
+          <div class="tabs">
+            <div class="tab on" data-v="bet" data-act="show" data-arg="bet">投注</div>
+            <div class="tab" data-v="autos" data-act="show" data-arg="autos">自动投</div>
+            <div class="tab" data-v="chat" data-act="show" data-arg="chat">聊天室</div>
+            <div class="tab" data-v="bust" data-act="show" data-arg="bust">查爆仓</div>
+          </div>
+          <div class="roundbar">
+            <div class="ri-line1">
+              <span class="rper"><b>00089期</b></span>
+              <span class="sealgrp">
+                <svg class="sealpie" viewBox="0 0 20 20" aria-hidden="true"><circle class="track" cx="10" cy="10" r="8"/><circle class="prog" cx="10" cy="10" r="8"/></svg>
+                <span class="rseal-lab">投注时间还剩</span><span class="rseal">0分48秒</span>
+              </span>
+            </div>
+            <div class="ri-line2" data-act="results">
+              <span class="rlastlab"><b>00088期</b></span>
+              <span class="rballs2"><i class="bb c1">3</i><i class="bb c2">7</i><i class="bb c3">1</i><i class="bb c4">9</i><i class="bb c5">5</i><i class="bb c6">2</i><i class="bb c7">10</i><i class="bb c8">4</i><i class="bb c9">6</i><i class="bb c10">8</i></span>
+              <span class="rcaret">⌄</span>
+            </div>
+            <div class="resultpanel">
+              <div class="histrow"><span>00087期</span><span class="histballs"><i class="bb c6">6</i><i class="bb c2">2</i><i class="bb c8">8</i><i class="bb c1">1</i><i class="bb c4">4</i><i class="bb c5">5</i><i class="bb c10">10</i><i class="bb c3">3</i><i class="bb c9">9</i><i class="bb c7">7</i></span></div>
+              <div class="histrow"><span>00086期</span><span class="histballs"><i class="bb c9">9</i><i class="bb c3">3</i><i class="bb c5">5</i><i class="bb c10">10</i><i class="bb c1">1</i><i class="bb c4">4</i><i class="bb c7">7</i><i class="bb c2">2</i><i class="bb c8">8</i><i class="bb c6">6</i></span></div>
+              <div class="streakbox">
+                <div class="streaktitle">当前长龙</div>
+                <div class="streakchips"><span>冠军 大 · 4期</span><span>冠亚和 单 · 3期</span><span>第5名 小 · 3期</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="body">
+          <!-- 页面内容由 views/*.js 提供，shared/app.js 启动时按原顺序注入此容器 -->
+        </div>
+        <!-- 长龙快投 Drawer -->
+        <div class="streak-drawer">
+          <div class="sd-backdrop" data-act="sdcancel"></div>
+          <div class="sd-sheet">
+            <div class="sd-handle"><i></i></div>
+            <div class="sd-head">
+              <div class="sd-title">长龙快投</div>
+              <div class="sd-sub">确认后加入注单 · 第 <b class="sd-period">00089</b> 期</div>
+              <div class="sd-badge">
+                <span class="sd-dot"></span>
+                <span class="sd-badge-txt"></span>
+              </div>
+            </div>
+            <div class="sd-section">
+              <div class="sd-label">投注</div>
+              <div class="sd-toggle-row">
+                <div class="sd-tbtn sel-follow" data-act="sddir" data-arg="follow"></div>
+                <div class="sd-tbtn" data-act="sddir" data-arg="against"></div>
+              </div>
+            </div>
+            <div class="sd-section">
+              <div class="sd-label">金额</div>
+              <div class="sd-amt-row">
+                <span class="sd-amt-label">每注</span>
+                <input class="sd-amt-input" type="number" inputmode="numeric" placeholder="最低1 - 最高100K">
+              </div>
+              <div class="sd-amt-err">单笔范围 1 - 100K</div>
+              <div class="sd-pills">
+                <div class="sd-pill mm" data-act="sdpill" data-arg="min">最低</div>
+                <div class="sd-pill" data-act="sdpill" data-arg="30">30</div>
+                <div class="sd-pill" data-act="sdpill" data-arg="60">60</div>
+                <div class="sd-pill" data-act="sdpill" data-arg="90">90</div>
+                <div class="sd-pill" data-act="sdpill" data-arg="180">180</div>
+                <div class="sd-pill" data-act="sdpill" data-arg="360">360</div>
+                <div class="sd-pill mm" data-act="sdpill" data-arg="max">最高</div>
+              </div>
+            </div>
+            <div class="sd-section" style="padding-bottom:2px;">
+              <div class="sd-footrow">
+                <div class="sd-finfo">
+                  <div class="f1">共 <b>1</b> 注</div>
+                  <div class="f2">可赢 <span class="sd-win"></span></div>
+                </div>
+                <button class="ghost" data-act="sdcancel">取消</button>
+                <button class="cta" data-act="sdsubmit">加入注单</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== 底部导航（外壳级：资讯 · 聊天 · 消息 · 我的）===== -->
+        <nav class="tabbar" data-navviews="news groups home me">
+          <div class="nav" data-act="show" data-arg="news"><svg viewBox="0 0 24 24"><path d="M4 11.5L12 4l8 7.5V20a1 1 0 0 1-1 1h-5.2v-5.2h-3.6V21H5a1 1 0 0 1-1-1z"/></svg><span>资讯</span></div>
+          <div class="nav" data-act="show" data-arg="groups"><svg viewBox="0 0 24 24"><path d="M12 4c4.7 0 8.5 3.1 8.5 7s-3.8 7-8.5 7c-.9 0-1.8-.1-2.6-.3L5 19.5l1-3.2C4.4 15 3.5 13.1 3.5 11c0-3.9 3.8-7 8.5-7z"/><circle class="dot" cx="8.4" cy="11" r="1.1"/><circle class="dot" cx="12" cy="11" r="1.1"/><circle class="dot" cx="15.6" cy="11" r="1.1"/></svg><span>聊天</span></div>
+          <div class="nav on" data-act="show" data-arg="home"><svg viewBox="0 0 24 24"><path d="M6 16v-5.5a6 6 0 0 1 12 0V16l1.6 2.6H4.4z"/><path d="M10 21a2 2 0 0 0 4 0"/></svg><span>消息</span></div>
+          <div class="nav" data-act="show" data-arg="me"><svg viewBox="0 0 24 24"><circle cx="12" cy="7.6" r="3.6"/><path d="M5 20.5a7 7 0 0 1 14 0z"/></svg><span>我的</span></div>
+        </nav>
+
+        <!-- ===== 侧边抽屉 side menu（我的群组）===== -->
+        <div class="drawer" id="drawer">
+          <div class="dw-back" data-act="drawerclose"></div>
+          <div class="dw-panel">
+            <div class="dw-head"><b>我的群组</b></div>
+            <div class="dw-filters">
+              <div class="dw-filter"><span class="di"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg></span>最近</div>
+            </div>
+            <div class="dw-groups imlist">
+              <div class="imrow" data-act="show" data-arg="groups"><div class="sq sq-game"><svg viewBox="0 0 24 24"><path d="M5 8h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z"/><path d="M7 12v3M5.5 13.5h3"/><path d="M15.5 13h.01M17.5 15h.01"/></svg></div><div class="gx"><b>幸运组</b></div><span class="dw-dots" data-act="grpmenu"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></span></div>
+              <div class="imrow"><div class="sq sq-vip"><svg viewBox="0 0 24 24"><path d="M4 8l4 3 4-6 4 6 4-3-1.5 10h-13z"/></svg></div><div class="gx"><b>VIP 大厅</b></div><span class="dw-dots" data-act="grpmenu"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></span></div>
+              <div class="imrow"><div class="sq sq-fast"><svg viewBox="0 0 24 24"><path d="M13 3L5 13h5l-1 8 8-11h-5z"/></svg></div><div class="gx"><b>极速专区</b></div><span class="dw-dots" data-act="grpmenu"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg></span></div>
+            </div>
+            <div class="dw-newgrp" data-act="drawerclose"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>新增群组</div>
+          </div>
+        </div>
+
+        <!-- 急停/重启/删除 二次确认弹窗（屏幕级 · 全部计划 + 仪表盘共用） -->
+        <div class="plan-modal" id="planModal">
+          <div class="pm-backdrop" data-act="pmclose"></div>
+          <div class="pm-sheet">
+            <div class="pm-h" id="pmTitle">确认</div>
+            <div class="pm-body" id="pmBody"></div>
+            <div class="pm-btns" id="pmBtns"></div>
+          </div>
+        </div>
+
+        <!-- 自动投 · 启动确认（预算透明） -->
+        <div class="start-modal" id="startModal">
+          <div class="sm-backdrop" data-act="tplcancel"></div>
+          <div class="sm-sheet">
+            <div class="sm-h">启动「小本试水」</div>
+            <div class="sm-sub">启动后每期自动下注，你随时可以急停</div>
+            <div class="srow"><span>玩法</span><b>两面 · 跟投</b></div>
+            <div class="srow"><span>每期投入</span><b>10 起 · 倍投最高 40</b></div>
+            <div class="srow"><span>最坏情况</span><b class="rd">−100 自动停止</b></div>
+            <div class="srow"><span>达到止盈</span><b class="gn">+100 自动停止</b></div>
+            <div class="srow"><span>占用预算</span><b>100 <small>/ 余额 400</small></b></div>
+            <div class="sm-note"><i>ⓘ</i><span>预算从余额中预留，计划结束后未用部分自动退回。</span></div>
+            <div class="sm-btns"><button class="ghost" data-act="tpladjust">调整设置</button><button class="cta" data-act="tplconfirm">确认启动</button></div>
+          </div>
+        </div>
+
+        <!-- 自动投 · 使用指南弹窗（占位框架，暂不跳转页面，内容待后续补充） -->
+        <div class="tpl-modal" id="guideModal">
+          <div class="cf-backdrop" data-act="guideclose"></div>
+          <div class="cf-sheet">
+            <div class="cf-h">使用指南</div>
+            <div class="guide-empty">内容规划中，敬请期待</div>
+          </div>
+        </div>
+
+        <!-- 自动投 · 首次引导 Drawer（3 页 · 每会话首次进入自动投自动弹出一次） -->
+        <div class="ob-drawer" id="obDrawer">
+          <div class="ob-backdrop" data-act="obclose"></div>
+          <div class="ob-sheet">
+            <div class="ob-top">
+              <div class="ob-close" data-act="obclose" aria-label="关闭引导">✕</div>
+            </div>
+            <div class="ob-page on" data-ob="1">
+              <div class="ob-img"><img src="shared/auto-guide/01.png" alt="" onerror="this.remove()"></div>
+              <div class="ob-body">
+                <div class="ob-title">让系统帮你盯盘看走势</div>
+                <div class="ob-copy">按设定规则自动下注，实时追踪，随时急停。</div>
+              </div>
+              <div class="ob-dots"><span class="on"></span><span></span><span></span></div>
+              <div class="ob-ftr"><button class="pri" data-act="obnext">下一步</button></div>
+            </div>
+            <div class="ob-page" data-ob="2">
+              <div class="ob-img"><img src="shared/auto-guide/02.png" alt="" onerror="this.remove()"></div>
+              <div class="ob-body">
+                <div class="ob-title">你的策略设置</div>
+                <div class="ob-copy">玩家设定触发条件、金额、倍数、止盈止损，系统只按规则执行。</div>
+              </div>
+              <div class="ob-dots"><span></span><span class="on"></span><span></span></div>
+              <div class="ob-ftr"><button class="ghost" data-act="obprev">上一步</button><button class="pri" data-act="obnext">下一步</button></div>
+            </div>
+            <div class="ob-page" data-ob="3">
+              <div class="ob-img"><img src="shared/auto-guide/04.png" alt="" onerror="this.remove()"></div>
+              <div class="ob-body">
+                <div class="ob-title">结果一目了然</div>
+                <div class="ob-copy">实时报告命中、盈亏，并可随时急停或修改。</div>
+              </div>
+              <div class="ob-dots"><span></span><span></span><span class="on"></span></div>
+              <div class="ob-ftr"><button class="ghost" data-act="obprev">上一步</button><button class="pri" data-act="obclose">立即体验</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 自动投 · 轻提示 Toast -->
+        <div class="dashtoast" id="dashToast"></div>
+
+        <div class="quickslip">
+          <div class="quicktop"><span>长龙下注</span><b class="quickpick">冠军 大</b><button data-act="quickclose">×</button></div>
+          <div class="quickamt"><span>每注</span><input class="qamtin" type="number" value="30" inputmode="numeric"><div class="qchips"><span class="qamtchip on">30</span><span class="qamtchip">60</span><span class="qamtchip">90</span><span class="qamtchip">180</span></div></div>
+          <div class="quickfoot"><span>已选 1 注</span><button>确认下注</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+<script src="views/news.js?v=20260717b"></script>
+<script src="views/groups.js?v=20260717b"></script>
+<script src="views/me.js?v=20260717b"></script>
+<script src="views/game-bet.js?v=20260717b"></script>
+<script src="views/game-autos.js?v=20260720c"></script>
+<script src="views/game-chat.js?v=20260721c"></script>
+<script src="views/game-bust.js?v=20260720d"></script>
+<script src="views/wallet.js?v=20260720i"></script>
+<script src="views/admin.js?v=20260720i"></script>
+<script src="shared/app.js?v=20260721i"></script>
+</body>
+</html>

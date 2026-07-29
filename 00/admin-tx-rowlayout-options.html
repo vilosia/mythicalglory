@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>交易行 · 状态 / 时间位置对比</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared/styles.css?v=20260714d">
+<style>
+  body{margin:0;background:#EEF1F6;font-family:"Noto Sans SC",-apple-system,"PingFang SC",sans-serif;color:#1B2330;}
+  .wrap{max-width:1180px;margin:0 auto;padding:26px 16px 70px;}
+  h1{font-size:18px;font-weight:700;text-align:center;margin:0 0 4px;}
+  .sub{text-align:center;font-size:12.5px;color:#6b7488;margin:0 0 22px;line-height:1.6;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;align-items:start;}
+  .col{background:#fff;border:1px solid #DCE2EE;border-radius:16px;overflow:hidden;}
+  .col.rec{border-color:#126BFF;box-shadow:0 0 0 3px rgba(18,107,255,.12);}
+  .col h2{font-size:13.5px;font-weight:700;margin:0;padding:13px 16px 4px;display:flex;align-items:center;gap:8px;}
+  .tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;}
+  .tag.bad{background:#FDECEC;color:#C0392B;}
+  .tag.ok{background:#E7F0FF;color:#0B52CC;}
+  .col .why{font-size:11px;color:#7a8296;line-height:1.6;padding:0 16px 12px;margin:0;}
+  .col .why b{color:#1B2330;}
+  .list{border-top:1px solid #F0F1F3;}
+
+  /* 通用行骨架（不复用 .bi，独立可控） */
+  .row{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #F1F2F5;}
+  .row:last-child{border-bottom:none;}
+  .row .main{flex:1;min-width:0;}
+  .row .ttl{font-size:14px;font-weight:500;color:#1B2330;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .row .meta{font-size:10.5px;color:#9CA3AF;margin-top:3px;}
+  .row .amt{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;flex:none;}
+  .row .amt.pos{color:#16A34A;}
+  .rj{opacity:.55;}
+  /* 行内 pill（A/B 用真实 .stag） */
+  .l1{display:flex;align-items:center;min-width:0;}
+  .l1 .stag{flex:none;}
+
+  /* C：右列（金额 + 时间），左列（标题 + 状态文字） */
+  .row.c .right{flex:none;text-align:right;}
+  .row.c .right .tm{font-size:10.5px;color:#9CA3AF;margin-top:3px;}
+  .st{font-size:11px;font-weight:500;margin-top:4px;display:inline-flex;align-items:center;gap:4px;}
+  .st::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;}
+  .st.pd{color:#126BFF;}
+  .st.no{color:#8A93A6;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>交易行 · 状态标签 & 日期时间位置</h1>
+  <p class="sub">同样 3 笔记录（处理中 / 已完成 / 已拒绝），三种排布对比。「已完成」按现方案默认不显示标签。</p>
+
+  <div class="grid">
+
+    <!-- A 现状：前缀 -->
+    <div class="col">
+      <h2>A · 现状：标签在标题前 <span class="tag bad">对齐参差</span></h2>
+      <p class="why"><b>问题：</b>有标签的行标题被顶右，没标签的行贴左 —— 标题左缘参差，一列扫下来不齐。</p>
+      <div class="list">
+        <div class="row"><div class="main"><div class="ttl l1"><i class="stag pd">处理中</i>上分 · 王哥</div><div class="meta">2026/07/07 09:48</div></div><div class="amt">−20,000.00</div></div>
+        <div class="row"><div class="main"><div class="ttl l1">下分 · 吴先生</div><div class="meta">2026/07/07 09:12</div></div><div class="amt pos">+80,000.00</div></div>
+        <div class="row rj"><div class="main"><div class="ttl l1"><i class="stag no">已拒绝</i>上分 · 周先生</div><div class="meta">2026/07/05 16:30</div></div><div class="amt">−8,000.00</div></div>
+      </div>
+    </div>
+
+    <!-- B 标签在标题后 -->
+    <div class="col">
+      <h2>B · 标签在标题后</h2>
+      <p class="why">标题左缘对齐了，名字是锚点、状态作后缀。<b>代价：</b>标签横向位置随名字长短浮动；名字长时可能挤压金额。</p>
+      <div class="list">
+        <div class="row"><div class="main"><div class="ttl l1">上分 · 王哥&nbsp;<i class="stag pd">处理中</i></div><div class="meta">2026/07/07 09:48</div></div><div class="amt">−20,000.00</div></div>
+        <div class="row"><div class="main"><div class="ttl l1">下分 · 吴先生</div><div class="meta">2026/07/07 09:12</div></div><div class="amt pos">+80,000.00</div></div>
+        <div class="row rj"><div class="main"><div class="ttl l1">上分 · 周先生&nbsp;<i class="stag no">已拒绝</i></div><div class="meta">2026/07/05 16:30</div></div><div class="amt">−8,000.00</div></div>
+      </div>
+    </div>
+
+    <!-- C 推荐：状态下沉到第二行 + 紧凑时间靠右 -->
+    <div class="col rec">
+      <h2>C · 推荐：状态下沉，时间靠右 <span class="tag ok">推荐</span></h2>
+      <p class="why">第一行只剩「谁 / 做什么 + 金额」，左缘永远对齐。状态与时间同在第二行：<b>状态在左（小圆点+文字，不再是重色药丸），时间在右且紧凑</b>。完整时间戳留在详情页。</p>
+      <div class="list">
+        <div class="row c"><div class="main"><div class="ttl">上分 · 王哥</div><span class="st pd">处理中</span></div><div class="right"><div class="amt">−20,000.00</div><div class="tm">今天 09:48</div></div></div>
+        <div class="row c"><div class="main"><div class="ttl">下分 · 吴先生</div></div><div class="right"><div class="amt pos">+80,000.00</div><div class="tm">今天 09:12</div></div></div>
+        <div class="row c rj"><div class="main"><div class="ttl">上分 · 周先生</div><span class="st no">已拒绝 · 到账未核实</span></div><div class="right"><div class="amt">−8,000.00</div><div class="tm">07-05 16:30</div></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

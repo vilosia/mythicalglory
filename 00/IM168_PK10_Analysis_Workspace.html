@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f7fb">
+  <title>IM168 · 极速赛车趋势分析</title>
+  <style>
+    :root{
+      --blue:#246bfd;
+      --blue-700:#164fd2;
+      --blue-50:#edf4ff;
+      --ink:#161c2d;
+      --muted:#727b91;
+      --line:#e6e9f0;
+      --surface:#fff;
+      --page:#f5f6f9;
+      --green:#13a66a;
+      --green-50:#eaf8f1;
+      --red:#e04b52;
+      --red-50:#fff0f1;
+      --orange:#e99520;
+      --orange-50:#fff7e7;
+      --shadow:0 10px 30px rgba(28,40,72,.08);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:var(--page);
+      color:var(--ink);
+      font-family:Inter,"PingFang SC","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
+      font-size:14px;
+      line-height:1.45;
+    }
+    button,input,select{font:inherit}
+    button{cursor:pointer}
+    .shell{width:min(100%,430px);min-height:100vh;margin:0 auto;background:var(--page);padding-bottom:92px}
+    .app-header{
+      position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);
+      border-bottom:1px solid var(--line);backdrop-filter:blur(14px);
+    }
+    .header-top{height:56px;display:flex;align-items:center;gap:10px;padding:0 14px}
+    .icon-btn{width:40px;height:40px;border:0;border-radius:12px;background:transparent;color:var(--ink);font-size:25px}
+    .brand{
+      width:36px;height:36px;border-radius:11px;background:var(--blue);color:#fff;
+      display:grid;place-items:center;font-size:11px;font-weight:800;letter-spacing:-.5px;
+    }
+    .game-title{min-width:0;flex:1}
+    .game-title b{display:block;font-size:15px}
+    .game-title span{display:block;margin-top:1px;color:var(--muted);font-size:11px}
+    .balance{text-align:right}
+    .balance small{display:block;color:var(--muted);font-size:10px}
+    .balance b{font-size:13px;font-variant-numeric:tabular-nums}
+    .bell{position:relative;font-size:18px}
+    .bell::after{content:"";position:absolute;right:8px;top:8px;width:6px;height:6px;border-radius:50%;background:var(--red);border:2px solid #fff}
+    .scope-selector{padding:12px 14px 10px;background:#fff}
+    .scope-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .select-btn{
+      min-height:44px;padding:8px 11px;border:1px solid var(--line);border-radius:12px;
+      background:#f8f9fc;color:var(--ink);text-align:left;display:flex;align-items:center;justify-content:space-between;
+    }
+    .select-btn span{color:var(--muted);font-size:12px}
+    .select-btn b{display:block;margin-top:1px;font-size:13px}
+    .scope-summary{margin:8px 2px 0;color:var(--muted);font-size:11px}
+    .section{margin-top:10px;background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .section-head{display:flex;align-items:flex-start;gap:10px;padding:16px 14px 12px}
+    .section-head h2{font-size:17px;line-height:1.2;margin:0}
+    .section-head p{margin:4px 0 0;color:var(--muted);font-size:11px}
+    .head-side{margin-left:auto;text-align:right;color:var(--muted);font-size:11px}
+    .condition{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:8px;background:var(--blue-50);color:var(--blue-700);font-weight:700}
+    .play-tabs{display:flex;padding:0 14px;border-bottom:1px solid var(--line)}
+    .play-tab{
+      flex:1;min-height:44px;border:0;background:transparent;color:var(--muted);position:relative;font-weight:600;
+    }
+    .play-tab.on{color:var(--blue)}
+    .play-tab.on::after{content:"";position:absolute;left:24%;right:24%;bottom:-1px;height:3px;border-radius:3px 3px 0 0;background:var(--blue)}
+    .road-list{padding:10px 10px 4px;background:#f6f7fa}
+    .road-card{margin-bottom:10px;border:1px solid var(--line);border-radius:14px;background:#fff;overflow:hidden;box-shadow:0 3px 12px rgba(28,40,72,.04)}
+    .road-title{display:flex;align-items:center;padding:11px 12px 9px}
+    .road-title b{font-size:14px}
+    .road-title span{margin-left:7px;color:var(--muted);font-size:11px}
+    .road-title .arrow{margin-left:auto;color:#9aa2b4;font-size:18px}
+    .live-tag{margin-left:auto!important;padding:4px 7px;border-radius:8px;background:var(--orange-50);color:var(--orange)!important;font-weight:700}
+    .road-scroll{overflow-x:auto;padding:0 12px 9px;scrollbar-width:none}
+    .road-scroll::-webkit-scrollbar{display:none}
+    .road-grid{
+      display:grid;grid-auto-flow:column;grid-template-rows:repeat(6,25px);grid-auto-columns:25px;
+      gap:3px;width:max-content;min-width:100%;
+    }
+    .road-dot{
+      width:25px;height:25px;border-radius:50%;display:grid;place-items:center;
+      border:2px solid currentColor;background:#fff;font-size:10px;font-weight:800;position:relative;
+    }
+    .road-dot.a{color:var(--red);background:var(--red-50)}
+    .road-dot.b{color:var(--blue);background:var(--blue-50)}
+    .road-dot.trigger::after{
+      content:"";position:absolute;right:-2px;bottom:-2px;width:7px;height:7px;border-radius:50%;
+      background:var(--green);border:2px solid #fff;
+    }
+    .road-dot.pending::after{background:var(--orange)}
+    .road-result{display:flex;align-items:center;gap:9px;padding:9px 12px;border-top:1px solid #f0f1f5;color:var(--muted);font-size:11px}
+    .road-result strong{color:var(--ink)}
+    .road-result .hit{color:var(--green)}
+    .road-result .miss{color:var(--red)}
+    .road-result .pending-text{color:var(--orange)}
+    .road-result .spacer{flex:1}
+    .empty{display:none;padding:42px 20px;text-align:center;color:var(--muted)}
+    .empty b{display:block;color:var(--ink);font-size:15px;margin-bottom:7px}
+    .sum-divider{padding:10px 12px 4px;color:var(--muted);font-size:11px;font-weight:700}
+    .overview-body{padding:0 14px 16px}
+    .overview-main{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .metric{padding:11px 10px;border-radius:12px;background:#f7f8fb}
+    .metric span{display:block;color:var(--muted);font-size:10px}
+    .metric b{display:block;margin-top:3px;font-size:20px;font-variant-numeric:tabular-nums}
+    .metric.green b{color:var(--green)}
+    .metric.red b{color:var(--red)}
+    .metric.orange b{color:var(--orange)}
+    .fact-list{margin-top:12px;border-top:1px solid var(--line)}
+    .fact{display:flex;justify-content:space-between;padding:10px 1px;border-bottom:1px solid var(--line);font-size:12px}
+    .fact span{color:var(--muted)}
+    .filter-head{display:flex;align-items:center;margin-top:15px}
+    .filter-head b{font-size:13px}
+    .filter-head button{margin-left:auto;border:0;background:transparent;color:var(--blue);font-size:12px}
+    .chips{display:flex;gap:7px;overflow-x:auto;padding:9px 0 2px;scrollbar-width:none}
+    .chip{flex:0 0 auto;min-height:36px;padding:7px 11px;border:1px solid var(--line);border-radius:18px;background:#fff;color:#586178}
+    .chip.on{border-color:#aac7ff;background:var(--blue-50);color:var(--blue-700);font-weight:700}
+    .filtered-count{margin-top:10px;padding:9px 10px;border-radius:10px;background:#f7f8fb;color:var(--muted);font-size:11px}
+    .filtered-count b{color:var(--ink)}
+    .settings{padding:0 14px 16px}
+    .setting{padding:13px 0;border-top:1px solid var(--line)}
+    .setting:first-child{border-top:0}
+    .setting-label{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
+    .setting-label b{font-size:13px}
+    .setting-label span{color:var(--muted);font-size:10px}
+    .segment{display:flex;gap:6px}
+    .segment button{
+      flex:1;min-height:40px;border:1px solid var(--line);border-radius:10px;background:#f8f9fb;color:#616a80;
+    }
+    .segment button.on{border-color:var(--blue);background:var(--blue-50);color:var(--blue-700);font-weight:700}
+    .bet-input{display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;background:#f8f9fb;overflow:hidden}
+    .bet-input input{min-width:0;flex:1;height:42px;border:0;background:transparent;padding:0 12px;outline:0;font-weight:700}
+    .bet-input span{padding:0 12px;color:var(--muted);font-size:11px}
+    .dirty-bar{display:none;align-items:center;gap:8px;margin-top:13px;padding:10px;border-radius:11px;background:var(--orange-50);color:#996314;font-size:11px}
+    .dirty-bar.show{display:flex}
+    .dirty-bar .spacer{flex:1}
+    .dirty-bar button{min-height:34px;border:0;border-radius:9px;padding:0 11px}
+    .reset{background:transparent;color:#7c6541}
+    .recalc{background:var(--blue);color:#fff;font-weight:700}
+    .next-actions{padding:16px 14px 22px}
+    .action-note{margin:0 0 12px;color:var(--muted);font-size:11px}
+    .main-action,.secondary-action{width:100%;min-height:50px;border-radius:13px;font-weight:800}
+    .main-action{border:0;background:var(--blue);color:#fff;box-shadow:0 8px 18px rgba(36,107,253,.22)}
+    .secondary-action{margin-top:9px;border:1px solid #bfd2ff;background:#fff;color:var(--blue-700)}
+    .sticky-actions{
+      position:fixed;z-index:18;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,430px);
+      display:flex;align-items:center;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+      background:rgba(255,255,255,.96);border-top:1px solid var(--line);backdrop-filter:blur(14px);
+    }
+    .sticky-summary{min-width:0;flex:1;border:0;background:transparent;text-align:left;padding:0}
+    .sticky-summary b{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sticky-summary span{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+    .sticky-actions>button:not(.sticky-summary){height:42px;border-radius:11px;padding:0 13px;font-weight:800}
+    .sticky-demo{border:0;background:var(--blue);color:#fff}
+    .sticky-save{border:1px solid #c8d8ff;background:#fff;color:var(--blue-700)}
+    .sheet-wrap{position:fixed;inset:0;z-index:50;display:none;align-items:flex-end;justify-content:center}
+    .sheet-wrap.show{display:flex}
+    .backdrop{position:absolute;inset:0;background:rgba(15,21,35,.48)}
+    .sheet{
+      position:relative;width:min(100%,430px);max-height:86vh;overflow:auto;background:#fff;
+      border-radius:22px 22px 0 0;padding:8px 16px calc(18px + env(safe-area-inset-bottom));
+      animation:slideUp .22s ease-out;
+    }
+    @keyframes slideUp{from{transform:translateY(30px);opacity:.3}}
+    .handle{width:38px;height:4px;border-radius:4px;background:#d7dbe4;margin:3px auto 13px}
+    .sheet-title{display:flex;align-items:center;margin-bottom:12px}
+    .sheet-title b{font-size:17px}
+    .sheet-title button{margin-left:auto;width:38px;height:38px;border:0;border-radius:11px;background:#f3f4f7;font-size:18px}
+    .option-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .option{
+      min-height:44px;border:1px solid var(--line);border-radius:11px;background:#fff;text-align:left;padding:0 11px;
+    }
+    .option.on{border-color:var(--blue);background:var(--blue-50);color:var(--blue-700);font-weight:700}
+    .sheet-apply{width:100%;min-height:48px;border:0;border-radius:13px;background:var(--blue);color:#fff;font-weight:800;margin-top:16px}
+    .save-summary{border:1px solid var(--line);border-radius:13px;overflow:hidden}
+    .save-row{display:flex;justify-content:space-between;gap:20px;padding:10px 12px;border-bottom:1px solid var(--line);font-size:12px}
+    .save-row:last-child{border:0}
+    .save-row span{color:var(--muted)}
+    .name-input{width:100%;height:46px;margin-bottom:12px;padding:0 12px;border:1px solid var(--line);border-radius:11px;outline:0}
+    .radio-row{display:flex;gap:8px;margin-top:12px}
+    .radio-option{flex:1;min-height:50px;border:1px solid var(--line);border-radius:11px;background:#fff}
+    .radio-option.on{border-color:var(--blue);background:var(--blue-50);color:var(--blue-700);font-weight:700}
+    .loading{position:fixed;inset:0;z-index:60;display:none;place-items:center;background:rgba(255,255,255,.75);backdrop-filter:blur(4px)}
+    .loading.show{display:grid}
+    .loading-box{padding:18px 22px;border-radius:15px;background:#fff;box-shadow:var(--shadow);text-align:center}
+    .spinner{width:28px;height:28px;margin:0 auto 10px;border:3px solid #dce7ff;border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .toast{
+      position:fixed;z-index:70;left:50%;bottom:88px;transform:translate(-50%,18px);
+      width:min(calc(100% - 28px),402px);padding:12px 14px;border-radius:12px;background:#172033;color:#fff;
+      opacity:0;pointer-events:none;transition:.2s;font-size:12px;box-shadow:var(--shadow);
+    }
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    @media (min-width:700px){
+      body{padding:24px 0}
+      .shell{border-radius:24px;overflow:hidden;box-shadow:0 24px 70px rgba(26,38,70,.13)}
+      .app-header{top:24px}
+      .sticky-actions{bottom:24px;border:1px solid var(--line);border-radius:16px}
+      .sheet{margin-bottom:24px;border-radius:22px}
+    }
+
+    /* v2：Road-first 密集工作台 */
+    .shell{padding-bottom:74px}
+    .scope-selector{padding-top:8px;padding-bottom:8px}
+    .scope-summary{display:none}
+    .road-wall{margin-top:0;border-top:0}
+    .road-wall>.section-head{padding:11px 12px 8px}
+    .road-wall>.section-head h2{font-size:15px}
+    .road-wall>.section-head p{margin-top:2px;font-size:10px}
+    .road-wall .play-tabs{display:none}
+    .road-list{
+      display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:6px;padding:7px;background:#eef1f6;
+    }
+    .road-list[hidden]{display:none!important}
+    .road-group-title{
+      grid-column:1/-1;display:flex;align-items:center;gap:7px;
+      position:sticky;top:128px;z-index:8;height:31px;margin:1px -1px;
+      padding:0 8px;border:1px solid #dfe4ed;border-radius:9px;
+      background:rgba(249,250,252,.96);backdrop-filter:blur(10px);
+    }
+    .road-group-title b{font-size:12px}
+    .road-group-title span{color:var(--muted);font-size:10px}
+    .road-group-title i{margin-left:auto;color:var(--muted);font-size:10px;font-style:normal}
+    .compact-road{
+      min-width:0;margin:0;border:1px solid #dfe3eb;border-radius:10px;
+      background:#fff;overflow:hidden;
+    }
+    .compact-head{height:28px;display:flex;align-items:center;gap:5px;padding:0 7px;border-bottom:1px solid #eef0f4}
+    .compact-head b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
+    .compact-head .rule{margin-left:auto;color:var(--muted);font-size:10px;white-space:nowrap}
+    .compact-head .live-dot{width:6px;height:6px;border-radius:50%;background:var(--orange);box-shadow:0 0 0 2px var(--orange-50)}
+    .compact-road .road-scroll{padding:6px 7px 5px;overflow-x:auto}
+    .compact-road .road-grid{
+      grid-template-rows:repeat(6,13px);grid-auto-columns:13px;gap:2px;min-width:max-content;
+    }
+    .compact-road .road-dot{
+      width:13px;height:13px;border-width:1px;font-size:10px;line-height:1;
+    }
+    .compact-road .road-dot.trigger::after{
+      right:-2px;bottom:-2px;width:4px;height:4px;border-width:1px;
+    }
+    .compact-stats{
+      height:24px;display:flex;align-items:center;gap:5px;padding:0 7px;
+      border-top:1px solid #f0f1f4;color:var(--muted);font-size:10px;white-space:nowrap;
+    }
+    .compact-stats b{color:var(--ink)}
+    .compact-stats .hit{color:var(--green)}
+    .compact-stats .miss{color:var(--red)}
+    .compact-stats .wait{margin-left:auto;color:var(--orange)}
+    .empty{grid-column:1/-1}
+    .result-overview,.validation-settings,.next-actions{margin-top:0;border:0}
+    .control-tabs{display:flex;gap:6px;margin-bottom:6px;padding:0 2px}
+    .control-tab{
+      flex:1;height:42px;border:1px solid var(--line);border-radius:11px;background:#f7f8fb;color:var(--muted);font-weight:700;
+    }
+    .control-tab.on{border-color:var(--blue);background:var(--blue-50);color:var(--blue-700)}
+    .control-pane{display:none}
+    .control-pane.on{display:block}
+    #controlSheet .sheet{padding-left:10px;padding-right:10px}
+    #controlSheet .section-head{padding-left:4px;padding-right:4px}
+    #controlSheet .overview-body,#controlSheet .settings,#controlSheet .next-actions{padding-left:4px;padding-right:4px}
+    .sticky-actions{gap:6px;padding-top:8px;padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+    .sticky-summary{
+      display:flex;flex-direction:column;justify-content:center;min-height:42px;
+      padding:0 8px;border-radius:10px;background:#f3f5f9;
+    }
+    .sticky-actions>button:not(.sticky-summary){padding:0 11px}
+    .sticky-settings{border:1px solid #d9dfeb;background:#fff;color:var(--ink)}
+    @media (max-width:360px){
+      .road-list{grid-template-columns:1fr}
+      .road-group-title{top:128px}
+    }
+
+    /* v3：单列 Road + 直接可见的查看范围 */
+    .scope-selector{display:flex;flex-direction:column;gap:7px}
+    .scope-toggle-row{height:25px;display:flex;align-items:center}
+    .scope-toggle-row b{font-size:11px}
+    .scope-toggle-row button{margin-left:auto;border:0;background:transparent;color:var(--blue);font-size:10px}
+    .scope-selector.collapsed .scope-line{display:none}
+    .scope-selector.collapsed .scope-summary{display:block;margin:0;color:var(--ink)}
+    .scope-line{display:grid;grid-template-columns:34px minmax(0,1fr);align-items:start;gap:6px}
+    .scope-name{padding-top:8px;color:var(--muted);font-size:10px;font-weight:700}
+    .inline-play{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+    .inline-ranks{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
+    .scope-chip{
+      min-width:0;height:32px;padding:0 3px;border:1px solid var(--line);border-radius:8px;
+      background:#f7f8fb;color:#626b80;font-size:10px;white-space:nowrap;
+    }
+    .inline-play .scope-chip{height:36px;font-size:12px;font-weight:700}
+    .scope-chip.on{border-color:#9ebeff;background:var(--blue-50);color:var(--blue-700);font-weight:700}
+    .road-list{grid-template-columns:1fr}
+    .compact-road{border-radius:11px}
+    .compact-head{height:38px;padding:0 10px}
+    .head-main{min-width:0;display:flex;align-items:center;gap:5px}
+    .head-main b{font-size:12px}
+    .head-main span{color:var(--muted);font-size:10px}
+    .head-stats{margin-left:auto;display:flex;align-items:center;gap:8px;text-align:right;white-space:nowrap}
+    .head-stats b{display:block;font-size:10px}
+    .head-stats span{display:block;margin:0;font-size:10px}
+    .head-stats i{font-style:normal}
+    .play-badge{
+      padding:2px 6px;border-radius:6px;background:var(--blue-50);
+      color:var(--blue-700)!important;font-size:10px!important;font-weight:800;font-style:normal;
+    }
+    .head-stats .hit{color:var(--green)}
+    .head-stats .miss{margin-left:5px;color:var(--red)}
+    .head-stats .wait{margin-left:5px;color:var(--orange)}
+    .compact-road .road-scroll{padding:7px 10px 8px}
+    .compact-road .road-grid{
+      display:grid;grid-auto-flow:initial;grid-template-rows:repeat(6,18px);
+      grid-template-columns:repeat(var(--cols),minmax(18px,1fr));gap:3px;width:100%;
+    }
+    .compact-road .road-dot{width:18px;height:18px;font-size:10px;justify-self:center}
+    .compact-road .road-dot.a{background:var(--red);border-color:var(--red);color:transparent}
+    .compact-road .road-dot.b{background:var(--blue);border-color:var(--blue);color:transparent}
+    .compact-road .road-dot.trigger{box-shadow:0 0 0 2px var(--green)}
+    .compact-road .road-dot.trigger::after{
+      content:"T";right:-5px;bottom:-5px;width:10px;height:10px;border:1px solid #fff;
+      display:grid;place-items:center;color:#fff;font-size:10px;font-style:normal;font-weight:900;
+    }
+    .compact-stats{display:none}
+    .sheet{scrollbar-width:none}
+    .sheet::-webkit-scrollbar{display:none;width:0;height:0}
+    .strategy-preview{
+      width:100%;min-height:48px;border:0;border-radius:12px;background:#f3f6fb;
+      display:flex;align-items:center;gap:10px;padding:7px 11px;text-align:left;
+    }
+    .strategy-preview .preview-mark{width:30px;height:30px;border-radius:9px;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:900}
+    .strategy-preview .preview-copy{min-width:0;flex:1}
+    .strategy-preview b{display:block;font-size:12px}
+    .strategy-preview span{display:block;margin-top:2px;color:var(--muted);font-size:10px}
+    .strategy-preview .preview-arrow{color:var(--blue);font-size:18px}
+    .sticky-actions>button:not(.sticky-summary).strategy-preview{height:50px;padding:7px 11px}
+    #controlSheet .next-actions{padding-top:12px;border-top:1px solid var(--line)}
+    #controlSheet .next-actions h2,#controlSheet .next-actions .action-note{display:none}
+
+    /* v4：避免顶部覆盖；Drawer 固定双 CTA */
+    .app-header{position:relative;top:0;padding-top:env(safe-area-inset-top)}
+    #controlSheet .sheet{
+      height:min(86vh,720px);max-height:86vh;overflow:hidden;
+      display:flex;flex-direction:column;padding-bottom:calc(10px + env(safe-area-inset-bottom));
+    }
+    #controlSheet .control-pane.on{
+      display:block;flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;
+    }
+    #controlSheet .control-pane::-webkit-scrollbar{display:none;width:0;height:0}
+    #drawerActions{flex:0 0 auto;background:#fff;padding-top:8px}
+    #controlSheet .next-actions{
+      display:grid;grid-template-columns:1fr 1fr;gap:8px;
+      margin:0;padding:8px 4px 0;border:0;border-top:1px solid var(--line);
+      background:#fff;
+    }
+    #controlSheet .main-action,#controlSheet .secondary-action{
+      min-height:48px;margin:0;padding:0 8px;font-size:12px;
+    }
+    .quick-strategy{
+      width:100%;height:52px;display:flex;align-items:center;
+      border:1px solid #dbe2ee;border-radius:13px;background:#f7f9fc;overflow:hidden;
+    }
+    .quick-title{
+      width:54px;align-self:stretch;display:grid;place-items:center;
+      border-right:1px solid var(--line);background:#fff;color:var(--ink);
+      font-size:10px;font-weight:900;line-height:1.2;text-align:center;
+    }
+    .mini-adjust{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:5px}
+    .mini-adjust+.mini-adjust{border-left:1px solid var(--line)}
+    .mini-adjust>span{font-size:10px;font-weight:900;color:var(--blue-700);white-space:nowrap}
+    .mini-adjust button{
+      width:28px;height:32px;border:0;border-radius:8px;background:#e9eef7;color:#536078;
+      font-size:17px;line-height:1;
+    }
+    .mini-adjust b{width:20px;text-align:center;font-size:14px}
+    .drawer-arrow{
+      align-self:stretch;width:54px;border:0;border-left:1px solid #dbe2ee;
+      background:#fff;color:var(--blue);font-size:22px;
+    }
+    /* v5：Sticky 查询范围 + 即时历史策略验证 */
+    .scope-selector{
+      position:sticky;top:0;z-index:25;border-bottom:1px solid var(--line);
+      box-shadow:0 8px 18px -16px rgba(24,38,68,.5);
+    }
+    #controlSheet .control-tabs,#overviewPane{display:none!important}
+    #controlSheet #settingsPane{display:block}
+    #controlSheet .dirty-bar{display:none!important}
+    #controlSheet .result-overview .filter-head,
+    #controlSheet .result-overview .chips,
+    #controlSheet .result-overview .filtered-count{display:none}
+    #controlSheet .result-overview .head-side span{display:none}
+    #controlSheet .result-overview{margin-top:8px;border-top:8px solid var(--page)}
+    #controlSheet .result-overview .section-head{padding-top:13px}
+    .risk-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .risk-field span:first-child{display:block;padding:0 0 5px;color:var(--muted);font-size:10px}
+    .multiplier-setting[hidden]{display:none!important}
+    /* v6：真实移动 Web 画布，解除外层裁切以保证 Sticky */
+    body{padding:0!important}
+    .shell{
+      width:min(100%,430px);min-height:100dvh;border-radius:0!important;
+      box-shadow:none!important;overflow:visible!important;
+    }
+    .scope-selector{
+      position:-webkit-sticky;position:sticky!important;top:0!important;z-index:40;
+    }
+    .sticky-actions{bottom:0!important;border-radius:0!important}
+    .sheet{margin-bottom:0!important;border-radius:22px 22px 0 0!important}
+    .drawer-range{margin:0 4px 8px;width:calc(100% - 8px);flex:0 0 52px}
+    #strategyParamsMount .validation-settings{margin:0 4px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+    #strategyParamsMount .validation-settings>.section-head,
+    #strategyParamsMount .sm-setting{display:none}
+    #historyResultMount .result-overview{
+      margin:10px 4px 4px;border:1px solid #d9e3f3;border-radius:13px;
+      overflow:hidden;background:#f3f6fb;
+    }
+    #historyResultMount .result-overview .section-head{background:#edf3fc;border-bottom:1px solid #d9e3f3}
+    #historyResultMount .overview-body{background:#f6f8fc;padding-top:12px}
+    #historyResultMount .metric{background:#fff;border:1px solid #e1e7f0}
+    .readonly-title{display:flex;align-items:center;gap:7px}
+    .readonly-title span{padding:2px 6px;border-radius:6px;background:#dbe7f8;color:#536987;font-size:10px;font-weight:800}
+    .history-dropdown select{
+      height:34px;padding:0 25px 0 9px;border:1px solid #c8d4e6;border-radius:9px;
+      background:#fff;color:var(--ink);font-size:11px;font-weight:700;
+    }
+    @media (max-width:360px){
+      .inline-ranks{grid-template-columns:repeat(4,minmax(0,1fr))}
+      .road-group-title{top:220px}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell analysis-workspace">
+    <header class="app-header">
+      <div class="header-top">
+        <button class="icon-btn" aria-label="返回">‹</button>
+        <div class="brand">IM</div>
+        <div class="game-title">
+          <b>极速赛车 PK10</b>
+          <span>第 1096523 期 · <strong id="countdown">00:45</strong> 后开奖</span>
+        </div>
+        <div class="balance"><small>余额</small><b>12,450.00</b></div>
+        <button class="icon-btn bell" aria-label="通知">♢</button>
+      </div>
+    </header>
+    <section class="scope-selector" aria-label="查看范围">
+        <div class="scope-toggle-row"><b>查看范围</b><button id="toggleScope" aria-expanded="true">收起⌃</button></div>
+        <div class="scope-line">
+          <span class="scope-name">玩法</span>
+          <div class="inline-play" id="inlinePlay">
+            <button class="scope-chip on" data-inline-play="全部">全部</button>
+            <button class="scope-chip on" data-inline-play="大小">大小</button>
+            <button class="scope-chip on" data-inline-play="单双">单双</button>
+            <button class="scope-chip on" data-inline-play="龙虎">龙虎</button>
+          </div>
+        </div>
+        <div class="scope-line">
+          <span class="scope-name">名次</span>
+          <div class="inline-ranks" id="inlineRanks"></div>
+        </div>
+        <span id="rankLabel" hidden>全部名次</span><span id="playLabel" hidden>全部玩法</span>
+        <div class="scope-summary" id="scopeSummary">全部名次 · 大小 / 单双 / 龙虎</div>
+    </section>
+
+    <section class="section road-wall">
+      <header class="section-head">
+        <div><h2>Road Wall</h2><p id="triggerExplain">绿色 T = S2 开始观察，连续满足 M4 时触发</p></div>
+        <div class="head-side"><span class="condition" id="conditionTop">S2 · M4</span><br><span id="historyTop">近 50 期</span></div>
+      </header>
+      <nav class="play-tabs" aria-label="玩法切换">
+        <button class="play-tab on" data-play="大小">大小</button>
+        <button class="play-tab" data-play="单双">单双</button>
+        <button class="play-tab" data-play="龙虎">龙虎</button>
+      </nav>
+      <div class="road-list" id="roadList"></div>
+      <div class="empty" id="emptyState"><b>没有 Road 符合当前筛选条件</b><span>可清除筛选，继续查看完整 Road。</span><br><button class="chip" id="clearEmpty" style="margin-top:14px">清除筛选</button></div>
+    </section>
+
+    <section class="section result-overview">
+      <header class="section-head">
+        <div><div class="readonly-title"><h2>历史模拟结果</h2><span>只读</span></div><p id="simulationSubtitle">完整策略应用于过去 50 期的即时验证</p></div>
+        <div class="head-side">
+          <label class="history-dropdown"><select id="historySelect" aria-label="历史范围"><option value="30">近 30 期</option><option value="50" selected>近 50 期</option><option value="100">近 100 期</option></select></label>
+          <b id="overviewRoadCount" hidden>全部 21 条</b><span id="filteredRoadCount" hidden>筛选后 21 条</span>
+        </div>
+      </header>
+      <div class="overview-body">
+        <div class="overview-main">
+          <div class="metric"><span>总 Trigger</span><b id="totalTriggers">64</b></div>
+          <div class="metric green"><span>中</span><b id="totalHits">39</b></div>
+          <div class="metric" id="profitMetric"><span>模拟盈亏</span><b id="simulatedProfit">+0</b></div>
+        </div>
+        <div class="fact-list">
+          <div class="fact"><span>分析范围</span><b id="overviewHistory">近 50 期</b></div>
+          <div class="fact"><span>当前条件</span><b id="overviewCondition">S2 · M4</b></div>
+          <div class="fact"><span>投注设置</span><b id="overviewBet">跟投 · Round 3 · 底注 100</b></div>
+        </div>
+        <div class="filter-head"><b>快速筛选</b><button id="clearFilters">清除</button></div>
+        <div class="chips">
+          <button class="chip" data-filter="trigger">触发 ≥ 5</button>
+          <button class="chip" data-filter="hit">中 ≥ 3</button>
+          <button class="chip" data-filter="miss">不中 ≤ 2</button>
+          <button class="chip" data-filter="current">当前触发中</button>
+        </div>
+        <div class="filtered-count">保留原始总数，并实时显示筛选后的 Road 数量。</div>
+      </div>
+    </section>
+
+    <section class="section validation-settings" id="settings">
+      <header class="section-head">
+        <div><h2>更多策略参数</h2><p id="drawerCondition">基于 S2 · M4 的 Trigger 继续验证</p></div>
+      </header>
+      <div class="settings">
+        <div class="setting sm-setting">
+          <div class="setting-label"><b>最低长龙</b><span>达到该连续期数后开始触发</span></div>
+          <div class="segment" data-setting="s">
+            <button data-value="1">1 期</button><button class="on" data-value="2">2 期</button><button data-value="3">3 期</button><button data-value="4">4 期</button>
+          </div>
+        </div>
+        <div class="setting sm-setting">
+          <div class="setting-label"><b>最高长龙</b><span>超过该连续期数后停止触发</span></div>
+          <div class="segment" data-setting="m">
+            <button data-value="2">2 期</button><button data-value="3">3 期</button><button class="on" data-value="4">4 期</button><button data-value="5">5 期</button><button data-value="6">6 期</button>
+          </div>
+        </div>
+        <div class="setting">
+          <div class="setting-label"><b>Round</b><span>每次 Trigger 后执行回合数</span></div>
+          <div class="segment" data-setting="round">
+            <button data-value="1">1</button><button data-value="2">2</button><button class="on" data-value="3">3</button><button data-value="5">5</button><button data-value="10">10</button>
+          </div>
+        </div>
+        <div class="setting">
+          <div class="setting-label"><b>底注</b><span>额度单位 · 必须大于 0</span></div>
+          <label class="bet-input"><input id="baseBet" type="number" inputmode="numeric" min="1" value="100"><span>额度</span></label>
+        </div>
+        <div class="setting">
+          <div class="setting-label"><b>投注方向</b><span>跟随或反向于 Trigger</span></div>
+          <div class="segment" data-setting="direction">
+            <button class="on" data-value="跟投">跟投</button><button data-value="反投">反投</button>
+          </div>
+        </div>
+        <div class="setting">
+          <div class="setting-label"><b>金额模式</b><span>每回合固定，或未中后按倍数递增</span></div>
+          <div class="segment" data-setting="stakeMode">
+            <button class="on" data-value="fixed">固定金额</button><button data-value="martingale">倍投</button>
+          </div>
+        </div>
+        <div class="setting multiplier-setting" id="multiplierSetting" hidden>
+          <div class="setting-label"><b>倍投倍数</b><span>每次未中后的金额倍数</span></div>
+          <div class="segment" data-setting="multiplier">
+            <button data-value="1.5">1.5×</button><button class="on" data-value="2">2×</button><button data-value="3">3×</button>
+          </div>
+        </div>
+        <div class="setting">
+          <div class="setting-label"><b>止盈止损</b><span>达到任一条件后停止历史模拟</span></div>
+          <div class="risk-grid">
+            <label class="risk-field"><span>止盈</span><span class="bet-input"><input id="takeProfit" type="number" inputmode="numeric" min="1" value="500"></span></label>
+            <label class="risk-field"><span>止损</span><span class="bet-input"><input id="stopLoss" type="number" inputmode="numeric" min="1" value="500"><span>额度</span></span></label>
+          </div>
+        </div>
+        <div class="dirty-bar" id="dirtyBar"><b>参数已修改</b><span class="spacer"></span><button class="reset" id="resetSettings">重置</button><button class="recalc" id="recalculate">重新计算</button></div>
+      </div>
+    </section>
+
+    <section class="section next-actions">
+      <h2 style="margin:0 0 5px;font-size:17px">下一步</h2>
+      <p class="action-note">先用 Demo 观察未来表现，或将当前参数保存为策略交给 Robot。</p>
+      <button class="main-action" data-demo>Demo 验证</button>
+      <button class="secondary-action" data-open="saveSheet">保存并运行策略</button>
+    </section>
+  </main>
+
+  <div class="sticky-actions">
+    <div class="quick-strategy" aria-label="快速策略设置">
+      <div class="quick-title">策略<br>设置</div>
+      <div class="mini-adjust"><span>最低<br>长龙</span><button data-sm-key="s" data-sm-delta="-1" aria-label="减少最低长龙">−</button><b id="quickS">2</b><button data-sm-key="s" data-sm-delta="1" aria-label="增加最低长龙">＋</button></div>
+      <div class="mini-adjust"><span>最高<br>长龙</span><button data-sm-key="m" data-sm-delta="-1" aria-label="减少最高长龙">−</button><b id="quickM">4</b><button data-sm-key="m" data-sm-delta="1" aria-label="增加最高长龙">＋</button></div>
+      <button class="drawer-arrow" id="openOverview" aria-label="展开策略筛选与设置">⌃</button>
+    </div>
+  </div>
+
+  <div class="sheet-wrap" id="rankSheet">
+    <div class="backdrop" data-close></div>
+    <section class="sheet">
+      <div class="handle"></div><div class="sheet-title"><b>选择名次</b><button data-close>×</button></div>
+      <div class="option-list" id="rankOptions"></div>
+      <button class="sheet-apply" data-apply="rank">应用名次范围</button>
+    </section>
+  </div>
+  <div class="sheet-wrap" id="playSheet">
+    <div class="backdrop" data-close></div>
+    <section class="sheet">
+      <div class="handle"></div><div class="sheet-title"><b>选择玩法</b><button data-close>×</button></div>
+      <div class="option-list" id="playOptions"></div>
+      <button class="sheet-apply" data-apply="play">应用玩法范围</button>
+    </section>
+  </div>
+  <div class="sheet-wrap" id="saveSheet">
+    <div class="backdrop" data-close></div>
+    <section class="sheet">
+      <div class="handle"></div><div class="sheet-title"><b>保存策略</b><button data-close>×</button></div>
+      <input class="name-input" id="strategyName" value="PK10 趋势验证 01" aria-label="策略名称">
+      <div class="save-summary">
+        <div class="save-row"><span>Road 范围</span><b id="saveScope">全部名次 · 全部玩法</b></div>
+        <div class="save-row"><span>触发条件</span><b id="saveCondition">S2 · M4</b></div>
+        <div class="save-row"><span>执行设置</span><b id="saveExecution">Round 3 · 底注 100</b></div>
+        <div class="save-row"><span>方向 / 历史</span><b id="saveDirection">跟投 · 近 50 期</b></div>
+      </div>
+      <div class="radio-row">
+        <button class="radio-option" data-run="false">仅保存，暂不运行</button>
+        <button class="radio-option on" data-run="true">保存后立即运行</button>
+      </div>
+      <button class="sheet-apply" id="confirmSave">确认保存</button>
+    </section>
+  </div>
+  <div class="sheet-wrap" id="controlSheet">
+    <div class="backdrop" data-close></div>
+    <section class="sheet">
+      <div class="handle"></div>
+      <div class="sheet-title"><b>策略验证</b><button data-close>×</button></div>
+      <div class="control-tabs">
+        <button class="control-tab on" data-control-tab="overviewPane">结果筛选</button>
+        <button class="control-tab" data-control-tab="settingsPane">策略参数</button>
+      </div>
+      <div class="control-pane" id="overviewPane"></div>
+      <div class="control-pane on" id="settingsPane">
+        <div class="drawer-range quick-strategy" aria-label="长龙范围">
+          <div class="mini-adjust"><span>最低<br>长龙</span><button data-sm-key="s" data-sm-delta="-1" aria-label="减少最低长龙">−</button><b id="drawerQuickS">2</b><button data-sm-key="s" data-sm-delta="1" aria-label="增加最低长龙">＋</button></div>
+          <div class="mini-adjust"><span>最高<br>长龙</span><button data-sm-key="m" data-sm-delta="-1" aria-label="减少最高长龙">−</button><b id="drawerQuickM">4</b><button data-sm-key="m" data-sm-delta="1" aria-label="增加最高长龙">＋</button></div>
+        </div>
+        <div id="strategyParamsMount"></div>
+        <div id="historyResultMount"></div>
+      </div>
+      <div id="drawerActions"></div>
+    </section>
+  </div>
+
+  <div class="loading" id="loading"><div class="loading-box"><div class="spinner"></div><b id="loadingText">正在重新计算…</b></div></div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const ranks = ["冠军","亚军","第三名","第四名","第五名","第六名","第七名","第八名","第九名","第十名","冠亚和"];
+    const dragonRanks = ["冠军 vs 第十名","亚军 vs 第九名","第三名 vs 第八名","第四名 vs 第七名","第五名 vs 第六名"];
+    const plays = ["大小","单双","龙虎"];
+    const state = {
+      play:"大小",
+      selectedRanks:new Set(ranks),
+      selectedPlays:new Set(plays),
+      filters:new Set(),
+      applied:{s:2,m:4,round:3,baseBet:100,direction:"跟投",history:50,stakeMode:"fixed",multiplier:2,takeProfit:500,stopLoss:500},
+      draft:{s:2,m:4,round:3,baseBet:100,direction:"跟投",history:50,stakeMode:"fixed",multiplier:2,takeProfit:500,stopLoss:500},
+      runAfterSave:true,
+      variant:0
+    };
+
+    const $ = (s, root=document) => root.querySelector(s);
+    const $$ = (s, root=document) => [...root.querySelectorAll(s)];
+    const seed = (text) => [...text].reduce((a,c)=>((a*31+c.charCodeAt(0))>>>0),2166136261) + state.variant*97;
+    const roadData = (name, play) => {
+      const max = state.applied.history === 30 ? 30 : state.applied.history === 100 ? 60 : 42;
+      let x = seed(name+play), streak = 0, previous = -1;
+      return Array.from({length:max},(_,i)=>{
+        x = (x*1664525+1013904223)>>>0;
+        const value = (x>>>28)%2;
+        streak = value===previous ? streak+1 : 1; previous=value;
+        const trigger=streak>=state.applied.s && streak<=state.applied.m;
+        const pending=trigger && i>max-3;
+        const outcome=trigger&&!pending?(((x>>>20)%10)<6?"hit":"miss"):null;
+        return {issue:1096474+i,value,trigger,pending,outcome,label:play==="大小"?(value?"大":"小"):play==="单双"?(value?"单":"双"):(value?"龙":"虎")};
+      });
+    };
+    const roadStats = (name, play) => {
+      const data=roadData(name,play);
+      const triggers=data.filter(item=>item.trigger);
+      const pending=triggers.filter(item=>item.pending).length;
+      const rawHit=triggers.filter(item=>item.outcome==="hit").length;
+      const rawMiss=triggers.filter(item=>item.outcome==="miss").length;
+      const hit=state.applied.direction==="跟投"?rawHit:rawMiss;
+      const miss=state.applied.direction==="跟投"?rawMiss:rawHit;
+      return {triggered:triggers.length,hit,miss,pending,current:Boolean(data.at(-1)?.trigger)};
+    };
+    const buildRoadCells = data => {
+      let column=0,row=0,previous=null,runId=-1,streak=0;
+      const cells=data.map((item,index)=>{
+        if(previous===null || item.value!==previous){
+          if(previous!==null) column++;
+          row=0;runId++;streak=1;
+        }else{
+          streak++;row++;
+          if(row===6){column++;row=0}
+        }
+        previous=item.value;
+        return {...item,index,row,column,runId,streak};
+      });
+      return {cells,columns:Math.max(1,column+1)};
+    };
+    const getVisibleNames = (play) => {
+      if(play==="龙虎") return dragonRanks.filter((_,i)=>state.selectedRanks.has(ranks[i]) || state.selectedRanks.has(ranks[9-i]));
+      return ranks.filter(r=>state.selectedRanks.has(r));
+    };
+    const passesFilters = stats =>
+      (!state.filters.has("trigger") || stats.triggered>=5) &&
+      (!state.filters.has("hit") || stats.hit>=3) &&
+      (!state.filters.has("miss") || stats.miss<=2) &&
+      (!state.filters.has("current") || stats.current);
+
+    function renderRoads(){
+      const list=$("#roadList"); list.innerHTML="";
+      let shown=0, total=0;
+      const allStats=[];
+      [...state.selectedPlays].forEach(play=>{
+        const names=getVisibleNames(play);
+        total+=names.length;
+        names.forEach(name=>allStats.push(roadStats(name,play)));
+        const visible=names.map(name=>({name,stats:roadStats(name,play)})).filter(item=>passesFilters(item.stats));
+        if(!visible.length) return;
+        visible.forEach(({name,stats})=>{
+          shown++;
+          const card=document.createElement("article");card.className="compact-road";
+          const data=roadData(name,play);
+          const road=buildRoadCells(data);
+          const minWidth=Math.max(100,road.columns*21);
+          card.innerHTML=`
+            <div class="compact-head">
+              <div class="head-main"><b>${name}</b><i class="play-badge">${play}</i>${stats.current?'<i class="live-dot" title="当前触发"></i>':''}</div>
+              <div class="head-stats"><b>触发 ${stats.triggered}</b><span class="hit">中 ${stats.hit}</span></div>
+            </div>
+            <div class="road-scroll"><div class="road-grid" style="--cols:${road.columns};min-width:${minWidth}px">${road.cells.map(d=>`<i class="road-dot ${d.value?'a':'b'} ${d.trigger?'trigger':''} ${d.pending?'pending':''}" style="grid-row:${d.row+1};grid-column:${d.column+1}" title="第 ${d.issue} 期 · ${d.label} · 连续 ${d.streak} 期${d.trigger?' · Trigger':''}" aria-label="第 ${d.issue} 期，${d.label}，连续 ${d.streak} 期${d.trigger?'，Trigger':''}"></i>`).join("")}</div></div>
+            `;
+          list.appendChild(card);
+        });
+      });
+      $("#emptyState").style.display=shown?"none":"block";
+      list.hidden=!shown;
+      $("#overviewRoadCount").textContent=`全部 ${total} 条`;
+      $("#filteredRoadCount").textContent=`筛选后 ${shown} 条`;
+      updateOverview(allStats);
+    }
+
+    function updateOverview(all){
+      const totals=all.reduce((a,s)=>({triggered:a.triggered+s.triggered,hit:a.hit+s.hit,miss:a.miss+s.miss,pending:a.pending+s.pending,current:a.current+(s.current?1:0)}),{triggered:0,hit:0,miss:0,pending:0,current:0});
+      $("#totalTriggers").textContent=totals.triggered;
+      $("#totalHits").textContent=totals.hit;
+      const a=state.applied;
+      const lossWeight=a.stakeMode==="martingale"?a.multiplier:1;
+      const raw=(totals.hit-totals.miss*lossWeight)*a.baseBet*a.round;
+      const profit=Math.round(Math.min(a.takeProfit,Math.max(-a.stopLoss,raw)));
+      $("#simulatedProfit").textContent=`${profit>0?"+":""}${profit}`;
+      $("#profitMetric").classList.toggle("green",profit>0);
+      $("#profitMetric").classList.toggle("red",profit<0);
+    }
+
+    function syncAppliedText(){
+      const a=state.applied;
+      $("#conditionTop").textContent=`长龙 ${a.s}–${a.m} 期`;
+      $("#triggerExplain").textContent=`绿色 T = 连续达到 ${a.s}–${a.m} 期时触发`;
+      $("#drawerCondition").textContent=`当前 Trigger：最低长龙 ${a.s} 期 · 最高长龙 ${a.m} 期`;
+      $("#historyTop").textContent=`近 ${a.history} 期`;
+      $("#simulationSubtitle").textContent=`完整策略应用于过去 ${a.history} 期的即时验证`;
+      $("#overviewHistory").textContent=`近 ${a.history} 期`;
+      $("#overviewCondition").textContent=`最低 ${a.s} 期 · 最高 ${a.m} 期`;
+      $("#overviewBet").textContent=`${a.direction} · Round ${a.round} · ${a.stakeMode==="fixed"?"固定金额":"倍投 "+a.multiplier+"×"} · 底注 ${a.baseBet}`;
+      $("#quickS").textContent=a.s;
+      $("#quickM").textContent=a.m;
+      $("#drawerQuickS").textContent=a.s;
+      $("#drawerQuickM").textContent=a.m;
+      $("#saveCondition").textContent=`长龙 ${a.s}–${a.m} 期`;
+      $("#saveExecution").textContent=`Round ${a.round} · 底注 ${a.baseBet}`;
+      $("#saveDirection").textContent=`${a.direction} · 近 ${a.history} 期`;
+    }
+    function updateScopeText(){
+      const rankText=state.selectedRanks.size===ranks.length?"全部名次":`${state.selectedRanks.size} 个名次`;
+      const playText=state.selectedPlays.size===plays.length?"全部玩法":[...state.selectedPlays].join(" / ");
+      $("#rankLabel").textContent=rankText; $("#playLabel").textContent=playText;
+      $("#scopeSummary").textContent=`${rankText} · ${state.selectedPlays.size?[...state.selectedPlays].join(" / "):"未选择玩法"}`;
+      $("#saveScope").textContent=`${rankText} · ${playText}`;
+      $$("[data-inline-play]").forEach(b=>b.classList.toggle("on",b.dataset.inlinePlay==="全部"?state.selectedPlays.size===plays.length:state.selectedPlays.has(b.dataset.inlinePlay)));
+      $$("[data-inline-rank]").forEach(b=>b.classList.toggle("on",b.dataset.inlineRank==="全部"?state.selectedRanks.size===ranks.length:state.selectedRanks.has(b.dataset.inlineRank)));
+    }
+    function markDirty(){
+      state.draft.baseBet=Math.max(1,Number($("#baseBet").value)||1);
+      $("#dirtyBar").classList.add("show");
+    }
+    function syncDraftControls(){
+      $$("[data-setting]").forEach(group=>{
+        const key=group.dataset.setting;
+        $$("button",group).forEach(btn=>btn.classList.toggle("on",String(state.draft[key])===btn.dataset.value));
+      });
+      $("#baseBet").value=state.draft.baseBet;
+      $("#takeProfit").value=state.draft.takeProfit;
+      $("#stopLoss").value=state.draft.stopLoss;
+      $("#historySelect").value=String(state.draft.history);
+      $("#multiplierSetting").hidden=state.draft.stakeMode!=="martingale";
+    }
+    function makeOptions(){
+      $("#rankOptions").innerHTML=ranks.map(r=>`<button class="option on" data-rank="${r}">${r}</button>`).join("");
+      $("#playOptions").innerHTML=plays.map(p=>`<button class="option on" data-play-option="${p}">${p}</button>`).join("");
+      $("#inlineRanks").innerHTML=["全部",...ranks].map(r=>`<button class="scope-chip on" data-inline-rank="${r}">${r}</button>`).join("");
+    }
+    function openSheet(id){
+      if(id==="rankSheet") $$("[data-rank]").forEach(b=>b.classList.toggle("on",state.selectedRanks.has(b.dataset.rank)));
+      if(id==="playSheet") $$("[data-play-option]").forEach(b=>b.classList.toggle("on",state.selectedPlays.has(b.dataset.playOption)));
+      if(id==="saveSheet") syncAppliedText();
+      $("#"+id).classList.add("show"); document.body.style.overflow="hidden";
+    }
+    function showControlPane(id){
+      $$(".control-tab").forEach(b=>b.classList.toggle("on",b.dataset.controlTab===id));
+      $$(".control-pane").forEach(p=>p.classList.toggle("on",p.id===id));
+    }
+    function closeSheets(){ $$(".sheet-wrap").forEach(s=>s.classList.remove("show")); document.body.style.overflow=""; }
+    function toast(text){const t=$("#toast");t.textContent=text;t.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove("show"),2600)}
+
+    $("#strategyParamsMount").appendChild($(".validation-settings"));
+    $("#historyResultMount").appendChild($(".result-overview"));
+    $("#drawerActions").appendChild($(".next-actions"));
+    makeOptions(); updateScopeText(); syncDraftControls(); syncAppliedText(); renderRoads();
+
+    $$("[data-open]").forEach(b=>b.addEventListener("click",()=>openSheet(b.dataset.open)));
+    $$("[data-close]").forEach(b=>b.addEventListener("click",closeSheets));
+    $$(".control-tab").forEach(b=>b.addEventListener("click",()=>showControlPane(b.dataset.controlTab)));
+    $("#toggleScope").addEventListener("click",()=>{
+      const selector=$(".scope-selector");
+      const collapsed=selector.classList.toggle("collapsed");
+      $("#toggleScope").textContent=collapsed?"展开⌄":"收起⌃";
+      $("#toggleScope").setAttribute("aria-expanded",String(!collapsed));
+    });
+    $("#inlinePlay").addEventListener("click",e=>{
+      const b=e.target.closest("[data-inline-play]");if(!b)return;
+      const play=b.dataset.inlinePlay;
+      if(play==="全部") state.selectedPlays=new Set(plays);
+      else if(state.selectedPlays.has(play)){
+        if(state.selectedPlays.size===1){toast("请至少保留一个玩法");return}
+        state.selectedPlays.delete(play);
+      }else state.selectedPlays.add(play);
+      updateScopeText();renderRoads();
+    });
+    $$("[data-sm-delta]").forEach(button=>button.addEventListener("click",()=>{
+      const key=button.dataset.smKey;
+      const raw=state.applied[key]+Number(button.dataset.smDelta);
+      const next=key==="s"
+        ?Math.max(1,Math.min(state.applied.m,4,raw))
+        :Math.max(state.applied.s,2,Math.min(6,raw));
+      if(next===state.applied[key])return;
+      state.applied[key]=next;state.draft[key]=next;
+      syncDraftControls();syncAppliedText();renderRoads();
+      $("#dirtyBar").classList.remove("show");
+    }));
+    $("#inlineRanks").addEventListener("click",e=>{
+      const b=e.target.closest("[data-inline-rank]");if(!b)return;
+      const rank=b.dataset.inlineRank;
+      if(rank==="全部") state.selectedRanks=new Set(ranks);
+      else if(state.selectedRanks.has(rank)){
+        if(state.selectedRanks.size===1){toast("请至少保留一个名次");return}
+        state.selectedRanks.delete(rank);
+      }else state.selectedRanks.add(rank);
+      updateScopeText();renderRoads();
+    });
+    $("#rankOptions").addEventListener("click",e=>{const b=e.target.closest("[data-rank]");if(b)b.classList.toggle("on")});
+    $("#playOptions").addEventListener("click",e=>{const b=e.target.closest("[data-play-option]");if(b)b.classList.toggle("on")});
+    $$("[data-apply]").forEach(b=>b.addEventListener("click",()=>{
+      if(b.dataset.apply==="rank"){
+        const chosen=$$("[data-rank].on").map(x=>x.dataset.rank); if(!chosen.length){toast("请至少选择一个名次");return}
+        state.selectedRanks=new Set(chosen);
+      }else{
+        const chosen=$$("[data-play-option].on").map(x=>x.dataset.playOption); if(!chosen.length){toast("请至少选择一个玩法");return}
+        state.selectedPlays=new Set(chosen);
+      }
+      updateScopeText(); closeSheets(); renderRoads();
+    }));
+    $$("[data-filter]").forEach(b=>b.addEventListener("click",()=>{
+      const f=b.dataset.filter; state.filters.has(f)?state.filters.delete(f):state.filters.add(f);
+      b.classList.toggle("on",state.filters.has(f)); renderRoads();
+    }));
+    function clearFilters(){state.filters.clear();$$("[data-filter]").forEach(b=>b.classList.remove("on"));renderRoads()}
+    $("#clearFilters").addEventListener("click",clearFilters); $("#clearEmpty").addEventListener("click",clearFilters);
+    $("#roadList").addEventListener("click",e=>{
+      const trigger=e.target.closest(".road-dot.trigger");
+      if(trigger)toast(trigger.title);
+    });
+    $$("[data-setting] button").forEach(btn=>btn.addEventListener("click",()=>{
+      const group=btn.closest("[data-setting]"),key=group.dataset.setting;
+      state.draft[key]=["direction","stakeMode"].includes(key)?btn.dataset.value:Number(btn.dataset.value);
+      if(key==="s"&&state.draft.s>state.draft.m)state.draft.m=state.draft.s;
+      if(key==="m"&&state.draft.m<state.draft.s)state.draft.s=state.draft.m;
+      state.applied={...state.draft};
+      syncDraftControls();syncAppliedText();renderRoads();
+    }));
+    const applyNumericStrategy=()=>{
+      state.draft.baseBet=Math.max(1,Number($("#baseBet").value)||1);
+      state.draft.takeProfit=Math.max(1,Number($("#takeProfit").value)||1);
+      state.draft.stopLoss=Math.max(1,Number($("#stopLoss").value)||1);
+      state.applied={...state.draft};syncAppliedText();renderRoads();
+    };
+    $("#baseBet").addEventListener("input",applyNumericStrategy);
+    $("#takeProfit").addEventListener("input",applyNumericStrategy);
+    $("#stopLoss").addEventListener("input",applyNumericStrategy);
+    $("#historySelect").addEventListener("change",e=>{
+      state.draft.history=Number(e.target.value);
+      state.applied={...state.draft};syncAppliedText();renderRoads();
+    });
+    $("#resetSettings").addEventListener("click",()=>{state.draft={...state.applied};syncDraftControls();$("#dirtyBar").classList.remove("show")});
+    $("#recalculate").addEventListener("click",()=>{
+      markDirty(); const l=$("#loading");$("#loadingText").textContent=`正在根据 S${state.draft.s} · M${state.draft.m} 重新计算 Road…`;l.classList.add("show");
+      setTimeout(()=>{state.applied={...state.draft};state.variant++;syncAppliedText();renderRoads();$("#dirtyBar").classList.remove("show");l.classList.remove("show");toast("已应用新参数，Road 与结果概览已同步更新")},700);
+    });
+    $("#openOverview").addEventListener("click",()=>{showControlPane("settingsPane");openSheet("controlSheet")});
+    $$("[data-demo]").forEach(b=>b.addEventListener("click",()=>{
+      const a=state.applied; toast(`Demo Session 已创建 · S${a.s} / M${a.m} / Round ${a.round}，等待下期开奖`);
+    }));
+    $$("[data-run]").forEach(b=>b.addEventListener("click",()=>{
+      state.runAfterSave=b.dataset.run==="true";$$("[data-run]").forEach(x=>x.classList.toggle("on",x===b));
+    }));
+    $("#confirmSave").addEventListener("click",()=>{
+      const name=$("#strategyName").value.trim(); if(!name){toast("请输入策略名称");return}
+      closeSheets();toast(state.runAfterSave?`「${name}」已保存并交给 Robot 运行`:`「${name}」已保存，暂未运行`);
+    });
+    let seconds=45;
+    setInterval(()=>{seconds=seconds>0?seconds-1:45;$("#countdown").textContent=`00:${String(seconds).padStart(2,"0")}`},1000);
+  </script>
+</body>
+</html>
