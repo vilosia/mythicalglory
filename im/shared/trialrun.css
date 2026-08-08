@@ -1,0 +1,335 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   IM168 · 自动投 · 历史试跑「工作台」 —— 样式
+   来源：Ref/IM168_AutoBet_TrialRun_Workbench_V3.html（V3.6.1）
+   移植说明：
+     · 全部类名加 tr- 前缀，避免与 shared/styles.css（530KB）里既有的
+       .road / .rail / .lab / .dock / .tpl / .rangewrap … 撞名。
+     · 只移植 V3 新增的四块：路子条＋试跑入口条（自动投页顶部）、看路屏、
+       模板页、试跑工作台。V3 文档里自制的那份「自动投页」不移植 ——
+       本原型已经有真的自动投页，试跑是<加进去>的，不是替换掉的。
+     · 颜色一律走 design-tokens.css 的 var(--*)，不裸写 hex。
+   ⚠ 字号：本层刻意保留 V3 的 8.5–11.5px 微型标签（十名次路子条、珠子、
+     柱下连长这些密集数据显示器读不了 12px 起跳的字号）。这是与
+     DESIGN_SYSTEM.md §4.1「字号底线 12px」的<已知偏离>，见 README.md。
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════ 一、自动投页顶部：路子条 ＋ 试跑入口条 ═══════════
+   两条都<不属于>任何一张策略卡（一个是全局开奖数据，一个是通用入口），
+   所以摆在策略卡上方；策略卡因此紧贴下方面板，那颗连接点才连得起来。 */
+#trTopBand{flex:none;}
+
+.tr-strip{flex:none;background:var(--surface);border-bottom:1px solid var(--line);padding:7px 8px 6px 12px;}
+
+/* 标题行：最新路子图 ＋ 玩法切换 ＋ 右上角「试跑策略」。这一行<不可点> ——
+   整行可点的话，点玩法切换旁边的空白会莫名跳页。 */
+.tr-strip .tr-rh{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.tr-strip .tr-rh b{flex:none;font-size:12px;font-weight:700;}
+.tr-tryentry{margin-left:auto;flex:none;border:1px solid var(--blue-line);background:var(--tint);color:var(--blue-d);font-family:inherit;font-size:12px;font-weight:700;border-radius:var(--radius-sm);padding:0 12px;min-height:30px;cursor:pointer;white-space:nowrap;}
+.tr-tryentry:hover{background:var(--blue-soft);border-color:var(--blue);}
+
+/* 玩法切换：原来 9.5px／padding 2px 点不到，改成 30px 高的分段控件。 */
+.tr-strip .tr-pkseg{flex:none;display:inline-flex;gap:3px;background:var(--fill);border-radius:9px;padding:3px;}
+.tr-strip .tr-pkseg button{border:0;background:transparent;font-family:inherit;font-size:12px;font-weight:700;color:var(--muted);border-radius:6px;padding:0 14px;min-height:26px;cursor:pointer;}
+.tr-strip .tr-pkseg button.on{background:var(--surface);color:var(--blue-d);box-shadow:0 1px 3px rgba(20,40,80,.14);}
+
+/* 珠子那一行才是可点的那块：整行进看路屏，行尾一个 › 表明这件事。
+   单个名次（data-trpos）带自己的属性，点它会直接带着那个名次进去 ——
+   事件里用 closest 取<最近>的 data 属性，所以两者不冲突。 */
+.tr-pos10{display:flex;align-items:center;gap:2px;cursor:pointer;border-radius:9px;padding:1px 0 2px;}
+.tr-pos10:hover,.tr-pos10:focus-visible{background:var(--blue-soft);outline:none;}
+.tr-pos10:active{background:var(--tint);}
+.tr-chev{flex:none;width:18px;text-align:center;color:var(--faint);font-size:22px;line-height:1;font-weight:400;}
+.tr-pos10:hover .tr-chev,.tr-pos10:focus-visible .tr-chev{color:var(--blue);}
+.tr-pos10 .tr-pc{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0 3px;border-radius:7px;}
+.tr-pos10 .tr-pc:hover{background:var(--tint);}
+.tr-pos10 .tr-pc .tr-bd2{position:relative;width:24px;height:24px;border-radius:50%;color:var(--surface);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.tr-pos10 .tr-pc .tr-bd2.c1{background:var(--red);}
+.tr-pos10 .tr-pc .tr-bd2.c0{background:var(--blue);}
+.tr-pos10 .tr-pc .tr-bd2 em{position:absolute;top:-4px;right:-5px;background:var(--surface);color:var(--muted);border:1px solid var(--line-strong);border-radius:var(--radius-pill);font-size:10px;font-style:normal;padding:0 3px;line-height:1.5;}
+.tr-pos10 .tr-pc .tr-bd2.hot em{background:var(--gold);color:var(--surface);border-color:var(--gold);}
+.tr-pos10 .tr-pc span{font-size:10px;color:var(--faint);white-space:nowrap;}
+
+
+/* 执行动态那排图标里的 🧪 历史试跑（长在原有结构里，不另开一排） */
+.s2-act.tr-try{border-color:var(--blue-line);background:var(--tint);color:var(--blue-d);}
+
+/* ═══════════ 一之二、模拟策略 vs 真钱策略：怎么分得开 ═══════════
+   同一套引擎、同一套报告，区别只在钱是假的。所以不做成两种界面，而是在
+   <四个地方>盖同一枚金色戳，让人任何时候扫一眼都知道自己在看哪种钱：
+     ① 策略卡整张转金（未选＝金边淡金底，选中＝金色渐变，连接点也转金）
+     ② 卡片指标标签：「累计盈亏」→「模拟盈亏」
+     ③ 面板标题：执行动态 旁边一枚「模拟」chip
+     ④ 执行动态列表最上面一条金色横幅，写明不动真实余额、不进钱包记录
+   刻意<不>写进卡片的来源行 —— 卡只有 91px 宽，多四个字就把策略名挤成「小本…」。
+   金色＝假钱是这一层的约定（路子条的「4 连以上」也用 --gold，但那是开奖数据的
+   高亮，不在策略卡这一层，不会混）。 */
+.stg-preview-actions button.stg-demobtn{flex:none;border:1px solid var(--gold);background:#FFFCF4;color:#8A6420;font-family:inherit;font-size:13.5px;font-weight:700;border-radius:var(--radius-md);padding:0 14px;cursor:pointer;}
+.stg-preview-actions button.stg-demobtn:hover{background:var(--warning-soft);}
+
+/* 特异性要压过 styles.css 的 .stg-tabwrap .tabrow .stgcard.skin2[.sel]（0,3,0 / 0,4,0），
+   所以这里也从 .stg-tabwrap .tabrow 起头 —— 少一级就盖不住，卡片还是蓝的。 */
+.stg-tabwrap .tabrow .stgcard.skin2.is-demo{border-color:var(--gold);background:#FFFCF4;}
+.stg-tabwrap .tabrow .stgcard.skin2.is-demo .sc-source{color:#8A6420;}
+.stg-tabwrap .tabrow .stgcard.skin2.is-demo.sel{background:linear-gradient(180deg,#D9A94E,var(--gold));border-color:#A9762A;}
+/* 选中的模拟卡：连接到面板的那颗点也要跟着转金，否则蓝点接金卡很怪 */
+.stg-tabwrap .tabrow .stgcard.skin2.is-demo.sel::after{background:var(--gold);}
+
+.stg-demochip{flex:none;font-size:var(--fs-badge);font-weight:700;color:#8A6420;background:var(--warning-soft);border:1px solid #EBD9A8;border-radius:var(--radius-pill);padding:1px 8px;margin-left:6px;}
+
+.stg-demobanner{background:#FFFCF4;border:1px solid #EBD9A8;border-radius:var(--radius-md);color:#7A5600;font-size:12px;line-height:1.65;padding:8px 11px;margin:0 0 10px;}
+.stg-demobanner b{color:#5B4300;}
+
+/* 策略卡上的 ⋮（编辑 / 删除）—— 原来那条「XX策略详情」标题行整块去掉后它的新家。
+   放<右下角>，不是右上角：卡只有 91px 宽，头部已经装着来源文字＋运行状态图标，
+   再塞一个 24px 就把策略名挤成「小本…」。右下角在指标右侧本来就是空白，
+   absolute 定位既不参与 flex、也不和状态图标打架。 */
+.stg-tabwrap .tabrow .stgcard{position:relative;}
+.stgcard .sc-menu{position:absolute;bottom:5px;right:4px;z-index:2;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:var(--radius-sm);color:var(--faint);cursor:pointer;}
+.stgcard .sc-menu:hover{background:var(--fill);color:var(--muted);}
+.stgcard.sel .sc-menu{color:rgba(255,255,255,.8);}
+.stgcard.sel .sc-menu:hover{background:rgba(255,255,255,.2);color:var(--surface);}
+/* ＋新建策略 那张空卡没有 ⋮，也不需要这套定位 */
+.stgcard.add .sc-menu,.stgcard.tpl .sc-menu{display:none;}
+
+/* 未启用态的 kick 行返回空串时，把容器一起收掉，面板不留一条空白 */
+.stg-kick.is-empty{display:none;}
+
+/* ═══════════ 二、次级整屏（看路屏 / 模板页）的通用外壳 ═══════════ */
+.tr-wtop{background:var(--surface);border-bottom:1px solid var(--line);padding:9px 12px;display:flex;align-items:center;gap:8px;flex:none;}
+.tr-wtop .bk{color:var(--muted);font-size:16px;cursor:pointer;flex:none;}
+.tr-wtop .tt{flex:1;min-width:0;}
+/* 直接子代选择器，不是后代 —— 副标题 <small> 里也有 <b>（「最新路子」那几个字），
+   写成 .tt b 会把它一起变成 display:block，副标题就被撑成三行。 */
+.tr-wtop .tt>b{display:block;font-size:13px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tr-wtop .tt>small{display:block;font-size:10px;color:var(--faint);line-height:1.35;}
+.tr-wtop .tt>small b{font-weight:700;color:var(--muted);}
+.tr-wtop .tt>small em{font-style:normal;color:var(--gold);font-weight:700;}
+
+.tr-scrbody{flex:1;min-height:0;overflow-y:auto;padding:10px 12px 16px;}
+.tr-scrbody::-webkit-scrollbar{width:0;}
+.tr-note{font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:10px;}
+.tr-note b{color:var(--ink);}
+
+/* ═══════════ 三、看路屏：十个名次，每段都是完整的大路 ═══════════
+   路子图本来就是十行一起看的东西。这是专门看路的整屏，不该把每个名次压成一行。
+   整屏一个金圈都没有 —— 它不含任何投注参数。 */
+/* 与路子条上的那个切换同一套尺寸（30px 高），别一个大一个小 */
+.tr-pkseg2{flex:none;display:inline-flex;gap:3px;background:var(--fill);border-radius:9px;padding:3px;}
+.tr-pkseg2 button{border:0;background:transparent;font-family:inherit;font-size:12px;font-weight:700;color:var(--muted);border-radius:6px;padding:0 14px;min-height:26px;cursor:pointer;}
+.tr-pkseg2 button.on{background:var(--surface);color:var(--blue-d);box-shadow:0 1px 3px rgba(20,40,80,.14);}
+
+.tr-rsec{border:1px solid var(--line);border-radius:11px;background:var(--surface);margin-bottom:8px;overflow:hidden;cursor:pointer;}
+.tr-rsec.on{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue);}
+.tr-rsh{display:flex;align-items:center;gap:8px;padding:6px 10px;background:#FBFCFE;border-bottom:1px solid var(--line);}
+.tr-rsec.on .tr-rsh{background:var(--blue-soft);}
+.tr-rsh b{font-size:12.5px;font-weight:800;flex:none;}
+.tr-rsh .sp{flex:1;}
+.tr-rsh em{font-style:normal;font-size:10.5px;color:var(--muted);flex:none;}
+.tr-rsh em b{font-size:11.5px;color:var(--ink);font-weight:700;}
+.tr-rsh em.hot b{color:var(--gold);}
+.tr-rsec .tr-roadbox{border:0;border-radius:0;background:var(--surface);padding:7px 8px 4px;}
+.tr-rsec .tr-bd{width:17px;height:17px;font-size:10px;}
+.tr-rsec .tr-bd .tr-bg{width:10px;height:10px;font-size:10px;}
+.tr-rsec .tr-ph{font-size:10px;}
+
+/* 底部固定：选中的名次 ＋ 去试跑 */
+.tr-rfoot{flex:none;display:flex;align-items:center;gap:9px;padding:9px 12px;border-top:1px solid var(--line-strong);background:var(--surface);box-shadow:0 -6px 18px -12px rgba(20,40,80,.4);}
+.tr-rfoot .l{flex:1;min-width:0;}
+.tr-rfoot .l b{display:block;font-size:12.5px;font-weight:800;}
+.tr-rfoot .l span{font-size:10.5px;color:var(--muted);}
+.tr-rfoot button{flex:none;border:0;background:var(--blue);color:var(--surface);font-family:inherit;font-size:12.5px;font-weight:700;border-radius:9px;padding:10px 14px;cursor:pointer;}
+
+/* ═══════════ 四、模板页：＋新建策略先给模板，不直接丢进试跑 ═══════════ */
+.tr-tpl{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:9px 11px;margin-bottom:8px;}
+.tr-tpl .r1{display:flex;align-items:center;gap:6px;}
+.tr-tpl .r1 b{font-size:13px;font-weight:700;flex:1;min-width:0;}
+.tr-tpl .tg{flex:none;font-size:10px;font-weight:700;border-radius:var(--radius-pill);padding:1px 7px;}
+.tr-tpl .tg.low{color:var(--win);background:var(--positive-soft);}
+.tr-tpl .tg.mid{color:var(--warning);background:var(--warning-soft);}
+.tr-tpl .tg.high{color:var(--red);background:var(--danger-soft);}
+.tr-tpl .r2{font-size:10.5px;color:var(--faint);margin:3px 0 2px;}
+.tr-tpl .r2 b{color:var(--ink);}
+.tr-tpl .r3{display:flex;gap:6px;margin-top:7px;}
+.tr-tpl .r3 button{flex:1;border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);font-family:inherit;font-size:11.5px;font-weight:700;border-radius:var(--radius-sm);padding:6px 0;cursor:pointer;}
+.tr-tpl .r3 button.pri{border:0;background:var(--blue);color:var(--surface);}
+.tr-tpl .r3 button.try{border-color:var(--blue-line);background:var(--tint);color:var(--blue-d);}
+
+/* ═══════════ 五、工作台：全屏工具 ═══════════
+   没有 投注/自动投 页签，只有自己的顶栏 —— 它是「打开的工具」，不是「页面顶部的卡」。 */
+.view-bench{background:var(--page);}
+
+/* 位置条：只切换查看，不改策略 */
+.tr-railrow{flex:none;background:var(--surface);border-bottom:1px solid var(--line);padding:6px 10px;}
+/* padding-top 给 ✓ 角标留位：overflow-x:auto 会让 y 轴也变成裁切上下文 */
+.tr-rail{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding:4px 0 1px;}
+.tr-rail::-webkit-scrollbar{display:none;}
+.tr-rail button{flex:none;border:1px solid var(--line-strong);background:var(--surface);font-family:inherit;border-radius:var(--radius-sm);padding:3px 8px;cursor:pointer;text-align:left;line-height:1.3;position:relative;}
+.tr-rail button.on{border-color:var(--blue);background:var(--tint);}
+.tr-rail button span{display:block;font-size:10.5px;font-weight:700;color:var(--ink);white-space:nowrap;}
+.tr-rail button.on span{color:var(--blue-d);}
+.tr-rail button em{font-style:normal;display:block;font-size:10px;color:var(--faint);white-space:nowrap;}
+/* 三种状态要能一眼分开：素色＝不在策略 · 淡蓝＋✓＝在策略 · 蓝框＝正在看 */
+.tr-rail button.foc{background:#F5F9FF;border-color:var(--blue-line-2);}
+.tr-rail button.foc.on{background:var(--tint);border-color:var(--blue);}
+.tr-rail button i.fk{position:absolute;top:-2px;right:-2px;width:13px;height:13px;border-radius:50%;background:var(--blue);color:var(--surface);font-size:10px;font-style:normal;display:flex;align-items:center;justify-content:center;font-weight:700;}
+
+/* 路子区 —— 工作台的「显示器」，位置固定，不被控件推挤 */
+.tr-roadzone{flex:none;background:var(--surface);border-bottom:1px solid var(--line);padding:7px 10px 6px;}
+.tr-lab{font-size:10.5px;color:var(--muted);font-weight:700;margin-bottom:5px;display:flex;align-items:center;gap:5px;}
+.tr-lab .rt{margin-left:auto;font-weight:700;color:var(--blue);font-size:10.5px;}
+.tr-lab .q{flex:none;width:15px;height:15px;border-radius:50%;border:1px solid var(--blue-line);color:var(--blue-d);background:var(--tint);font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;}
+/* 唯一能改「策略里有哪些位置」的按钮（位置条只切换查看）。状态用文字写明，顺便解释 ✓ 角标 */
+.tr-lab .tr-addb{flex:none;border:1px solid var(--line-strong);background:var(--surface);font-family:inherit;font-size:10px;font-weight:700;color:var(--muted);border-radius:var(--radius-pill);padding:2px 8px;cursor:pointer;white-space:nowrap;}
+.tr-lab .tr-addb.inplan{border-color:var(--blue);background:var(--tint);color:var(--blue-d);}
+.tr-lab .tr-addb.lock{opacity:.45;cursor:default;}
+
+.tr-roadbox{background:#FBFCFE;border:1px dashed var(--blue-line-2);border-radius:9px;padding:7px 7px 4px;overflow-x:auto;}
+.tr-roadbox::-webkit-scrollbar{height:4px;}
+.tr-roadbox::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:4px;}
+.tr-road{display:flex;gap:3px;align-items:flex-start;min-height:26px;}
+.tr-pil{display:flex;flex-direction:column;gap:2px;align-items:center;}
+.tr-bd{width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--surface);font-size:10px;font-weight:700;flex:none;position:relative;}
+.tr-bd.v1{background:var(--red);}
+.tr-bd.v0{background:var(--blue);}
+.tr-bd.tgt{box-shadow:0 0 0 1.5px var(--surface),0 0 0 3px var(--gold);}
+.tr-bd .tr-bg{position:absolute;top:-4px;right:-4px;width:11px;height:11px;border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;color:var(--surface);font-weight:700;}
+.tr-bd .tr-bg.w{background:var(--win);}
+.tr-bd .tr-bg.l{background:#8E1F1F;}
+.tr-ph{font-size:10px;color:var(--faint);line-height:1.4;}
+
+/* 图例常驻在路子下面，不塞进 tutorial（07-29 §4） */
+.tr-roadfoot{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--faint);margin-top:4px;flex-wrap:wrap;}
+.tr-roadfoot .lg{display:inline-flex;align-items:center;gap:3px;}
+.tr-roadfoot .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+.tr-roadfoot .ring{width:9px;height:9px;border-radius:50%;background:var(--fill);box-shadow:0 0 0 1.5px var(--gold);display:inline-block;}
+
+/* 中段：老手的深挖（独立滚动；新手可以从头到尾不碰它） */
+.tr-mid{flex:1;min-height:0;display:flex;flex-direction:column;padding:7px 10px 0;}
+.tr-mtabs{display:flex;gap:5px;flex:none;margin-bottom:6px;}
+.tr-mtabs button{border:1px solid var(--line-strong);background:var(--surface);font-family:inherit;font-size:10.5px;color:var(--muted);border-radius:7px;padding:3px 10px;cursor:pointer;}
+.tr-mtabs button.on{border-color:var(--blue);background:var(--tint);color:var(--blue-d);font-weight:700;}
+.tr-mbody{flex:1;min-height:0;overflow-y:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md);padding:7px 9px;}
+.tr-mbody::-webkit-scrollbar{width:4px;}
+.tr-mbody::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:4px;}
+
+.tr-drow{display:flex;align-items:center;gap:6px;font-size:11px;padding:4px 0;border-bottom:1px solid #F3F6FA;}
+.tr-drow:last-child{border-bottom:0;}
+.tr-drow .nm{font-weight:700;color:var(--ink);flex:none;width:72px;}
+.tr-drow .st{flex:1;color:var(--muted);}
+.tr-drow b.pos{color:var(--win);}
+.tr-drow b.neg{color:var(--red);}
+
+.tr-sfoot{font-size:10px;color:var(--muted);margin-top:6px;line-height:1.5;}
+.tr-sfoot b{color:var(--ink);}
+
+table.tr-mt{width:100%;border-collapse:collapse;font-size:10.5px;}
+table.tr-mt th{font-size:10px;color:var(--faint);text-align:left;font-weight:700;padding:3px 5px;border-bottom:1px solid var(--line);}
+table.tr-mt td{padding:3px 5px;border-bottom:1px solid #F3F6FA;}
+table.tr-mt tr.hot td{background:var(--danger-soft);}
+table.tr-wt{width:100%;border-collapse:collapse;font-size:10.5px;}
+table.tr-wt th{font-size:10px;color:var(--faint);text-align:left;font-weight:700;padding:3px 5px;border-bottom:1px solid var(--line);}
+table.tr-wt td{padding:4px 5px;border-bottom:1px solid #F3F6FA;}
+table.tr-wt td b.pos{color:var(--win);}
+table.tr-wt td b.neg{color:var(--red);}
+
+/* ═══════════ 六、底部工作坞：参数 ＋ 结论 ＋ 主行动，全部在拇指区 ═══════════ */
+.tr-dock{flex:none;background:var(--surface);border-top:1px solid var(--line-strong);box-shadow:0 -8px 22px -14px rgba(20,40,80,.45);}
+.tr-chips{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding:7px 10px 0;}
+.tr-chips::-webkit-scrollbar{display:none;}
+.tr-chips button{flex:none;border:1px solid var(--line-strong);background:var(--surface);font-family:inherit;border-radius:var(--radius-sm);padding:3px 9px;cursor:pointer;text-align:left;line-height:1.3;}
+.tr-chips button.on{border-color:var(--blue);background:var(--tint);}
+.tr-chips button span{display:block;font-size:10px;color:var(--faint);}
+.tr-chips button b{display:block;font-size:11px;color:var(--ink);white-space:nowrap;}
+.tr-chips button.on b{color:var(--blue-d);}
+
+.tr-dockbar{display:flex;align-items:center;gap:9px;padding:7px 10px 9px;}
+.tr-dockbar .n{font-size:17px;font-weight:800;line-height:1.1;}
+.tr-dockbar .n.pos{color:var(--win);}
+.tr-dockbar .n.neg{color:var(--red);}
+.tr-dockbar .l{flex:1;min-width:0;}
+.tr-dockbar .s{font-size:10px;color:var(--muted);line-height:1.35;}
+.tr-dockbar .s b{color:var(--ink);}
+.tr-dockbar>button{flex:none;border:0;background:var(--blue);color:var(--surface);font-family:inherit;font-size:12.5px;font-weight:700;border-radius:9px;padding:9px 13px;cursor:pointer;}
+.tr-dockbar>button i{font-style:normal;display:block;font-size:10px;font-weight:400;opacity:.85;}
+
+/* 参数编辑：从坞里长出来（在 chips 上方就地展开，不遮路子图，改完即时重算） */
+.tr-editor{display:none;border-top:1px solid var(--line);padding:9px 11px;background:#FBFCFE;}
+.tr-editor.show{display:block;}
+.tr-editor .tr-lab{margin-bottom:6px;}
+.tr-seg{display:flex;background:var(--fill);border-radius:var(--radius-sm);padding:3px;gap:3px;}
+.tr-seg button{flex:1;border:0;background:transparent;font-family:inherit;font-size:12px;color:var(--muted);padding:5px 0 4px;border-radius:6px;cursor:pointer;line-height:1.3;}
+.tr-seg button.on{background:var(--surface);color:var(--blue);font-weight:700;box-shadow:0 1px 3px rgba(20,40,80,.1);}
+/* 07-29 §3：选跟／反的当下就把这个方向在同一段样本上的结果写出来 */
+.tr-seg button .hr{display:block;font-size:10px;font-weight:700;color:var(--faint);}
+.tr-seg button.on .hr{color:var(--blue-d);}
+
+/* 区间和回合数都是拖杆 —— 同一套操作语言，拖到哪需备本金跟到哪 */
+.tr-rangewrap{position:relative;height:24px;}
+.tr-rangetrack{position:absolute;top:10px;left:0;right:0;height:4px;background:#E9E9E9;border-radius:2px;}
+.tr-rangefill{position:absolute;top:10px;height:4px;background:var(--blue);border-radius:2px;}
+.tr-rangewrap input[type=range]{position:absolute;left:0;top:0;width:100%;height:24px;margin:0;background:transparent;pointer-events:none;-webkit-appearance:none;appearance:none;}
+.tr-rangewrap input[type=range]::-webkit-slider-thumb{pointer-events:auto;-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--blue);border:2px solid var(--surface);box-shadow:0 1px 4px rgba(18,107,255,.4);cursor:pointer;}
+.tr-rangewrap input[type=range]::-moz-range-thumb{pointer-events:auto;width:17px;height:17px;border-radius:50%;background:var(--blue);border:2px solid var(--surface);cursor:pointer;}
+.tr-rangewrap input[type=range]::-moz-range-track{background:transparent;}
+.tr-ticks{display:flex;justify-content:space-between;font-size:10px;color:var(--faint);padding:0 2px;}
+.tr-slwarn{font-size:10px;color:var(--warning);margin-top:4px;line-height:1.5;display:none;}
+.tr-slwarn.show{display:block;}
+.tr-code{font-size:10.5px;font-weight:700;color:var(--blue-d);background:var(--tint);border:1px solid var(--blue-line);border-radius:5px;padding:0 7px;letter-spacing:.3px;margin-left:auto;}
+
+/* ═══════════ 七、sheet（名词卡 / 启动 / 位置勾选） ═══════════ */
+.tr-sheet{display:none;position:absolute;inset:0;z-index:20;}
+.tr-sheet.show{display:block;}
+.tr-smask{position:absolute;inset:0;background:rgba(20,32,56,.42);}
+.tr-scard{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:16px 16px 0 0;padding:12px 13px 14px;max-height:78%;overflow-y:auto;}
+.tr-scard::-webkit-scrollbar{width:0;}
+.tr-scard h4{font-size:14px;font-weight:800;margin-bottom:8px;}
+.tr-scard .x{position:absolute;top:10px;right:12px;border:0;background:var(--fill);color:var(--muted);width:24px;height:24px;border-radius:50%;font-size:12px;cursor:pointer;font-family:inherit;}
+
+/* 07-29 §1.3：参数直接带过去，不用重填 */
+.tr-lsparams{background:var(--fill);border-radius:9px;padding:7px 9px;margin-bottom:9px;}
+.tr-lsparams .t{font-size:10px;color:var(--faint);font-weight:700;margin-bottom:3px;}
+.tr-lsparams .row{display:flex;flex-wrap:wrap;gap:4px;}
+.tr-lsparams .row span{font-size:10px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:1px 6px;}
+.tr-lsopt{display:block;width:100%;text-align:left;border:1px solid var(--line-strong);background:var(--surface);border-radius:var(--radius-md);padding:8px 10px;margin-bottom:6px;cursor:pointer;font-family:inherit;}
+.tr-lsopt b{display:block;font-size:12.5px;color:var(--ink);}
+.tr-lsopt em{font-style:normal;display:block;font-size:10.5px;color:var(--muted);margin-top:1px;line-height:1.5;}
+/* 模拟＝金色，真钱＝蓝色。假钱绝不能和真钱看起来一样（07-29 §1.5） */
+.tr-lsopt.demo{border-color:var(--gold);background:#FFFCF4;}
+.tr-lsopt.demo b{color:#8A6420;}
+.tr-lsopt.real{border-color:var(--blue-line);background:var(--blue-soft);}
+.tr-lsopt.real b{color:var(--blue-d);}
+.tr-lscancel{width:100%;border:0;background:transparent;font-family:inherit;font-size:11.5px;color:var(--muted);padding:6px 0;cursor:pointer;}
+
+.tr-terms{display:grid;gap:8px;}
+.tr-terms div{font-size:11.5px;color:var(--muted);line-height:1.65;background:var(--fill);border-radius:var(--radius-sm);padding:7px 10px;}
+.tr-terms b{color:var(--ink);}
+
+/* 位置勾选：一格一卡，卡里是迷你路子图（与主路子图同一种画法，小一号） */
+/* minmax(0,1fr)：迷你路的内容比列宽宽，纯 1fr 的 auto 下限会把两列挤成不等宽 */
+.tr-pgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px;}
+.tr-pcard{border:1px solid var(--line-strong);background:var(--surface);border-radius:var(--radius-md);padding:6px 7px 7px;cursor:pointer;min-width:0;}
+.tr-pcard.foc{border-color:var(--blue);background:var(--blue-soft);}
+.tr-pcard .hd{display:flex;align-items:center;gap:4px;margin-bottom:5px;}
+.tr-pcard .ck{flex:none;width:14px;height:14px;border-radius:4px;border:1.5px solid var(--line-strong);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--surface);}
+.tr-pcard.foc .ck{background:var(--blue);border-color:var(--blue);}
+.tr-pcard.foc .ck::after{content:"✓";}
+.tr-pcard .nm{font-size:10.5px;font-weight:700;color:var(--ink);flex:1;min-width:0;white-space:nowrap;}
+.tr-pcard .hn{flex:none;font-size:10px;color:var(--surface);background:var(--faint);border-radius:4px;padding:0 4px;font-weight:700;line-height:1.6;}
+.tr-pcard .hn.hot{background:var(--gold);}
+.tr-pcard .xy{flex:none;font-size:10px;font-weight:700;color:var(--ink);}
+.tr-mroad{display:flex;gap:2px;align-items:flex-start;justify-content:flex-end;overflow:hidden;height:84px;background:#FBFCFE;border:1px dashed var(--blue-line-2);border-radius:7px;padding:4px;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 14px);mask-image:linear-gradient(90deg,transparent 0,#000 14px);}
+.tr-pcard.foc .tr-mroad{background:var(--surface);}
+.tr-mroad .tr-mpil{display:flex;flex-direction:column;gap:2px;flex:none;}
+.tr-mroad .tr-mb{width:11px;height:11px;border-radius:50%;color:var(--surface);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;font-style:normal;}
+.tr-mroad .tr-mb.v1{background:var(--red);}
+.tr-mroad .tr-mb.v0{background:var(--blue);}
+.tr-mroad .tr-mb.tg{box-shadow:0 0 0 1px var(--surface),0 0 0 1.5px var(--gold);}
+
+/* ═══════════ 八、新手指引：一次性遮罩，看完即走，不占常驻空间 ═══════════ */
+.tr-coach{display:none;position:absolute;inset:0;z-index:30;background:rgba(15,25,45,.68);}
+.tr-coach.show{display:block;}
+.tr-coach .tip{position:absolute;background:var(--surface);border-radius:11px;padding:9px 12px;font-size:11.5px;line-height:1.6;color:var(--muted);max-width:250px;box-shadow:0 10px 30px -10px rgba(0,0,0,.5);}
+.tr-coach .tip b{color:var(--ink);}
+.tr-coach .tip i{font-style:normal;display:inline-flex;width:16px;height:16px;border-radius:50%;background:var(--blue);color:var(--surface);font-size:10px;font-weight:700;align-items:center;justify-content:center;margin-right:5px;}
+.tr-coach .ok{position:absolute;left:50%;transform:translateX(-50%);bottom:150px;border:0;background:var(--blue);color:var(--surface);font-family:inherit;font-size:13px;font-weight:700;border-radius:var(--radius-pill);padding:10px 26px;cursor:pointer;}

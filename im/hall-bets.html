@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>注单明细 · 幸运组 · IM168 原型</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared/styles.css?v=20260807k">
+<link rel="stylesheet" href="shared/hall.css?v=20260811jumper1">
+<link rel="stylesheet" href="shared/reference-theme.css?v=20260812refine24">
+<script src="shared/ui-consistency.js?v=20260812auth1" defer></script>
+<!--
+  游戏厅 · 明细（2026-08-06 结构改版）
+  ─────────────────────────────────────
+  游戏厅一层的注单汇总：手动投注和策略投注产生的每一注都在这里，
+  跨游戏收口 —— 每行标游戏（chip）＋来源。
+  2026-08-07（Hector）：来源那一栏只剩<策略代号>（可点回策略投注）；手动注单<不标>——
+    第一行没有代号本身就说明它不是策略下的注，再贴一枚「手动」标是把同一件事说两遍。
+  两个页签：进行中（未结）/ 已结算。切换是演示 JS（data-demo），不进交接。
+-->
+</head>
+<body>
+  <div class="stage">
+    <div class="phone" data-game="pk">
+      <div class="screen">
+
+        <div class="ghead chrome" data-component="HallHeader">
+          <div class="gtop">
+            <a class="gback" href="groups.html#groups" aria-label="返回群组"><svg class="icx" viewBox="25.0 51.0 11.0 17.0" fill="none"><path d="M34 66L27 59.5L34 53" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            <span class="gtitle"><b>注单明细</b><small>· 幸运组</small></span>
+            <span class="sp"></span>
+            <span class="bal" aria-label="钱包余额"><svg class="wic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"/><path d="M3 8V6a2 2 0 0 1 2-2h10"/><circle cx="16.5" cy="12.5" r="1.3" fill="currentColor" stroke="none"/></svg><b>240,000.00</b></span>
+          </div>
+        </div>
+
+        <div class="hall-body" data-component="MyBets">
+
+          <div class="btabs fg-btabs" id="betsTabs" data-component="BetsTabs">
+            <button type="button" class="btab on" data-tab="open">未结</button>
+            <button type="button" class="btab" data-tab="settled">已结</button>
+          </div>
+
+          <!-- 策略投注按「策略＋期号」汇总；单项只在点击后的 drawer 里展开。 -->
+          <div class="bet-list" id="betsOpen">
+            <article class="strategy-bet-group" data-component="StrategyBetGroup" data-code="C0404R5" data-period="第00089期" data-time="09:47" data-bet-count="3" data-total="310" data-status="open" tabindex="0" role="button">
+              <div class="sbg-head"><span class="game-chip g-pk">极速飞艇</span><b class="sbg-code">C0404R5</b><span class="sbg-per">第00089期 · <em>09:47</em></span><i class="sbg-chev" aria-hidden="true"></i></div>
+              <div class="sbg-overview"><span><i>本期注数</i><b>3 注</b></span><span><i>总投入</i><b>310.00</b></span><em class="sbg-status pending">待开奖</em></div>
+              <div class="sbg-lines" hidden>
+                <div class="sbg-line" data-stake="270" data-result="pending"><span><b>冠军 · 大</b><small>倍投 R4/5 · 每注 10</small></span><em>270.00</em><i class="pending">待开奖</i></div>
+                <div class="sbg-line" data-stake="30" data-result="pending"><span><b>亚军 · 双</b><small>倍投 R2/5 · 每注 10</small></span><em>30.00</em><i class="pending">待开奖</i></div>
+                <div class="sbg-line" data-stake="10" data-result="pending"><span><b>龙虎·冠十 · 龙</b><small>条件已触发 R1/5 · 连开 4 期</small></span><em>10.00</em><i class="pending">待开奖</i></div>
+              </div>
+            </article>
+            <article class="strategy-bet-group" data-component="StrategyBetGroup" data-code="C0506R5" data-period="第00089期" data-time="09:47" data-bet-count="2" data-total="10" data-status="open" tabindex="0" role="button">
+              <div class="sbg-head"><span class="game-chip g-pk">极速飞艇</span><b class="sbg-code">C0506R5</b><span class="sbg-per">第00089期 · <em>09:47</em></span><i class="sbg-chev" aria-hidden="true"></i></div>
+              <div class="sbg-overview"><span><i>本期注数</i><b>2 注</b></span><span><i>总投入</i><b>10.00</b></span><em class="sbg-status pending">待开奖</em></div>
+              <div class="sbg-lines" hidden>
+                <div class="sbg-line" data-stake="5" data-result="pending"><span><b>第四 · 小</b><small>固定投 R3/5 · 每注 5</small></span><em>5.00</em><i class="pending">待开奖</i></div>
+                <div class="sbg-line" data-stake="5" data-result="pending"><span><b>第六 · 单</b><small>条件已触发 R1/5 · 连开 5 期</small></span><em>5.00</em><i class="pending">待开奖</i></div>
+              </div>
+            </article>
+            <div class="bet-row" data-component="BetRow" data-stake="20">
+              <div class="br-top"><span class="game-chip g-pk">极速飞艇</span><span class="br-per">第00089期 · <em>09:41</em></span><span class="br-amt pending">¥20.00</span></div>
+              <div class="br-sub"><b class="br-pick">冠亚和 · 大</b><span class="sp"></span><span class="bet-res pending">待开奖</span></div>
+            </div>
+            <div class="bet-row" data-component="BetRow" data-stake="10">
+              <div class="br-top"><span class="game-chip g-pk10">极速赛车</span><span class="br-per">第778902期 · <em>09:38</em></span><span class="br-amt pending">¥10.00</span></div>
+              <div class="br-sub"><b class="br-pick">冠军 · 龙</b><span class="sp"></span><span class="bet-res pending">待开奖</span></div>
+            </div>
+          </div>
+
+          <!-- 已结算 -->
+          <!-- 2026-08-07（Hector：今天 ＋ 期数 放一起怪；历史会跨很多天，今天会重复无数次；
+             已结算需要日期区间筛选；宁可不按期数分组，时间写进每张卡）——
+             分组抬头（.bet-date）整块撤掉，改成：每张卡自带 期号 · 时间，已结算多一条日期筛选。 -->
+        <div class="bet-days" id="betsDays" hidden data-component="BetsDayFilter">
+          <button type="button" class="bday on" data-d="1">今天</button>
+          <button type="button" class="bday" data-d="3">近 3 天</button>
+          <button type="button" class="bday" data-d="7">近 7 天</button>
+          <button type="button" class="bday" data-d="0">全部</button>
+        </div>
+        <div class="bet-list" id="betsSettled" hidden>
+            <article class="strategy-bet-group" data-component="StrategyBetGroup" data-code="C0404R5" data-period="第00088期" data-time="09:42" data-bet-count="2" data-total="100" data-pnl="-80.4" data-hit="1" data-status="settled" data-ago="0" tabindex="0" role="button">
+              <div class="sbg-head"><span class="game-chip g-pk">极速飞艇</span><b class="sbg-code">C0404R5</b><span class="sbg-per">第00088期 · <em>09:42</em></span><i class="sbg-chev" aria-hidden="true"></i></div>
+              <div class="sbg-overview"><span><i>本期注数</i><b>2 注</b></span><span><i>总投入</i><b>100.00</b></span><span class="sbg-pnl lose"><i>本期盈亏</i><b>−80.40</b></span></div>
+              <div class="sbg-lines" hidden>
+                <div class="sbg-line" data-stake="10" data-pnl="9.6" data-hit="1" data-result="win"><span><b>第三 · 大</b><small>投入 10 · 连开 5 期</small></span><em>10.00</em><i class="win">+9.60</i></div>
+                <div class="sbg-line" data-stake="90" data-pnl="-90" data-hit="0" data-result="lose"><span><b>冠军 · 大</b><small>倍投 R3/5 · 投入 90</small></span><em>90.00</em><i class="lose">−90.00</i></div>
+              </div>
+            </article>
+            <article class="strategy-bet-group" data-component="StrategyBetGroup" data-code="C0506R5" data-period="第00088期" data-time="09:42" data-bet-count="2" data-total="10" data-pnl="-0.2" data-hit="1" data-status="settled" data-ago="0" tabindex="0" role="button">
+              <div class="sbg-head"><span class="game-chip g-pk">极速飞艇</span><b class="sbg-code">C0506R5</b><span class="sbg-per">第00088期 · <em>09:42</em></span><i class="sbg-chev" aria-hidden="true"></i></div>
+              <div class="sbg-overview"><span><i>本期注数</i><b>2 注</b></span><span><i>总投入</i><b>10.00</b></span><span class="sbg-pnl lose"><i>本期盈亏</i><b>−0.20</b></span></div>
+              <div class="sbg-lines" hidden>
+                <div class="sbg-line" data-stake="5" data-pnl="4.8" data-hit="1" data-result="win"><span><b>冠亚和 · 小</b><small>固定投 · 投入 5</small></span><em>5.00</em><i class="win">+4.80</i></div>
+                <div class="sbg-line" data-stake="5" data-pnl="-5" data-hit="0" data-result="lose"><span><b>第四 · 小</b><small>固定投 R2/5 · 投入 5</small></span><em>5.00</em><i class="lose">−5.00</i></div>
+              </div>
+            </article>
+            <div class="bet-row" data-component="BetRow" data-ago="0" data-stake="20" data-pnl="17.6" data-hit="1">
+              <div class="br-top"><span class="game-chip g-pk">极速飞艇</span><span class="br-per">第00087期 · <em>09:33</em></span><span class="br-amt win">+¥17.60</span></div>
+              <div class="br-sub"><b class="br-pick">冠亚和 · 单</b><span>¥20</span><span class="sp"></span><span class="bet-res win">已中奖</span></div>
+            </div>
+            <div class="bet-row" data-component="BetRow" data-ago="0" data-stake="5" data-pnl="-5" data-hit="0">
+              <div class="br-top"><span class="game-chip g-ssc">极速时时彩</span><span class="br-per">第20260806-221期 · <em>08:57</em></span><span class="br-amt lose">−¥5.00</span></div>
+              <div class="br-sub"><b class="br-pick">第1球 · 大</b><span>¥5</span><span class="sp"></span><span class="bet-res lose">未中奖</span></div>
+            </div>
+          
+            <article class="strategy-bet-group" data-component="StrategyBetGroup" data-code="C0404R5" data-period="第01402期" data-time="昨天 22:16" data-bet-count="1" data-total="20" data-pnl="19.2" data-hit="1" data-status="settled" data-ago="1" tabindex="0" role="button">
+              <div class="sbg-head"><span class="game-chip g-pk">极速飞艇</span><b class="sbg-code">C0404R5</b><span class="sbg-per">第01402期 · <em>昨天 22:16</em></span><i class="sbg-chev" aria-hidden="true"></i></div>
+              <div class="sbg-overview"><span><i>本期注数</i><b>1 注</b></span><span><i>总投入</i><b>20.00</b></span><span class="sbg-pnl win"><i>本期盈亏</i><b>+19.20</b></span></div>
+              <div class="sbg-lines" hidden>
+                <div class="sbg-line" data-stake="20" data-pnl="19.2" data-hit="1" data-result="win"><span><b>冠军 · 小</b><small>倍投 R2/5 · 投入 20</small></span><em>20.00</em><i class="win">+19.20</i></div>
+              </div>
+            </article>
+            <div class="bet-row" data-component="BetRow" data-ago="4" data-stake="50" data-pnl="-50" data-hit="0">
+              <div class="br-top"><span class="game-chip g-pk10">极速赛车</span><span class="br-per">第778120期 · <em>08-03 20:04</em></span><span class="br-amt lose">−¥50.00</span></div>
+              <div class="br-sub"><b class="br-pick">亚军 · 大</b><span>¥50</span><span class="sp"></span><span class="bet-res lose">未中奖</span></div>
+            </div>
+            <div class="bet-empty" id="betsEmpty" hidden>这个区间里没有已结算的注单。</div>
+        </div>
+
+        </div>
+
+        <!-- 固定在底部导航上方，不跟随注单列表滚动。
+             2026-08-08（Hector）：这一条<b>跟着页签走</b> —— 未结那一屏与已结那一屏
+             要回答的根本不是同一个问题（「现在押着多少」vs「这段赚了多少」）。
+             三格的内容由 renderSum() 现算，见页尾的演示脚本；这里只留一个空壳。 -->
+        <div class="bets-sum bets-fixedsum" id="betsSum" data-component="BetsSummary"></div>
+
+        <!-- 注单详情：点任意一张注单卡打开。内容全部读自那张卡自己（不另造数据）。 -->
+        <div class="bsheet-mask" id="bdMask2" hidden></div>
+        <div class="bsheet" id="betSheet" role="dialog" aria-modal="true" aria-label="注单详情" hidden>
+          <div class="bsheet-h"><b id="betSheetTitle">注单详情</b><button type="button" id="betSheetX" aria-label="关闭">×</button></div>
+          <div class="bsheet-b" id="betSheetB"></div>
+        </div>
+
+        <nav class="tabbar hallbar" data-component="HallNav">
+          <a class="nav" href="index.html"><svg viewBox="0 0 24 24"><path d="M12 3.2l1.8 5 5 1.8-5 1.8-1.8 5-1.8-5-5-1.8 5-1.8 1.8-5z"/><circle cx="18.2" cy="17.8" r="2.2"/></svg><span>游戏大厅</span></a>
+          <a class="nav" href="hall-plans.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12h.01"/></svg><span>策略投注</span></a>
+          <a class="nav" href="hall-results.html"><svg viewBox="0 0 24 24"><circle cx="7.5" cy="9" r="3.4"/><circle cx="16.5" cy="9" r="3.4"/><circle cx="12" cy="16.5" r="3.4"/></svg><span>开奖结果</span></a>
+          <a class="nav on" href="hall-bets.html"><svg viewBox="0 0 24 24"><path d="M6.5 3.5h11V21l-2.2-1.6L13 21l-1-0.8L11 21l-2.3-1.6L6.5 21V3.5z"/><path d="M9.5 8.5h5M9.5 12h5"/></svg><span>注单明细</span></a>
+        </nav>
+
+      </div>
+    </div>
+  </div>
+
+<script data-demo>
+/* 演示用：进行中 / 已结算 页签切换（不进交接） */
+(function(){
+  var tabs=document.getElementById('betsTabs');
+  var open=document.getElementById('betsOpen'),settled=document.getElementById('betsSettled');
+
+  /* 已结策略的大批量单期案例：卡面只看汇总，20 笔细项留在 drawer。 */
+  var exampleLines=[
+    '冠军 · 大','冠军 · 单','亚军 · 小','亚军 · 双','第三 · 大',
+    '第三 · 双','第四 · 小','第四 · 单','第五 · 大','第五 · 双',
+    '第六 · 小','第六 · 单','第七 · 大','第七 · 双','第八 · 小',
+    '第八 · 单','第九 · 大','第九 · 双','第十 · 小','龙虎·冠十 · 龙'
+  ];
+  var settledExamples=[
+    {game:'pk',gameName:'极速飞艇',code:'C0404R5',period:'第00087期',time:'09:37',stake:10,
+      wins:[0,1,3,5,6,8,10,12,14,17,19],mode:'倍投 R2/5'},
+    {game:'pk',gameName:'极速飞艇',code:'C0506R5',period:'第00086期',time:'09:32',stake:5,
+      wins:[1,4,6,9,11,14,16,18],mode:'固定投 R1/5'},
+    {game:'pk10',gameName:'极速赛车',code:'B0404R6',period:'第778901期',time:'09:28',stake:2,
+      wins:[0,2,3,5,7,8,10,11,13,15,17,19],mode:'倍投 R2/6'}
+  ];
+  function signed(v){return (v>0?'+':(v<0?'−':''))+Math.abs(v).toFixed(2);}
+  function exampleGroup(x){
+    var won={},pnl=0; x.wins.forEach(function(i){won[i]=1;});
+    var lines=exampleLines.map(function(name,i){
+      var hit=!!won[i],one=hit?x.stake*.96:-x.stake;pnl+=one;
+      return '<div class="sbg-line" data-stake="'+x.stake+'" data-pnl="'+one.toFixed(2)+'" data-hit="'+(hit?1:0)+'" data-result="'+(hit?'win':'lose')+'">'+
+        '<span><b>'+name+'</b><small>'+x.mode+' · 投入 '+x.stake+'</small></span><em>'+x.stake.toFixed(2)+'</em><i class="'+(hit?'win':'lose')+'">'+signed(one)+'</i></div>';
+    }).join('');
+    var total=x.stake*exampleLines.length,pcls=pnl>0?'win':(pnl<0?'lose':'');
+    return '<article class="strategy-bet-group" data-component="StrategyBetGroup" data-code="'+x.code+'" data-period="'+x.period+'" data-time="'+x.time+'" data-bet-count="20" data-total="'+total+'" data-pnl="'+pnl.toFixed(2)+'" data-hit="'+x.wins.length+'" data-status="settled" data-ago="0" tabindex="0" role="button">'+
+      '<div class="sbg-head"><span class="game-chip g-'+x.game+'">'+x.gameName+'</span><b class="sbg-code">'+x.code+'</b><span class="sbg-per">'+x.period+' · <em>'+x.time+'</em></span><i class="sbg-chev" aria-hidden="true"></i></div>'+ 
+      '<div class="sbg-overview"><span><i>本期注数</i><b>20 注</b></span><span><i>总投入</i><b>'+total.toFixed(2)+'</b></span><span class="sbg-pnl '+pcls+'"><i>本期盈亏</i><b>'+signed(pnl)+'</b></span></div>'+ 
+      '<div class="sbg-lines" hidden>'+lines+'</div></article>';
+  }
+  var firstManual=settled.querySelector('.bet-row');
+  if(firstManual)firstManual.insertAdjacentHTML('beforebegin',settledExamples.map(exampleGroup).join(''));
+
+  tabs.addEventListener('click',function(e){
+    var t=e.target.closest('.btab');if(!t)return;
+    tabs.querySelectorAll('.btab').forEach(function(x){x.classList.toggle('on',x===t);});
+    var isOpen=t.getAttribute('data-tab')==='open';
+    open.hidden=!isOpen;settled.hidden=isOpen;
+    days.hidden=isOpen; /* 日期筛选只属于已结算 —— 进行中都是当期的，没有区间可筛 */
+    renderSum();
+  });
+
+  /* ── 底部那条统计：2026-08-08（Hector）跟着页签换 ────────────────────────
+     未结与已结问的不是同一件事：
+       未结 ｜ 未结注单 N 注 · 押着多少（合计）· 在跑策略
+       已结 ｜ 这段盈亏（跟着日期筛选走）· 已结注单 N 注 · 中了几注
+     ⚠ 三个数都<b>现算自上面那些卡</b>，不是手写死的 —— 筛掉「昨天」以后，
+       「这段盈亏」当场跟着变；手写的话筛一下就自相矛盾。
+     ⚠ 「在跑策略 3 / 共 4 个」仍是示意值（这一页看不到策略的运行状态，那是策略页的数）。 */
+  function num(v){return parseFloat(v)||0;}
+  function items(root){return [].slice.call(root.querySelectorAll('.strategy-bet-group,.bet-row'));}
+  function betCount(item){return item.classList.contains('strategy-bet-group')?num(item.dataset.betCount):1;}
+  function stakeOf(item){return num(item.dataset.total||item.dataset.stake);}
+  function pnlOf(item){return num(item.dataset.pnl);}
+  function hitOf(item){return num(item.dataset.hit);}
+  function yuan(v){return (v<0?'−':'')+Math.abs(v).toFixed(2);}
+  function cell(lab,val,cls){return '<div class="bs"><i>'+lab+'</i><b'+(cls?' class="'+cls+'"':'')+'>'+val+'</b></div>';}
+  function renderSum(){
+    var box=document.getElementById('betsSum'),isOpen=!open.hidden,html;
+    if(isOpen){
+      var rows=items(open),count=rows.reduce(function(s,r){return s+betCount(r);},0),
+          amt=rows.reduce(function(s,r){return s+stakeOf(r);},0);
+      html=cell('未结注数',count+' 注')+
+           cell('未结金额',yuan(amt))+
+           cell('执行中策略','3<small> / 3</small>');
+    }else{
+      var vis=items(settled).filter(function(r){return !r.hidden;}),
+          count=vis.reduce(function(s,r){return s+betCount(r);},0),
+          pl=vis.reduce(function(s,r){return s+pnlOf(r);},0),
+          hit=vis.reduce(function(s,r){return s+hitOf(r);},0),
+          lab=(days.querySelector('.bday.on')||{}).textContent||'这段';
+      html=cell(lab+'盈亏',yuan(pl),pl>0?'win':(pl<0?'lose':''))+
+           cell('已结注数',count+' 注')+
+           /* ⚠ 用 span 不用 b：外层已经是 <b>，套第二个 b 会被浏览器拆行（实测「3 / 6 注」折成两行） */
+           cell('命中','<span class="win">'+hit+'</span><small> / '+count+' 注</small>');
+    }
+    box.innerHTML=html;
+  }
+  /* 日期区间筛选：卡上 data-ago＝几天前（0＝今天）。0 档＝全部。 */
+  var days=document.getElementById('betsDays');
+  function applyDays(b){
+    days.querySelectorAll('.bday').forEach(function(x){x.classList.toggle('on',x===b);});
+    var n=+b.getAttribute('data-d');
+    items(settled).forEach(function(r){
+      r.hidden=n>0&&(+r.getAttribute('data-ago')>=n);
+    });
+    var vis=items(settled).filter(function(r){return !r.hidden;}).length;
+    document.getElementById('betsEmpty').hidden=vis>0;
+    renderSum(); /* 筛掉几天，底下那条「这段盈亏」要跟着变 */
+  }
+  days.addEventListener('click',function(e){
+    var b=e.target.closest('.bday');if(b)applyDays(b);
+  });
+  /* ⚠ 落地就要跑一次：默认选中的是「今天」，不先筛一遍的话，
+     页面初始会把昨天/更早那几张也摆出来，与高亮的那颗 chip 自相矛盾。 */
+  applyDays(days.querySelector('.bday.on'));
+  renderSum();
+
+  /* ── 注单详情：2026-08-08（Hector：每张卡都要能点开看详情）────────────────
+     内容<b>全部读自那张卡自己</b>（游戏 · 代号 · 期号 · 时间 · 投注项 · 进程 · 金额 · 结果）——
+     不另造一份数据，卡上写什么，详情里就是什么，两处不可能对不上。
+     ⚠ 卡上原来就有一个可点的东西：策略代号（→ 策略页）。它<b>优先</b>，
+       点代号仍然跳走，点卡面其它任何位置才开详情。 */
+  var mask=document.getElementById('bdMask2'),sheet=document.getElementById('betSheet'),
+      stitle=document.getElementById('betSheetTitle'),sbody=document.getElementById('betSheetB');
+  function kv(k,v,cls){return v?('<div class="bsheet-kv"><i>'+k+'</i><b'+(cls?' class="'+cls+'"':'')+'>'+v+'</b></div>'):'';}
+  function txt(el){return el?el.textContent.trim():'';}
+  function openSheet(row){
+    var chip=row.querySelector('.game-chip'),code=row.querySelector('.bet-src'),
+        per=row.querySelector('.br-per'),amt=row.querySelector('.br-amt'),
+        pick=row.querySelector('.br-pick'),res=row.querySelector('.bet-res'),
+        metas=[].slice.call(row.querySelectorAll('.br-sub span')).filter(function(s){
+          return !s.classList.contains('sp')&&!s.classList.contains('bet-res');
+        }),
+        perTxt=txt(per),time=txt(per.querySelector('em')),
+        state=amt.classList.contains('win')?'win':(amt.classList.contains('lose')?'lose':'');
+    stitle.textContent='注单详情';
+    sbody.innerHTML=
+      '<div class="bsheet-id">'+(chip?chip.outerHTML:'')+(code?'<b>'+txt(code)+'</b>':'<b class="bsheet-manual">手动下注</b>')+'</div>'+ 
+      kv('投注项',txt(pick))+
+      kv('期号',perTxt.replace('· '+time,'').trim())+
+      kv('下注时间',time)+
+      kv('投入',yuan(stakeOf(row)))+
+      kv('进程',metas.map(txt).join(' · '))+
+      kv('结果',txt(res)+(state?('　'+txt(amt)):''),state)+
+      (code?'<a class="bsheet-go" href="hall-plans.html#mine='+txt(code)+'">查看策略</a>':'');
+    mask.hidden=false;sheet.hidden=false;
+  }
+  function openStrategySheet(group){
+    var chip=group.querySelector('.game-chip'),code=group.dataset.code,
+        count=betCount(group),total=stakeOf(group),pnl=pnlOf(group),hit=hitOf(group),
+        settledGroup=group.dataset.status==='settled',lines=group.querySelector('.sbg-lines');
+    stitle.textContent='策略注单明细';
+    sbody.innerHTML=
+      '<div class="bsheet-id bsheet-strategy-id">'+(chip?chip.outerHTML:'')+'<b>'+code+'</b>'+ 
+        '<span>'+group.dataset.period+' · '+group.dataset.time+'</span></div>'+ 
+      '<div class="bsheet-strategy-summary">'+
+        '<span><i>本期注数</i><b>'+count+' 注</b></span>'+ 
+        '<span><i>总投入</i><b>'+yuan(total)+'</b></span>'+ 
+        (settledGroup?'<span><i>命中／盈亏</i><b class="'+(pnl>0?'win':(pnl<0?'lose':''))+'">'+hit+' 注 · '+(pnl>0?'+':'')+yuan(pnl)+'</b></span>':
+          '<span><i>状态</i><b class="pending">待开奖</b></span>')+
+      '</div>'+ 
+      '<div class="bsheet-lines-title"><b>本期注单</b><span>'+count+' 笔</span></div>'+ 
+      '<div class="bsheet-lines">'+(lines?lines.innerHTML:'')+'</div>'+ 
+      '<a class="bsheet-go" href="hall-plans.html#mine='+code+'">进入策略</a>';
+    mask.hidden=false;sheet.hidden=false;
+  }
+  function closeSheet(){mask.hidden=true;sheet.hidden=true;}
+  document.querySelector('.hall-body').addEventListener('click',function(e){
+    if(e.target.closest('.bet-src'))return; /* 代号自己是链接，让它跳走 */
+    var group=e.target.closest('.strategy-bet-group');if(group){openStrategySheet(group);return;}
+    var row=e.target.closest('.bet-row');if(row)openSheet(row);
+  });
+  document.querySelector('.hall-body').addEventListener('keydown',function(e){
+    if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('strategy-bet-group')){
+      e.preventDefault();openStrategySheet(e.target);
+    }
+  });
+  document.getElementById('betSheetX').addEventListener('click',closeSheet);
+  mask.addEventListener('click',closeSheet);
+})();
+</script>
+</body>
+</html>

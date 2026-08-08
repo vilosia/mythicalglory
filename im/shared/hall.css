@@ -1,0 +1,455 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   IM168 · 游戏厅（小程序壳）专用样式 · 2026-08-06
+   ─────────────────────────────────────────────────────────────────────────
+   游戏厅改为「外部小程序」形态：自带底部导航（大厅 / 游戏 / 策略投注 / 我的投注）。
+   本档只放游戏厅壳与大厅/我的投注的新组件；平台级样式一律来自 shared/styles.css，
+   颜色只允许用 design-tokens.css 里的 token。
+   底部导航直接复用 .tabbar/.nav（styles.css §tabbar），本档只补 <a> 的还原。
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 游戏厅壳 ── */
+.hall-body{flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;}
+.hall-body::-webkit-scrollbar{display:none;}
+.hallbar a.nav{text-decoration:none;}
+/* 游戏厅导航是单套线性图标（没有 ic-on/ic-off 双份），选中态只换色不填实 —
+   styles.css 的 .tabbar .nav.on svg{fill:currentColor} 会把靶心/房子糊成实心块 */
+.tabbar.hallbar .nav.on svg{fill:none;}
+a.gback,a.bal{text-decoration:none;color:inherit;}
+.ghead .gtitle b{font-size:17px;font-weight:700;white-space:nowrap;}
+/* 08-06 四稿（Hector）：游戏厅壳的标题收成一行 ——「幸运组」直接跟在主标题旁。
+   styles.css §7139 的两行 grid（游戏名/群组）只留给游戏屏；本档只作用于 hall*.html。 */
+.ghead .gtitle{display:flex;align-items:baseline;gap:6px;min-width:0;max-width:none;} /* §7147 的 max-width:92px 一并解除 */
+.ghead .gtitle small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* ── 内页不出底部导航（08-06，Hector）──────────────────────────────────
+   执行动态／策略详情这类内页自己带底坞（指令栏、每注＋启用那一条），
+   再叠一条导航就是两层底部控件打架。内页只留返回，导航等回到列表页再出现。
+   用 :has() 直接看「现在开着哪个 view」，不必去改引擎的 show()。 */
+.screen:has(.view-plandetail.on) .hallbar,
+.screen:has(.view-planset.on) .hallbar,
+.screen:has(.view-feed.on) .hallbar{display:none;}
+
+/* ── 说明气泡 ⓘ（08-07，Hector：各屏小字说明太占地方）─────────────────────
+   原来每屏底部都挂一段小字（游戏页那句「带策略投注标的…」、开奖页「走势条怎么读」、
+   货架顶上那条口径条）。文字仍写在 HTML 里（前端要提字做 i18n），只是默认收起，
+   点 ⓘ 才展开。行为在 shared/hint.js。 */
+.info-wrap{position:relative;display:inline-flex;vertical-align:middle;}
+/* 全站同一枚：灰色实心圆 ＋ 白 i（Hector 08-07：所有说明图标长一个样）。
+   hall-plans 里引擎自带的 .bd-vq/.bd-tipq 也改成同一套，见该档内联样式。 */
+.info-i{width:16px;height:16px;flex:none;border:0;padding:0;border-radius:50%;cursor:pointer;
+  background:var(--faint);color:var(--surface);font-family:inherit;font-size:12px;font-weight:700;
+  line-height:16px;text-align:center;font-style:normal;}
+.info-wrap.open .info-i{background:var(--muted);}
+.info-pop{position:absolute;top:22px;left:0;z-index:40;width:max-content;max-width:min(272px,72vw);
+  background:var(--surface);border:1px solid var(--line-strong);border-radius:10px;
+  box-shadow:0 8px 24px rgba(20,40,80,.14);padding:9px 11px;
+  font-size:12px;line-height:1.6;font-weight:400;color:var(--muted);text-align:left;white-space:normal;}
+.info-pop.to-right{left:auto;right:0;}
+/* 气泡宽 272px，图标常在行中间 —— 按图标左对齐会顶出手机边框（实测溢出）。
+   凡是挂在区块标题行/筛选行上的，改成<铺满那一行>：left/right 都锁 0，永远不会越界。 */
+.hall-sec-head,.filter-row{position:relative;}
+/* 气泡要相对<整行>定位才能铺满 —— 所以这两种行里的 .info-wrap 不能是 relative，
+   否则 left:0;right:0 会算成图标自己的宽度（实测缩成 24px）。 */
+.hall-sec-head .info-wrap,.filter-row .info-wrap{position:static;}
+.hall-sec-head .info-pop,.filter-row .info-pop{left:0;right:0;width:auto;max-width:none;top:calc(100% + 2px);}
+/* 筛选行：chips 自己横滚（overflow-x:auto 会裁掉气泡），所以 ⓘ 放在滚动区<外面> */
+.filter-row{display:flex;align-items:center;gap:8px;padding:10px 12px 2px;}
+.filter-row .gfilter{flex:1;min-width:0;padding:0;}
+.filter-row .info-wrap{flex:none;}
+.info-pop b{color:var(--ink);}
+.info-pop a{color:var(--blue);text-decoration:none;font-weight:500;}
+.hall-sec-head .info-wrap{margin-left:2px;}
+
+/* ── 区块（大厅用）── */
+.hall-sec{margin:12px 12px 0;}
+.hall-body>.hall-sec:last-child{margin-bottom:16px;}
+.hall-sec .lobgrid{padding:0;}
+a.lobtile{display:block;text-decoration:none;color:inherit;}
+.hall-sec-head{display:flex;align-items:baseline;gap:8px;padding:2px 2px 8px;}
+.hall-sec-head b{font-size:15px;font-weight:700;color:var(--ink);}
+.hall-sec-head small{font-size:12px;color:var(--muted);}
+.hall-sec-head a{margin-left:auto;font-size:12px;color:var(--blue);text-decoration:none;}
+
+/* ── 游戏标签（跨游戏的策略/注单都要标明所属游戏）── */
+.game-chip{display:inline-flex;align-items:center;font-size:12px;line-height:17px;border-radius:8px;padding:0 6px;white-space:nowrap;}
+.game-chip.g-pk{background:var(--tint);color:var(--blue-d);}
+.game-chip.g-pk10{background:var(--warning-soft);color:var(--warning);}
+.game-chip.g-ssc{background:var(--positive-soft);color:var(--win);}
+
+/* ── 游戏一条横排（大厅顶部）── */
+.game-strip{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 4px;scrollbar-width:none;}
+.game-strip::-webkit-scrollbar{display:none;}
+.game-pill{flex:0 0 84px;display:flex;flex-direction:column;align-items:center;gap:5px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 6px 8px;text-decoration:none;color:var(--ink);text-align:center;}
+.game-pill b{font-size:12px;font-weight:500;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+.game-pill span{font-size:12px;color:var(--faint);white-space:nowrap;transform:scale(.92);}
+.game-pill.soon{opacity:.6;}
+.gp-ic{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.gp-ic.g-pk{background:var(--tint);border:1px solid var(--blue-line);}
+.gp-ic.g-pk10{background:var(--warning-soft);border:1px solid var(--gold);}
+.gp-ic.g-ssc{background:var(--positive-soft);border:1px solid var(--win);}
+.gp-ic.g-soon{background:var(--fill);border:1px solid var(--line-strong);}
+.gp-ic.g-more{background:var(--surface);border:1px dashed var(--blue-line);color:var(--blue);font-size:18px;}
+
+/* ── 概览条（08-07 三稿：一块淡蓝卡 ＋ 三栏细分隔线）─────────────────────
+   一稿是 --hero-grad 外框套白格子（双层框，Hector：外框不要）；
+   二稿把三格刷成实心蓝（Hector：三块蓝太丑 —— 满屏白卡上顶三块饱和蓝，
+   蓝色还重复三次，比内容本身抢眼）。
+   三稿反过来：<一块>淡蓝卡（--blue-soft）＋ 三栏用 1px 细线分开，
+   数字回到墨色、盈亏回到 --win/--red —— 和页面其余白卡是同一套语言，只是浅浅一层底。
+   三页共用：大厅 .stat-row / 明细 .bets-sum / 策略投注·执行动态 .bd-fxg。 */
+/* ㉗ 08-07（Hector：改成白的）—— 淡蓝底换白底：这一条是页面的第一块内容，
+   浅蓝底让它读起来像一张「提示卡」，而它其实是本页的数字本体。
+   白底 ＋ 细灰线之后，颜色只剩下盈亏那一个数在用（--win/--red），正是该被看见的东西。
+   三处一起改（大厅 .stat-row / 明细 .bets-sum / 策略投注 .bd-fxg，后者在 hall-plans.html 里）。 */
+/* 2026-08-07（Hector：把顶部那片白往下延，把这块也垫成白底）——
+   这块统计原来浮在灰色页底上，顶栏（白）和它之间夹着一条 12px 的灰缝，
+   读起来像「页面已经开始了，但第一块内容还没落位」。
+   做法：用一个 ::before 往四周各铺 12px 的白 —— 上边正好接住顶栏，
+   左右出血到屏幕边，下边给 12px 白垫底，再往下才回到灰色的内容区。
+   ⚠ 为什么用 ::before 而不是给父容器上白底：这两页的父容器（.hall-body）
+     整条都要留灰（下面的卡片区靠灰底衬托），只能局部铺。
+   ⚠ 两条都踩过，别改回去：
+     ① .stat-row 自己要 <b>z-index:0</b> 建一个层叠上下文，否则 ::before 的 z-index:-1
+        会掉到<祖先的背景>之下、整片白看不见。
+     ② 这条规则原来带 <b>overflow:hidden</b> —— 它会把 ::before 那 12px 的出血
+        <b>整圈裁掉</b>，于是样式全对、计算值全对，屏幕上却一点变化都没有。
+        去掉它是安全的：格子（.st/.bs）本身没有底色，圆角只由容器的 border-radius 负责，
+        没有任何东西需要被裁。 */
+/* 2026-08-07（Hector：用没有外框的那一版）—— 外框与圆角<撤掉>：
+   垫成白底之后那圈 1px 灰线在白上几乎看不见，反而在策略投注页（底色也是白）显得多了一道框；
+   两页并排看像两个组件。现在三处一律：白底 · 无框 · 只留格与格之间那条竖线。
+   分隔靠的是<白底本身>——白色band 到哪儿结束，这块统计就到哪儿结束。 */
+.stat-row,.bets-sum{display:flex;margin:12px 12px 0;background:var(--surface);
+  border:0;border-radius:0;position:relative;z-index:0;}
+.stat-row::before,.bets-sum::before{content:"";position:absolute;z-index:-1;
+  left:-12px;right:-12px;top:-12px;bottom:-12px;background:var(--surface);}
+.stat-row .st,.bets-sum .bs{flex:1;min-width:0;padding:10px 11px;}
+.stat-row .st+.st,.bets-sum .bs+.bs{border-left:1px solid var(--line);}
+.stat-row .st i,.bets-sum .bs i{display:block;font-style:normal;font-size:12px;
+  color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.stat-row .st b,.bets-sum .bs b{display:block;margin-top:3px;font-size:16px;font-weight:700;
+  color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums;}
+.stat-row .st b small,.bets-sum .bs b small{font-weight:400;font-size:12px;color:var(--muted);}
+.stat-row .st b.up,.bets-sum .bs b.win{color:var(--win);}
+.stat-row .st b.down,.bets-sum .bs b.lose{color:var(--red);}
+
+/* ── 策略投注 · 精选（08-06 五稿：卡片本体来自 shared/plancard.css，
+      与策略投注页<同一套>。本档只管这一段在大厅里的排布）── */
+.hall-star .bd-basis{margin:0 0 8px;}
+.plan-featured{display:grid;grid-template-columns:minmax(0,1fr);gap:9px;}
+/* 策略页里卡自带左右外边距（在整屏列表里用），进大厅的区块后由区块管边距 */
+.plan-featured .bd-card{margin:0;display:block;text-decoration:none;color:inherit;}
+/* 大厅上的类型标：进行中（绿）／可套用（蓝）—— 卡片本身两种版式已经不一样，
+   这枚标是把「这是我在跑的」与「这是能套用的模板」说死，两者点进去的地方也不同 */
+.lob-tag{flex:none;margin-left:6px;font-size:12px;line-height:17px;font-weight:500;border-radius:8px;padding:0 6px;white-space:nowrap;}
+.lob-tag.lob-run{background:var(--positive-soft);color:var(--win);}
+.lob-tag.lob-tpl{background:var(--tint);color:var(--blue-d);}
+/* 进行中卡在策略页自带左右外边距（整屏列表用），进大厅区块后由区块管边距 */
+.plan-featured .bd-ocard{margin:0;display:block;text-decoration:none;color:inherit;}
+.plan-new{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:9px;border:1px dashed var(--blue-line);border-radius:12px;padding:11px;color:var(--blue);font-size:13px;text-decoration:none;background:var(--surface);}
+
+/* ── 游戏页（08-06 六稿：全量 SGWin 阵容 · 缩略图网格）──────────────────
+   带「策略投注」标的游戏＝可以挂策略自动下注，这是本平台主推的玩法。 */
+.gfilter{display:flex;gap:7px;padding:10px 12px 2px;overflow-x:auto;scrollbar-width:none;}
+.gfilter::-webkit-scrollbar{display:none;}
+.gfchip{flex:none;padding:5px 12px;border-radius:999px;font-size:12px;background:var(--fill);color:var(--muted);border:1px solid transparent;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.gfchip.on{background:var(--tint);color:var(--blue-d);border-color:var(--blue-line);font-weight:500;}
+.ggrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+.gcard{display:block;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:7px 7px 9px;text-decoration:none;color:var(--ink);}
+.gcard[hidden]{display:none;}
+.gc-thumb{display:flex;align-items:center;justify-content:center;height:62px;border-radius:10px;font-size:27px;position:relative;}
+.gc-thumb.c-race{background:var(--tint);}
+.gc-thumb.c-ssc{background:var(--positive-soft);}
+.gc-thumb.c-k3{background:var(--warning-soft);}
+.gc-thumb.c-kl8{background:var(--blue-soft);}
+.gc-thumb.c-lhc{background:var(--danger-soft);}
+.gc-live{position:absolute;top:6px;right:6px;display:inline-flex;align-items:center;gap:3px;font-size:12px;line-height:16px;color:var(--win);background:var(--surface);border-radius:8px;padding:0 5px;}
+.gc-live i{width:5px;height:5px;border-radius:50%;background:var(--win);}
+.gc-name{display:block;margin-top:7px;font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gc-sub{display:flex;align-items:center;gap:6px;margin-top:3px;font-size:12px;color:var(--muted);}
+.gc-code{font-variant-numeric:tabular-nums;letter-spacing:.3px;}
+.gc-sub .sp{margin-left:auto;}
+.gc-strat{display:inline-flex;align-items:center;gap:3px;margin-top:5px;font-size:12px;line-height:18px;color:var(--blue-d);background:var(--tint);border-radius:8px;padding:0 6px;}
+.gcard.soon{opacity:.6;}
+.gcard.soon .gc-thumb{background:var(--fill);}
+.gc-soonlab{display:inline-block;margin-top:6px;font-size:12px;line-height:18px;color:var(--muted);background:var(--fill);border-radius:8px;padding:0 6px;}
+.games-note{margin:12px 12px 16px;padding:11px 12px;background:var(--surface);border:1px solid var(--blue-line);border-radius:12px;font-size:12px;color:var(--muted);line-height:1.6;}
+.games-note b{color:var(--ink);}
+.games-note a{color:var(--blue);text-decoration:none;font-weight:500;}
+
+/* ── 开奖页（08-06 五稿：两面竖着挂在各名次下面，不再把名次重列一遍）─────────────
+   四稿是一张 11 行的表，名次在球号上面已经排过一次，表里又排一次 —— 白占一屏。
+   现在球号与两面**共用同一套 10 列网格**，读法变成「顺着一列往下看」：
+     球号 → 名次 → 大小 → 单双 → 龙虎
+   龙虎只有 5 组（冠十/亚九/三八/四七/五六），所以 6–10 名那几格留空。
+   游戏标只在「全部」出现；进了某个游戏的列表就不必每行再说一遍（.by-game）。 */
+.rlist{margin:10px 12px 16px;display:grid;grid-template-columns:minmax(0,1fr);gap:8px;}
+.res-item{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+.res-item[hidden]{display:none;}
+.rr-head{display:flex;align-items:center;gap:8px;padding:10px 12px 0;cursor:pointer;}
+.rr-per{font-size:14px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap;}
+.rr-time{font-size:12px;color:var(--muted);white-space:nowrap;}
+.rr-cv{margin-left:auto;flex:none;color:var(--faint);font-size:14px;line-height:1;white-space:nowrap;}
+.res-item.open .rr-cv i{display:inline-block;transform:rotate(180deg);}
+.rlist.by-game .game-chip{display:none;}
+/* 球号与两面同一套网格 —— 列对齐是这一稿的全部意义 */
+.rr-grid{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;padding:9px 12px 11px;justify-items:center;align-items:center;}
+/* 时时彩只有 5 球：不要摊满整行（5 个 1fr 会拉出大空隙），列宽固定、整块靠左 */
+.rr-grid.five{grid-template-columns:repeat(5,44px);justify-content:start;justify-items:start;gap:6px;}
+.rr-two{display:none;}
+.res-item.open .rr-two{display:grid;border-top:1px solid var(--line);padding-top:9px;}
+.tw-pos{font-size:12px;color:var(--muted);line-height:17px;white-space:nowrap;}
+.tw-v{display:inline-block;min-width:22px;text-align:center;border-radius:6px;line-height:19px;padding:0 4px;font-size:12px;font-weight:700;color:var(--surface);}
+.tw-v.b{background:var(--red);}
+.tw-v.s{background:var(--blue);}
+/* 合值那一行与说明只在展开时出现（收起时整行只留球号） */
+.tw-sum{display:none;}
+.res-item.open .tw-sum{display:flex;align-items:center;gap:7px;padding:9px 12px 11px;font-size:12px;color:var(--muted);border-top:1px solid var(--line);}
+.tw-sum b{color:var(--ink);font-weight:500;white-space:nowrap;}
+
+.res-hint{margin:0 12px 16px;padding:10px 12px;background:var(--surface);border:1px solid var(--blue-line);border-radius:12px;font-size:12px;color:var(--muted);line-height:1.6;}
+.res-hint b{color:var(--ink);}
+.res-hint a{color:var(--blue);text-decoration:none;font-weight:500;}
+.bb.dg{background:var(--fill);color:var(--ink);}
+
+/* ── 聊天室入口卡（大厅）── */
+.hall-chat-card{display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;text-decoration:none;color:var(--ink);}
+.hall-chat-card .ci{flex:none;width:42px;height:42px;border-radius:10px;background:var(--tint);color:var(--blue);display:flex;align-items:center;justify-content:center;}
+.hall-chat-card .ci svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
+.hall-chat-card .cx{flex:1;min-width:0;}
+.hall-chat-card .cx b{display:block;font-size:14px;font-weight:500;}
+.hall-chat-card .cx span{display:block;font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hall-chat-card .online{flex:none;display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--win);}
+.hall-chat-card .online i{width:6px;height:6px;border-radius:50%;background:var(--win);}
+.hall-chat-card .chev{flex:none;color:var(--faint);font-size:16px;}
+
+/* ── 我的投注 ── */
+.bet-list{margin:8px 12px 12px;display:grid;grid-template-columns:minmax(0,1fr);gap:8px;}
+.bet-list[hidden]{display:none;}
+.bet-date{font-size:12px;color:var(--muted);padding:6px 2px 0;}
+.bet-row{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;}
+/* 2026-08-07（Hector：代号挪到游戏名旁边，让层级和别的卡一致；投注项下移；卡上要有期号）——
+   原来第一行是「游戏标 ＋ 投注项 ＋ 金额」、第二行是「代号 ＋ 玩法 ＋ 状态」，
+   于是同一张卡的<身份>被拆在两行：游戏在上、这注属于哪个策略在下。
+   全站其它卡都是「第一行＝身份，第二行＝这一条在干什么」，这里改成同一套：
+     第一行：[游戏] 代号 · 期号 …………… 金额
+     第二行：<b>投注项</b> 玩法/进程 ……… 状态
+   期号原来只有手动注单自己写着（策略注单靠分组抬头交代）—— 现在每张卡都写，
+   已结算那一屏跨期混排时不必再回头找分组抬头。 */
+.bet-row .br-top{display:flex;align-items:center;gap:6px;}
+.bet-row .br-top b{font-size:14px;font-weight:500;color:var(--ink);}
+.bet-row .br-per{font-size:12px;color:var(--faint);white-space:nowrap;
+  font-variant-numeric:tabular-nums;}
+.bet-row .br-pick{flex:none;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap;}
+.bet-row .br-amt{margin-left:auto;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;}
+.bet-row .br-amt.win{color:var(--win);}
+.bet-row .br-amt.lose{color:var(--red);}
+.bet-row .br-amt.pending{color:var(--muted);font-weight:500;}
+.bet-row .br-sub{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:12px;color:var(--muted);}
+.bet-row .br-sub .sp{margin-left:auto;}
+/* 来源标：手动＝灰 chip（它是一个<分类标签>，和游戏标不同色不同族，同行出现不打架）。 */
+.bet-src{display:inline-flex;align-items:center;font-size:12px;line-height:17px;border-radius:8px;padding:0 6px;background:var(--fill);color:var(--muted);text-decoration:none;}
+/* 2026-08-07（Hector：同一张卡里别重复同一种标的样式；策略代号要和别处的卡一致）——
+   策略代号原来也是一枚<蓝底药丸>，和上一行的游戏标（.game-chip.g-pk）同色同形，
+   一张卡里两枚一模一样的蓝药丸，读者得看字才知道它们是两种东西。
+   代号在别处（进行中卡 .bd-ohn / 大厅精选卡）从来都是<墨色粗体的裸文字>——
+   它是这条注单的<身份>，不是一个可以贴来贴去的标签。这里改回同一套写法：
+   墨色 · 700 · 定宽数字 · 与 .bd-ohn 同一档字距。仍然是 <a>，点了还是去那个策略。 */
+.bet-src.plan{background:none;padding:0;border-radius:0;color:var(--ink);font-weight:700;
+  letter-spacing:.3px;font-family:var(--font-code);}
+.bet-src.plan:active{color:var(--blue);}
+.bet-res{font-size:12px;}
+.bet-res.win{color:var(--win);}
+.bet-res.lose{color:var(--red);}
+.bet-res.pending{color:var(--warning);}
+
+
+/* ══ 2026-08-07（Hector：这种情况要留点空间）══════════════════════════════
+   明细页的 进行中/已结算 页签：选中态的下划线钉在 bottom:-1px（正好压在那条分隔线上），
+   而 styles.css:3444 有一条 .fg-btabs{margin-bottom:0!important} —— 于是页签下缘、
+   下划线、分隔线、下面第一行内容四样东西挤在同一处，读起来像被切了一刀。
+   ⚠ 那条 !important 是旧原型的全局规则，不能改（改了会动到 approvals/members 那几屏）——
+     只在游戏厅这几页覆盖它，同样带 !important 才压得过去。 */
+/* 补充（Hector：我说的是白底和文字之间要有空隙，现在贴在一起了）——
+   上一版只加了页签<下面>的空隙，真正贴住的是<上面>：统计那块的白底band 在页签正上方结束，
+   页签文字紧跟着那条白/灰交界线起排，看起来像文字压在色块边缘上。
+   所以上面留 12px（把文字从交界线推开），下面交给日期筛选自己的间距控制。 */
+.hall-body .fg-btabs,#betsTabs{margin-top:12px!important;margin-bottom:0!important;}
+
+
+/* ══ 明细 · 2026-08-07（Hector）══════════════════════════════════════════
+   ① 分组抬头（今天 · 第 00088 期）撤掉：期号已经写在每张卡上，而历史一旦跨天，
+      「今天」会重复很多次，且同一天里换一期就要多一条抬头 —— 抬头比卡还密。
+   ② 时间写进每张卡（期号 · 时间 同处第一行，两者都是「什么时候」）。
+   ③ 已结算多一条日期区间筛选（今天 / 近3天 / 近7天 / 全部）——
+      进行中不需要：那一屏都是当期未结的注，没有区间可言。 */
+.bet-days{display:flex;gap:7px;margin:0 12px 10px;overflow-x:auto;scrollbar-width:none;}
+.bet-days::-webkit-scrollbar{display:none;}
+.bet-days[hidden]{display:none;}
+.bday{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:var(--radius-pill);
+  padding:5px 13px;font-family:inherit;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;white-space:nowrap;}
+.bday.on{border-color:var(--blue);background:var(--tint);color:var(--blue-d);font-weight:700;}
+.bet-empty{margin:2px 12px 12px;padding:22px 14px;text-align:center;font-size:12px;color:var(--muted);
+  border:1px dashed var(--line-strong);border-radius:12px;}
+.bet-empty[hidden]{display:none;}
+/* 期号 ＋ 时间：可压缩（极速时时彩那种长期号在 375 下会顶到金额） */
+.bet-row .br-per{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;}
+
+/* 2026-08-07（Hector：日期和时间要放在一起）—— 原来跨天的卡写成「昨天 第01402期 · 22:16」，
+   日期被期号<劈开>在两头，读的时候要跳一下才能把「昨天」和「22:16」拼成一个时刻。
+   改成 期号 · <b>日期 时间</b>：期号一段、时刻一段，日期与时间永远相邻。
+   ⚠ 今天的卡<不写日期>（只有时间）—— 写了就是 Hector 上一轮点名的「今天重复很多次」。
+     所以 .br-per em 里可能是「22:16」也可能是「昨天 22:16」，两种都是同一个单位。 */
+.bet-row .br-per em{font-style:normal;white-space:nowrap;}
+
+/* 2026-08-07（Hector：手动 那枚标不用了，去掉）——
+   手动注单的第一行现在是「[游戏] 期号 · 时间」，没有代号那一段；
+   有没有代号本身就说明了它是不是策略下的注，不必再贴一枚标签说一遍。
+   ⚠ .bet-src 那条规则留着（策略代号 .bet-src.plan 还在用它当基底）。 */
+
+
+/* ══ 游戏页 · 2026-08-08 改版（Alex：把 游戏 当落地页，玩家先见到的是熟悉的玩法；
+   现在这一页太素）══════════════════════════════════════════════════════════
+   照参考图的骨架搭：欢迎抬头 · 长龙横幅 · 左侧分类竖轨 ＋ 右侧按分类分组的大图卡 ·
+   左下 AI 策略浮标。三处与参考图<刻意不同>，都写在下面对应的段里。
+   ⚠ 卡面那张 3D 渲染图<没有素材>：这里用「渐变面 ＋ 大字玩法名 ＋ 几颗球」现画，
+     位置、比例、圆角都按参考图留好了 —— 出图后把 .gx-art 换成 <img> 即可，其余不动。 */
+/* 2026-08-08（Hector 选定修法 C：顶栏一律白，蓝挪进内容区）——
+   问题：落地页原来是深蓝顶栏，另外四屏是白顶栏，切页时顶上整块变色，像换了个 app。
+   C 的做法：<b>五屏顶栏完全一样（白）</b>，蓝降一级、变成内容区里的东西。
+   ⚠ Hector 补充：<b>不要再套一层</b> —— 不做「蓝色 hero 卡里面再放一张白色长龙横幅」
+     （卡中卡，两层圆角两层底，比原来还重）。改成<b>长龙横幅自己变蓝</b>：
+     蓝就是这一条，没有额外容器。所以落地页的蓝＝那一条横幅，不多不少。 */
+.gx-top{background:var(--surface);border-bottom:1px solid var(--line);padding:8px 12px 11px;flex:none;}
+.gx-gtop{display:flex;align-items:center;gap:8px;}
+.gx-gtop .gback{flex:none;display:inline-flex;align-items:center;justify-content:center;
+  width:28px;height:28px;margin-left:-6px;color:var(--ink);text-decoration:none;}
+.gx-gtop .gback .icx{width:11px;height:17px;}
+.gx-gtop .gtitle{flex:none;display:flex;align-items:baseline;gap:5px;}
+.gx-gtop .gtitle b{font-size:17px;font-weight:700;color:var(--ink);letter-spacing:.2px;}
+.gx-gtop .gtitle small{font-size:12px;color:var(--faint);font-weight:400;}
+.gx-gtop .sp{flex:1;}
+/* 钱包回到全站那一枚在白底上的样子 */
+.gx-top .gx-bal{flex:none;display:inline-flex;align-items:center;gap:5px;background:var(--tint);
+  border-radius:var(--radius-pill);padding:6px 11px;color:var(--blue-d);text-decoration:none;}
+.gx-top .gx-bal b{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;}
+.gx-top .gx-bal .wic{stroke:var(--blue-d);}
+/* ══ 策略投注推广位（Hero）══ 2026-08-08（Hector 选 ②，并要求长龙转白）
+   一屏只留一块蓝 —— 蓝给这条推广位；长龙横幅转白（见下）。
+   主视觉＝回测曲线：策略投注自己的图形语言，出血到右下角，压在文字后面。 */
+.gx-promo{position:relative;display:block;overflow:hidden;flex:none;margin:11px 12px 0;
+  border-radius:16px;padding:13px 14px 12px;text-decoration:none;color:#fff;
+  background:linear-gradient(118deg,#0B52CC 0%,#126BFF 58%,#2E7DFF 100%);
+  box-shadow:0 6px 20px rgba(11,82,204,.30);}
+/* 右上角一团很淡的光 —— 是<扩散>不是玻璃球（不做参考图那种高光小球） */
+.gx-promo::after{content:"";position:absolute;right:-30px;top:-46px;width:150px;height:150px;
+  border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.22),rgba(255,255,255,0) 68%);}
+.gx-pfig{position:absolute;right:0;bottom:0;width:64%;height:76%;z-index:0;pointer-events:none;}
+.gx-pfig svg{width:100%;height:100%;display:block;}
+.gx-ptx{position:relative;z-index:1;display:block;}
+.gx-ptx small{display:block;font-size:10.5px;font-weight:700;color:#BBD4FF;letter-spacing:.6px;}
+.gx-ptx b{display:block;font-size:19px;font-weight:700;color:#fff;margin-top:3px;letter-spacing:.2px;}
+.gx-ptx em{display:block;font-style:normal;font-size:11.5px;color:#DCE9FF;margin-top:3px;}
+.gx-pfoot{position:relative;z-index:1;display:flex;align-items:center;gap:9px;margin-top:11px;}
+.gx-pcta{flex:none;background:#fff;color:var(--blue-d);border-radius:9px;padding:7px 13px;
+  font-size:12.5px;font-weight:700;}
+/* 右上角：曲线在这一带最低，字不会压在线上 */
+.gx-pnote{position:absolute;z-index:2;right:14px;top:14px;font-size:10px;font-weight:700;
+  color:#EAF2FF;background:rgba(255,255,255,.16);border-radius:999px;padding:3px 9px;}
+/* 曲线收一点，别爬到按钮那一行去 */
+.gx-pfig{height:66%;width:60%;}
+/* 长龙横幅：转白（蓝给了上面的推广位）。它仍是「点了就下注」，所以按钮留蓝。 */
+.gx-streak{display:flex;align-items:center;gap:8px;margin:10px 12px 0;background:var(--surface);
+  border:1px solid var(--line);border-radius:13px;padding:10px 10px 10px 12px;
+  text-decoration:none;color:var(--ink);}
+.gx-streak .zap{flex:none;font-size:14px;}
+.gx-streak .nm{flex:1;min-width:0;font-size:12.5px;font-weight:500;color:var(--ink);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gx-streak .run{flex:none;font-size:12px;font-weight:700;color:var(--red);}
+.gx-streak .sd{flex:none;display:inline-flex;align-items:center;justify-content:center;
+  width:21px;height:21px;border-radius:6px;background:var(--red);color:#fff;font-size:11px;font-weight:700;}
+.gx-streak .go{flex:none;background:var(--blue);color:#fff;border-radius:9px;
+  padding:7px 12px;font-size:12.5px;font-weight:700;}
+/* 「游戏精选」标题（.gx-hd）2026-08-08 撤掉 —— 分类页签已经在说这一段是什么 */
+/* .gx-vtog 列表/宫格切换：随竖轨版退役（方向二只有一种版式） */
+/* 主体（2026-08-08 · 主页卡片）：横向分类页签 ＋ 两列横向白卡。
+   ⚠ 竖轨那一套（.gx-body/.gx-rail/.gx-grp）已退役 —— 五个分类横着排得下，
+     省回左边 62px 全给卡片，卡因此更宽、图更大。 */
+.gx-tabs{flex:none;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding:0 12px 10px;}
+.gx-tabs::-webkit-scrollbar{display:none;}
+.gx-tabs{padding-top:13px;}
+.gx-tabs button{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--muted);
+  font-family:inherit;font-size:12.5px;border-radius:var(--radius-pill);padding:6px 14px;
+  cursor:pointer;white-space:nowrap;}
+.gx-tabs button em{font-style:normal;font-size:10.5px;margin-left:4px;opacity:.75;}
+.gx-tabs button.on{background:var(--blue-d);border-color:var(--blue-d);color:#fff;font-weight:700;}
+.gx-list{flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:0 12px 78px;}
+.gx-list::-webkit-scrollbar{display:none;}
+.gx-grp[hidden]{display:block;}
+.gx-gh{font-size:12.5px;font-weight:700;color:var(--ink);padding:2px 2px 8px;}
+.gx-grp+.gx-grp .gx-gh{padding-top:14px;}
+.gx-grp.gx-solo .gx-gh{display:flex;}   /* jumper 模式始终保留分区标题 */
+.gx-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+/* 2026-08-08（Hector 追加）：卡从 flex 行改成 <两列网格> ——
+   左列是缩略图（跨两行），右列上名字、下开奖倒计时。
+   为什么不是加一层包裹 span：14 张卡都要改结构，网格能只动 CSS 就把第二行接进来。 */
+.gx-card{position:relative;display:grid;grid-template-columns:56px minmax(0,1fr);
+  /* min-height 92 → 76：92 减掉图 56 与上下 padding 20 还多出 16px，全落在上下，
+     于是上下留白 18px、左右只有 10px，卡看起来被上下撑开。76＝56＋10×2，四边一样宽。 */
+  column-gap:9px;row-gap:3px;align-content:center;justify-items:start;min-height:76px;
+  border-radius:18px;overflow:hidden;text-decoration:none;color:var(--ink);background:var(--surface);
+  box-shadow:0 4px 16px rgba(20,40,80,.07);padding:10px;}
+.gx-card[hidden]{display:none;}
+/* 缩略图使用纯图形方形裁切，不带运营图里的文字。
+   ⚠ 64 → 56：右列在 375 宽只有 ~83px，缩略图每让出 1px 名字就多 1px —— 名字塞不下正是这一轮要修的。 */
+.gx-art{display:block;position:relative;grid-column:1;grid-row:1/span 2;align-self:center;
+  width:56px;height:56px;border-radius:14px;overflow:hidden;
+  background:#F4F7FD;}
+
+
+
+/* 2026-08-08：卡面从 emoji 换成<自己画的>内联 SVG（六类各一张，见 index.html 的说明）。
+   单色描线用 currentColor，所以整套跟着品牌蓝走 —— 换主题色不用改图。
+   ⚠ 抄参考图那套 3D 渲染是版权问题，没做也不会做；美术出图后换成 <img> 即可。 */
+.gx-art .gly{display:flex;align-items:center;justify-content:center;position:absolute;inset:0;
+  color:var(--blue);}
+.gx-art .gly svg{width:52px;height:36px;}
+.gx-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:inherit;}
+.gx-card.soon .gx-art .gly{color:var(--faint);}
+/* 玻璃球高光（.b1/.b2）随「深蓝实底」一起撤掉 —— 那是参考图最好认的一个特征 */
+/* 2026-08-08（Hector 追加）：名字<不再省略号>。
+   原来是 17px + nowrap + ellipsis，右列只有 ~83px，「极速赛车（自选）」被切成「极速赛车…」——
+   两张赛车卡在全部态上下相邻，玩家看到的是两个一模一样的名字，等于没标。
+   改法：字号 17 → 14px，最多折两行（-webkit-line-clamp 兜底超长名）。
+   ⚠ 14 是量出来的上限：右列实测 86px，最长的一行名「极速快乐十分」6 字刚好进去；
+     14.5 就会把它挤成两行（实测过）。八字名（两张「（自选）」）本来就折两行，两行都在框内。 */
+.gx-nm{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+  grid-column:2;grid-row:1;align-self:end;width:100%;min-width:0;
+  font-size:14px;line-height:1.28;font-weight:700;color:var(--ink);margin-top:0;
+  overflow:hidden;overflow-wrap:anywhere;}
+/* 开奖倒计时：名字下面那一行。这一版加的<唯一>新信息 ——
+   选游戏时真正在比的是「哪一场马上开」，原来要点进投注页才看得到。
+   数字用等宽表格数字，秒变化时不会左右抖。 */
+.gx-timer{grid-column:2;grid-row:2;align-self:start;display:flex;align-items:center;gap:4px;
+  font-size:11px;line-height:1.2;font-weight:600;color:var(--muted);white-space:nowrap;}
+/* 2026-08-08：标签「距下期」换回一枚时钟图标（见 index.html 里的说明）。
+   12px 是量出来的下限 —— 再小在 375 上就糊成一个点；跟着 --faint 走，不与数字抢。 */
+.gx-timer svg{width:12px;height:12px;flex:none;color:var(--faint);}
+.gx-timer b{font-weight:700;font-size:11.5px;color:var(--blue-d);
+  font-variant-numeric:tabular-nums;font-feature-settings:"tnum";}
+/* 最后 15 秒转红：这一场要封盘了，是「现在点进去还来得及吗」的答案 */
+.gx-timer.hot b{color:var(--red);}
+.gx-card.soon .gx-timer{display:none;}
+/* 2026-08-08（Hector）：卡上撤掉<游戏号>与<开奖频率> ——
+   游戏号是后台标识，玩家不认；频率在投注页顶上一直写着，选游戏的时候还不需要。
+   卡上只留：图 · 名字 · 一枚「策略投注」（只有支持这个玩法的游戏才有）。
+   ⚠ 那枚标现在是<唯一>的差异信息，所以它必须只出现在真支持的游戏上 ——
+     上线前要用运营正式清单核对哪些是（现在是按示意稿标的）。 */
+.gx-tag{display:inline-block;grid-column:2;grid-row:2;margin-top:0;font-size:10px;font-weight:700;color:var(--blue-d);
+  background:var(--tint);border-radius:5px;padding:2px 7px;}
+.gx-card .gx-tag:not(.gx-soon){display:none;}
+.gx-tag.gx-soon{color:var(--faint);background:var(--fill);}
+.gx-card.soon{opacity:.62;}
+.gx-card.soon .gx-art{background:var(--fill);}
+/* .gx-tag / .gx-nm2 / .gx-aslist 列表态：随竖轨版一起退役（方向二用 .gx-meta 里的一句话说策略） */
+/* AI 策略浮标（.gx-fab）2026-08-08 撤掉 —— 本平台没有这个产品，见 index.html 的说明 */

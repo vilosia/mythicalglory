@@ -1,0 +1,98 @@
+/*
+ * IM168 Design Tokens v2.1
+ * Single source of truth for the member app and operator surfaces.
+ * v2.1 (2026-07-25): 字号底线 12px（唯一例外：数字角标 11px）；
+ *   --muted 加深到 4.5:1 达标；新增 --faint / --fill / --line-strong；
+ *   删除 Micro（10px）字号层级。
+ */
+:root {
+  color-scheme: light;
+
+  /* Brand and semantic colors */
+  --blue: #126BFF;
+  --blue-d: #0B5ADC;
+  --blue-dark: #0B5ADC;
+  --tint: #E7F0FF;
+  --blue-tint: #E7F0FF;
+  --blue-soft: #EEF4FF;
+  --blue-line: #BBD4FF;   /* 蓝色系描边/分隔（浅蓝底上） */
+  --blue-line-2: #CFE0FF; /* 更浅一档的蓝描边 */
+  --ink: #414141;
+  --muted: #6B7280;       /* 次要文字；白底 4.8:1，达 WCAG AA */
+  --faint: #98A2B3;       /* 仅限装饰性元素（分隔符、禁用态），禁止承载信息 */
+  --line: #E8E8E8;
+  --line-strong: #D5D9DF; /* 需要更清晰边界时的重分隔线 */
+  --fill: #F4F5F7;        /* 浅灰内衬底（chip、well、输入框底） */
+  --page: #F5F5F5;
+  --surface: #FFFFFF;
+  --win: #16A34A;
+  --positive: #16A34A;
+  --positive-soft: #E6F6EE;
+  --red: #EF3939;
+  --danger: #EF3939;
+  --danger-soft: #FDECEC;
+  --warning: #9A6C00;
+  --warning-soft: #FFF8E0;
+  --gold: #C08C38;
+  --hero-grad: linear-gradient(180deg, #3D93FF, #2278F5); /* 唯一的英雄卡/选中策略卡渐变 */
+
+  /* Typography — 底线 12px；数字角标可用 --fs-badge */
+  --font: "Noto Sans SC", "PingFang SC", "Microsoft YaHei",
+    -apple-system, "Segoe UI", Arial, sans-serif;
+  --mono: var(--font);
+  /* 2026-08-07（Hector：所有代号都用这个字体）—— 策略代号（C0404R5）专用等宽栈。
+     ⚠ 不能直接改 --mono：那个变量在 styles.css 里被<刻意>指回 --font，159 处在用，
+       改它等于把整个旧原型的字体换掉。代号是新的一类东西，给它自己的 token。 */
+  --font-code: 'SF Mono', Menlo, Consolas, 'Noto Sans SC', monospace;
+  --fs-badge: 11px;
+  --fs-caption: 12px;
+  --fs-body: 14px;
+  --fs-body-lg: 15px;
+  --fs-header: 17px;
+  --fs-title: 18px;
+  --fs-number: 20px;
+  --fs-display: 28px;
+  --lh-caption: 17px;
+  --lh-body: 21px;
+  --lh-body-lg: 22px;
+  --lh-header: 24px;
+  --lh-title: 26px;
+  --lh-number: 26px;
+  --lh-display: 34px;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Shape and sizing */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-pill: 999px;
+  --radius-sheet: 15px;
+  --radius-device: 36px;
+  --header-h: 54px;
+  --control-h: 40px;
+  --touch-min: 44px;
+  --content-pad: 12px;
+
+  /* Motion */
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  --duration-fast: 140ms;
+  --duration-base: 200ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
