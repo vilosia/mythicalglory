@@ -2919,7 +2919,7 @@ body.bd-inner .tr-wtop>.bd-fxact,body.bd-inner .tr-wtop>*:last-child{margin-left
 .bd-gf.bd-on{background:var(--tint);color:var(--blue-d);border-color:var(--blue-line);font-weight:500;}
 .bd-name .game-chip{margin-left:6px;vertical-align:2px;}
 </style>
-  <link rel="stylesheet" href="shared/reference-theme.css?v=20260812refine34">
+  <link rel="stylesheet" href="shared/reference-theme.css?v=20260812refine37">
 <script src="shared/ui-consistency.js?v=20260812auth1" defer></script>
 <script src="shared/hint.js?v=20260807f" defer></script>
 </head>
@@ -4393,7 +4393,8 @@ function renderMine(){
       '<small class="bd-cardclock" data-mine-clock="1" data-game="'+(m.game||'pk')+'"><i aria-hidden="true"></i>本期 <b>'+beatText(LIVE_REMAIN)+'</b></small></span>'+ 
       '<span class="bd-ohidline"><b class="bd-code bd-ocode">'+planLabel(m)+'</b>'+ 
       '<span class="bd-mstate bd-mstate-'+state+'">'+mineStateText(m)+'</span></span></span>'+ 
-      '<span class="bd-ohpl '+(m.draft?'bd-ohsaved':kls(m.pl))+'" aria-label="累计盈亏">'+(m.draft?'未启用':money(m.pl))+'</span></div>'+ 
+      '<span class="bd-ohpl '+(m.draft?'bd-ohsaved':kls(m.pl))+'" aria-label="累计盈亏">'+
+      (m.draft?'<b>未启用</b>':'<small>累计盈亏</small><b>'+money(m.pl)+'</b>')+'</span></div>'+ 
       /* 第二行只放运行元数据与管理控件；盈亏保留在第一视觉层。 */
       '<div class="bd-osum"><span>执行线路 <b>'+m.lanes.length+'</b></span><i class="bd-vr"></i>'+ 
       '<span>'+(m.draft?'运行状态 <b>尚未启用</b>':'累计运行 <b>'+m.ran+' 期</b>')+'</span>'+ 
@@ -4982,13 +4983,16 @@ function renderFeed(){
   var html=rows.map(function(r,i){
       var id=r.k+(r.per||i),op=(FX.open[id]===undefined?(r.k==='plan'):FX.open[id]); /* 当期默认展开 */
       var vcls=r.vk==='pl'?kls(r.pl):(r.vk==='plan'?'bd-up':'');
+      var eventHtml=r.k==='plan'
+        ? '<span class="bd-fxevent bd-fxevent-plan">策略下注</span><b class="bd-fxcount">'+r.items.length+' 注</b>'
+        : '<span class="bd-fxevent">'+(r.k==='state'?'<i class="bd-fxstateico">▶</i>':'')+r.title+'</span>';
       return '<div class="bd-fxrow'+(op?' bd-open':'')+((r.k==='state'||r.k==='set')?' bd-fxset':'')+
         (r.k==='none'?' bd-fxnone':'')+'" data-fx="'+id+'">'+
-        '<div class="bd-fxh"><span class="bd-fxt">'+r.t+'</span>'+
-        '<span class="bd-fxm">'+(r.per?('第'+r.per+'期 · '):'')+(r.k==='state'?'<b style="color:var(--blue-d)">▶ </b>':'')+r.title+
-        (r.k==='set'&&r.note?('<small>'+r.note+'</small>'):'')+'</span>'+
-        (r.v?('<span class="bd-fxv '+vcls+'">'+r.v+(r.vk==='plan'?'<small>策略投入</small>':'')+'</span>'):'')+
-        '<span class="bd-fxchev">▾</span></div>'+
+        '<div class="bd-fxh"><span class="bd-fxm">'+
+        (r.per?'<b class="bd-fxperiod">第'+r.per+'期</b>':'')+'<time class="bd-fxtime">'+r.t+'</time>'+eventHtml+
+        (r.k==='set'&&r.note?('<small class="bd-fxnote">'+r.note+'</small>'):'')+'</span>'+
+        (r.v?('<span class="bd-fxv '+vcls+'">'+(r.vk==='plan'?'<small>本期投入</small>':'')+'<b>'+r.v+'</b></span>'):'')+
+        '<span class="bd-fxchev" aria-hidden="true"></span></div>'+
         '<div class="bd-fxb">'+fxBody(r)+'</div></div>';
     }).join('')+
     /* ㉒⁹：列表底部那颗急停撤掉 —— 它现在钉在抬头上。这段说明留着（它解释的是「只停后续期」）。 */
