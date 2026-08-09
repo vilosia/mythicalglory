@@ -505,6 +505,11 @@ body{
 .bd-basistext>b{color:var(--ink);font-size:10.5px;font-weight:700;line-height:1.25;}
 .bd-basistext>small{overflow:hidden;color:var(--muted);font-size:10px;line-height:1.3;text-overflow:ellipsis;white-space:nowrap;}
 .bd-basistext .bd-basisx{color:var(--red);font-style:normal;font-weight:800;}
+.bd-basisfacts{display:flex;align-items:center;gap:0;}
+.bd-basisfacts>span{display:inline-flex;align-items:center;gap:3px;white-space:nowrap;}
+.bd-basisfacts>span+span::before{content:"·";margin:0 6px;color:#a0adbd;font-weight:500;}
+.bd-basisfacts b{color:#4c5d74;font-size:10px;font-weight:750;}
+.bd-basisfacts>span:last-child b{color:#64758c;}
 .bd-onboard{
   position:relative;display:flex;align-items:center;gap:11px;min-height:82px;margin:0 12px 9px;padding:11px 36px 11px 12px;
   border:1px solid #dcecf9;border-radius:17px;background:linear-gradient(135deg,#f2f9ff 0%,#edf6ff 55%,#f8fbff 100%);
@@ -529,18 +534,31 @@ body{
    右栏：今日收益（大数）/ 最高 · 最低
    两栏都<b>顶端对齐</b>，所以「代号」与「今日收益」在同一条基线上起头。 */
 .bd-cardnm{gap:10px;align-items:flex-start;}
-.bd-cardid{display:flex;flex:1;min-width:0;flex-direction:column;gap:6px;}
+.bd-cardid{display:flex;flex:1;min-width:0;flex-direction:column;gap:3px;}
 .bd-idline{display:flex;align-items:center;gap:8px;min-width:0;}
 .bd-ctxtag{display:inline-flex;align-items:center;flex:none;min-height:18px;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;font-style:normal;line-height:1;white-space:nowrap;}
 .bd-ctx-blue{background:#edf6ff;color:var(--blue-d);}
 .bd-ctx-green{background:var(--positive-soft);color:var(--win);}
 .bd-ctx-violet{background:#f3efff;color:#7558c7;}
-.bd-cardright{display:flex;flex:none;flex-direction:column;align-items:flex-end;gap:5px;margin-left:auto;}
+.bd-cardgame{display:flex;align-items:center;align-self:flex-start;min-height:14px;color:#718198;font-size:10px;font-weight:650;line-height:14px;white-space:nowrap;}
+.bd-cardgame+.bd-idline{margin-top:-1px;}
+.bd-idline+.bd-meta{margin-top:2px;}
+.bd-cardcontext{display:inline-flex;align-items:center;gap:5px;margin-left:5px;background:transparent!important;font-size:10px;font-weight:750;font-style:normal;white-space:nowrap;}
+.bd-cardcontext em{color:#a2aebd;font-style:normal;font-weight:500;}
+.bd-cardcontext.bd-ctx-blue{color:var(--blue-d);}
+.bd-cardcontext.bd-ctx-green{color:var(--win);}
+.bd-cardcontext.bd-ctx-violet{color:#7558c7;}
+.bd-cardright{display:flex;flex:none;flex-direction:column;align-items:flex-end;gap:5px;margin-left:auto;padding-top:0;}
 /* 抬头里的爆仓那一行：靠左、并排；.bd-meta 原来是贴在图上方的注解条（右对齐），
    在这里要把它的 margin-left:auto 关掉，否则 上次爆 会被推到左栏最右端。 */
 .bd-cardid .bd-meta{gap:8px;padding:0;font-size:10.5px;}
 .bd-cardid .bd-meta .bd-lastb{margin-left:0;}
 .bd-cardid .bd-bust{margin-left:0;}
+.bd-cardbust,.bd-cardid .bd-lastb{display:inline-flex;align-items:baseline;gap:3px;white-space:nowrap;}
+.bd-cardbust span,.bd-cardid .bd-lastb span{color:#77869b;font-size:10px;font-weight:600;}
+.bd-cardbust b{color:var(--red);font-size:11px;font-weight:800;}
+.bd-cardbust em,.bd-cardid .bd-lastb em{color:#7b899c;font-size:10px;font-style:normal;font-weight:600;}
+.bd-cardid .bd-lastb b{color:#53637a;font-size:11px;font-weight:800;}
 .bd-gameicon{
   position:relative;display:block;flex:none;width:48px;height:48px;border-radius:13px;overflow:hidden;
   background:var(--blue-soft);box-shadow:inset 0 0 0 1px rgba(110,154,194,.14);
@@ -549,8 +567,8 @@ body{
 .bd-cardtitle{display:flex;flex:1;min-width:0;flex-direction:column;justify-content:center;gap:3px;}
 .bd-planname{overflow:hidden;color:var(--ink);font-size:14.5px;font-weight:700;line-height:18px;text-overflow:ellipsis;white-space:nowrap;}
 .bd-plancode{color:var(--muted);font:500 10.5px/14px var(--font-code);letter-spacing:.3px;white-space:nowrap;}
-.bd-cardrange{display:flex;flex:none;align-items:flex-end;gap:10px;margin-left:auto;text-align:right;}
-.bd-cardrange>span{display:flex;flex-direction:column;gap:2px;}
+.bd-cardrange{display:flex;flex:none;align-items:baseline;gap:10px;margin-left:auto;text-align:right;}
+.bd-cardrange>span{display:flex;flex-direction:row;align-items:baseline;gap:3px;}
 .bd-cardrange small{color:var(--muted);font-size:10px;font-weight:500;line-height:1.15;white-space:nowrap;}
 .bd-cardrange b{font-size:11.5px;font-weight:700;line-height:1.1;white-space:nowrap;}
 .bd-code{font-size:15.5px;letter-spacing:.7px;}
@@ -558,7 +576,7 @@ body{
 .bd-rule .bd-vq{width:16px;height:16px;font-size:10px;background:#b8c2d3;color:#fff;border:0;}
 .bd-spec{font-size:10px;padding:4px 9px;background:#f6f8fb;border-color:#e8edf3;}
 .bd-today{display:flex;align-items:flex-end;padding:6px 0 0;}
-.bd-todayyield{display:flex;align-items:baseline;gap:6px;min-width:0;}
+.bd-todayyield{display:flex;min-width:0;flex-direction:column;align-items:flex-end;gap:1px;}
 .bd-todayyield em{color:var(--muted);font-size:11px;font-weight:600;font-style:normal;white-space:nowrap;}
 /* 22px（原 23）：它现在与代号同一行的另一端，比代号（15.5）重就够了，
    再大会把右栏顶宽、把 最高／最低 挤到换行。 */
@@ -680,6 +698,10 @@ body{
 /* ── Strategy detail: explicit layers instead of one dense sheet ──────── */
 body.bd-inner .bd-headhost .tt>b{color:#fff;font-size:16px;line-height:19px;}
 body.bd-inner .bd-headhost .tt>b .bd-code{color:#fff;font-size:16px;}
+body.bd-inner #bdName .bd-hdcode{
+  font-family:var(--font)!important;font-size:16px!important;font-weight:800!important;
+  letter-spacing:.25px!important;font-variant-numeric:tabular-nums;
+}
 body.bd-inner .bd-headhost .tt>b .bd-codesuf{color:rgba(255,255,255,.62);font-size:10px;}
 body.bd-inner .bd-headhost .tt>b .game-chip{
   font-size:10px;line-height:18px;margin-right:6px;vertical-align:1px;background:rgba(255,255,255,.94);
@@ -712,17 +734,30 @@ body.bd-inner .ghead.chrome .bd-headhost .tt>small{color:rgba(255,255,255,.72);}
 }
 .bd-ovselect:focus{outline:0;border-color:var(--blue);}
 .bd-ovprofit>b{margin-top:5px;font-size:24px;line-height:1.08;font-weight:850;letter-spacing:-.5px;white-space:nowrap;}
-.bd-ovstats{display:flex;flex:1.45;min-width:0;align-items:center;}
+.bd-ovstats{display:flex;flex:1.45;min-width:0;align-items:stretch;}
 .bd-ovstats>span{
-  position:relative;display:flex;flex:1;min-width:0;flex-direction:column;align-items:center;
-  justify-content:center;gap:5px;color:var(--ink);
+  position:relative;display:grid;grid-template-rows:27px 28px;align-content:center;flex:1;min-width:0;
+  align-items:center;justify-items:center;gap:4px;color:var(--ink);
 }
 .bd-ovstats>span+span::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:1px;background:#e8edf3;}
-.bd-ovstats>span>span{display:flex;align-items:baseline;justify-content:center;gap:3px;}
+.bd-ovstats>span>span{min-height:28px;display:flex;align-items:flex-end;justify-content:center;gap:3px;padding-bottom:2px;box-sizing:border-box;}
 .bd-ovstats small{font-size:10.5px;line-height:1.15;font-style:normal;color:#687891;white-space:nowrap;}
 .bd-ovstats em{font-size:10px;line-height:1.15;font-style:normal;color:var(--muted);}
 .bd-ovstats b{font-size:16px;line-height:1;font-weight:800;}
 .bd-ovstats .bd-ovbust small,.bd-ovstats .bd-ovbust b{color:var(--red);}
+
+/* One-period prototype feedback: brief and local, never blocks interaction. */
+.phone{position:relative;}
+.bd-roundnotice{
+  position:absolute;z-index:120;top:72px;left:50%;transform:translate(-50%,-7px);
+  display:flex;align-items:center;justify-content:center;min-height:28px;padding:6px 12px;
+  border:1px solid #b8ddf8;border-radius:15px;background:rgba(255,255,255,.96);
+  box-shadow:0 6px 16px rgba(29,87,132,.14);color:var(--blue-d);font-size:11px;font-weight:750;
+  white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease;
+}
+.bd-roundnotice.bd-on{opacity:1;transform:translate(-50%,0);}
+@keyframes bd-round-fresh{0%{filter:none}35%{filter:drop-shadow(0 0 5px rgba(30,157,238,.24))}100%{filter:none}}
+.bd-roundfresh{animation:bd-round-fresh .9s ease-out;}
 /* 2026-08-08（Hector：这一块占地太多）—— L2 顶上叠着三条（页签／窗口·投中爆·合计／过滤 chips），
    加起来 45+49+45＝139px，占掉 812 高的 17%，而真正要读的矩阵在它们下面。
    三条各收一点：页签 45→38 · 数字条 49→38 · chips 那条已在上一轮收到 45 —— 合计省 ~18px，
@@ -908,11 +943,16 @@ body.bd-inner .ghead.chrome .bd-headhost .tt>small{color:rgba(255,255,255,.72);}
 .view-plandetail .tr-dockbar.bd-money{min-height:68px;padding:7px 12px 9px;gap:12px;}
 .view-plandetail .tr-dockbar .l{display:flex;min-width:0;flex-direction:column;justify-content:center;}
 .view-plandetail .bd-moneyhead{display:flex;align-items:center;gap:5px;min-height:25px;white-space:nowrap;}
+.view-plandetail .bd-saveplan{
+  flex:none;min-height:27px;margin-left:auto;padding:5px 8px;border:1px solid var(--brand-line);
+  border-radius:8px;background:#fff;color:var(--brand-strong);font:750 10.5px/1 var(--font);cursor:pointer;
+}
+.view-plandetail .bd-saveplan.bd-saved{border-color:#bfe7d1;background:#edf9f3;color:#148b4c;}
 .view-plandetail .tr-dockbar .n{font-size:13px;font-weight:800;line-height:1.2;}
 .view-plandetail .tr-dockbar .n b{margin-left:4px;font-size:18px;}
 .view-plandetail .tr-dockbar .s{display:flex;align-items:center;gap:0;margin:0;color:var(--muted);font-size:10px;line-height:1.2;}
 .view-plandetail .tr-dockbar .s:empty{display:none;}
-.view-plandetail .tr-dockbar>button#bdGo{min-width:132px;min-height:48px;padding:12px 20px;border-radius:17px;font-size:15px;box-shadow:0 8px 19px rgba(24,151,237,.24);}
+.view-plandetail .tr-dockbar>button#bdGo{min-width:118px;min-height:48px;padding:12px 13px;border-radius:17px;font-size:15px;box-shadow:0 8px 19px rgba(24,151,237,.24);}
 
 /* 调整设置抽屉：提高正文与辅助说明的字号、对比度，禁用项仍可辨认。 */
 body.bd-inner #bdSheet .bd-sh{padding:14px 16px 12px;}
@@ -1629,9 +1669,9 @@ body.bd-inner .ghead.chrome>.gtop .bd-headhost .tt>small{
 .bd-ocard .bd-mstate-saved::before{background:#6e8fae;box-shadow:none;}
 .bd-ocard .bd-ohsaved{font-size:11.5px;font-weight:700;color:#64758c!important;}
 .bd-ocard .bd-cardmore{
-  flex:0 0 26px;width:26px;height:26px;margin:0;padding:0;border:0;border-radius:7px;
-  display:grid;place-items:center;background:transparent;color:#718198;
-  font:800 11px/1 var(--font);letter-spacing:-1px;cursor:pointer;
+  flex:0 0 28px;width:28px;height:28px;margin:0;padding:0;border:0;border-radius:8px;
+  display:grid;place-items:center;background:#eef3f7;color:#607189;
+  font:800 17px/1 var(--font);letter-spacing:0;cursor:pointer;
 }
 .bd-ocard .bd-cardmore:active{background:#edf2f6;color:#33435a;}
 .bd-ocard .bd-draftsum{padding:12px 13px 11px;border-top:1px solid #e4ebf1;background:#f8fafc;}
@@ -1678,9 +1718,16 @@ body.bd-inner .ghead.chrome>.gtop>.bd-headhost .tt>b{
 
 /* Strategy identity and controls have stable zones; P/L moves to the metadata row. */
 .bd-ocard .bd-oh{display:flex;align-items:center;gap:7px;}
-.bd-ocard .bd-ohidentity{display:flex;align-items:center;gap:7px;min-width:0;flex:1 1 auto;}
+.bd-ocard .bd-ohidentity{display:flex;align-items:flex-start;flex-direction:column;gap:2px;min-width:0;flex:1 1 auto;}
+.bd-ocard .bd-ohcontext{display:flex;align-items:center;gap:6px;min-width:0;line-height:14px;}
+.bd-ocard .bd-ohgame{display:block;color:#718198;font-size:10px;font-weight:650;line-height:14px;white-space:nowrap;}
+.bd-ocard .bd-cardclock{display:inline-flex;align-items:center;gap:3px;color:#5f7087;font-size:10px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.bd-ocard .bd-cardclock::before{content:"·";margin-right:1px;color:#a1adbc;}
+.bd-ocard .bd-cardclock i{box-sizing:border-box;width:8px;height:8px;border:2px solid currentColor;border-left-color:#dbe3eb;border-radius:50%;}
+.bd-ocard .bd-cardclock b{font-size:10px;font-weight:750;color:currentColor;}
+.bd-ocard .bd-ohidline{display:flex;align-items:center;gap:7px;min-width:0;}
 .bd-ocard .bd-ohidentity .game-chip{max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.bd-ocard .bd-ohactions{gap:5px;margin-left:auto;}
+.bd-ocard .bd-ohactions{gap:3px;margin-left:auto;}
 .bd-ocard .bd-ocv{
   box-sizing:border-box!important;width:auto!important;min-width:48px!important;height:27px!important;
   margin:0!important;padding:0 7px!important;border:0!important;border-radius:8px!important;
@@ -1695,7 +1742,7 @@ body.bd-inner .ghead.chrome>.gtop>.bd-headhost .tt>b{
 }
 .bd-ocard.bd-ocopen .bd-ocv{transform:none!important;}
 .bd-ocard.bd-ocopen .bd-ocv::before{transform:translateY(2px) rotate(225deg)!important;}
-.bd-ocard .bd-osum{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;min-width:0;}
+.bd-ocard .bd-osum{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;min-width:0;padding-top:7px;}
 .bd-ocard .bd-cardpl{
   min-width:0;margin-left:auto;display:inline-flex;align-items:baseline;justify-content:flex-end;gap:4px;
   white-space:nowrap;font-variant-numeric:tabular-nums;
@@ -1726,7 +1773,8 @@ body.bd-inner .ghead.chrome>.gtop>.bd-headhost .tt>b{
 .bd-code,.bd-ocode,
 body.bd-inner .ghead.chrome>.gtop .bd-headhost .tt>b .bd-code,
 .view-feed .bd-fxw1>b{
-  font-family:var(--font)!important;font-weight:800!important;letter-spacing:.25px!important;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",Arial,sans-serif!important;
+  font-weight:800!important;letter-spacing:.15px!important;
   font-variant-numeric:tabular-nums!important;font-feature-settings:"tnum"!important;
 }
 body.bd-inner .ghead.chrome>.gtop .bd-headhost .tt>b#bdFeedTitle{
@@ -1741,7 +1789,7 @@ body.bd-inner .ghead.chrome>.gtop .bd-headhost .tt>b#bdFeedTitle{
   font-weight:800!important;line-height:20px!important;letter-spacing:0!important;white-space:nowrap;
   font-variant-numeric:tabular-nums;
 }
-.bd-ocard .bd-osum>.bd-ohactions{margin-left:auto;gap:5px;}
+.bd-ocard .bd-osum>.bd-ohactions{align-self:flex-start;margin-left:auto;margin-top:1px;gap:3px;}
 .bd-ocard .bd-osum>.bd-ohactions .bd-cardmore{flex:none;}
 .bd-ocard .bd-osum>.bd-ohactions .bd-ocv{min-width:58px!important;}
 .bd-ocard .bd-olines-preview{border-top:1px solid #e2e9f0;}
@@ -1845,6 +1893,7 @@ body.bd-inner .ghead.chrome>.gtop .bd-headhost .tt>b#bdFeedTitle{
 .bsheet-lines .sbg-line>span{min-width:0;}
 .bsheet-lines .sbg-line>span b{display:block;font-size:12.5px;font-weight:750;color:#263246;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .bsheet-lines .sbg-line>span small{display:block;margin-top:2px;font-size:10.5px;color:#718198;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bsheet-lines .sbg-line>span .sbg-order{margin-top:3px;color:#596b84;font-variant-numeric:tabular-nums;letter-spacing:.1px;}
 .bsheet-lines .sbg-line>em{font-style:normal;font-size:12px;font-weight:700;color:#344158;font-variant-numeric:tabular-nums;}
 .bsheet-lines .sbg-line>i{min-width:43px;text-align:right;font-style:normal;font-size:11.5px;font-weight:750;font-variant-numeric:tabular-nums;}
 .bsheet-lines .sbg-line>i.pending{color:#a66b00;}

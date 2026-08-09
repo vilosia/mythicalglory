@@ -2919,7 +2919,7 @@ body.bd-inner .tr-wtop>.bd-fxact,body.bd-inner .tr-wtop>*:last-child{margin-left
 .bd-gf.bd-on{background:var(--tint);color:var(--blue-d);border-color:var(--blue-line);font-weight:500;}
 .bd-name .game-chip{margin-left:6px;vertical-align:2px;}
 </style>
-  <link rel="stylesheet" href="shared/reference-theme.css?v=20260812refine24">
+  <link rel="stylesheet" href="shared/reference-theme.css?v=20260812refine34">
 <script src="shared/ui-consistency.js?v=20260812auth1" defer></script>
 <script src="shared/hint.js?v=20260807f" defer></script>
 </head>
@@ -2972,7 +2972,7 @@ body.bd-inner .tr-wtop>.bd-fxact,body.bd-inner .tr-wtop>*:last-child{margin-left
                        也是玩家在封盘前真正会看一眼的那个数；而且它跨策略汇总，
                        每张卡上都没有（卡上只有各自的线况），不是第二遍。
                        ⚠ tn/ta 在下面的合计循环里本来就算了，只是原来没地方显示。 -->
-                  <div class="bd-fxc"><i>本期投入</i><b id="bdSumNow">—</b></div>
+                  <div class="bd-fxc"><i>本期投入</i><b id="bdSumNow">-</b></div>
                   <!-- 槽位（3/3 跑 · 共 10 格）—— 2026-08-07（Hector：这一格不相关）撤掉。
                        「共 10 格」是<能存几张策略>的上限，玩家在这一屏根本碰不到；
                        而「几个在跑」左边那格（策略 3 跑 · 1 停）已经说了。撤掉之后两格各自宽敞，
@@ -2981,10 +2981,6 @@ body.bd-inner .tr-wtop>.bd-fxact,body.bd-inner .tr-wtop>*:last-child{margin-left
                        要恢复：把这一格 <div class="bd-fxc"><i>槽位</i><b id="bdSumSlot"> 加回来 ——
                          renderMine 里那两行写值的代码带着 if($('bdSumSlot')) 空值保护，没删。 -->
                 </div>
-                <!-- 08-06：原来这里有「SG飞艇 00089期 · 投注时间还剩 …」一行。
-                     进行中是<跨游戏>的列表，摆<一个>游戏的期号与倒计时说不通（各游戏节奏不同）。
-                     整行去掉；盘面与倒计时去「开奖」页或该游戏的投注屏看。
-                     ⚠ 时钟没删 —— 执行动态的干预窗口（bdFxSeal/bdFxPie）用的是同一个 tick。 -->
               </div>
               <!-- 2026-08-08（Hector：做成像 怎么玩 那样的右下角浮标）——
                    「＋ 新增策略」原来自己占一条 .bd-mineaddbar（整行只有右端一颗按钮，
@@ -3261,7 +3257,7 @@ body.bd-inner .tr-wtop>.bd-fxact,body.bd-inner .tr-wtop>*:last-child{margin-left
 <div class="tr-dock">
               <div class="tr-dockbar bd-money" id="bdMoney">
                 <div class="l">
-                  <div class="bd-moneyhead"><div class="n" id="bdCapital">最高投入 0</div><div class="s" id="bdAffordSub"></div></div>
+                  <div class="bd-moneyhead"><div class="n" id="bdCapital">最高投入 0</div><div class="s" id="bdAffordSub"></div><button type="button" class="bd-saveplan" id="bdSavePlan">保存策略</button></div>
                   <div class="bd-setrow bd-cfgrow">
                     <span class="bd-setlab">每注</span>
                     <select class="bd-vsel bd-stakesel" id="bdStakeSel" aria-label="每注金额"></select>
@@ -3270,7 +3266,7 @@ body.bd-inner .tr-wtop>.bd-fxact,body.bd-inner .tr-wtop>*:last-child{margin-left
                     <span class="bd-cfgmore" id="bdPrev" role="button" tabindex="0">更多设置 ›</span>
                   </div>
                 </div>
-                <button type="button" id="bdGo">启用策略</button>
+                <button type="button" id="bdGo">保存并启用</button>
               </div>
             </div>
           </div>
@@ -3361,6 +3357,22 @@ var DRAWS=(function(){
   }
   return out;
 })();
+/* Prototype live clock: one visible draw every 15 seconds.  The three strategy
+   surfaces consume this same draw so their period, curve and running state never
+   drift apart during a demo. */
+var LIVE_DRAW_RNG=mul32(860809),LIVE_PERIOD=89,LIVE_CLOCK=9*60+42;
+function liveDraw(){
+  var cars=[1,2,3,4,5,6,7,8,9,10];
+  for(var i=9;i>0;i--){
+    var j=Math.floor(LIVE_DRAW_RNG()*(i+1)),tmp=cars[i];cars[i]=cars[j];cars[j]=tmp;
+  }
+  return cars;
+}
+function livePeriod(offset){return String(LIVE_PERIOD+(offset||0)).padStart(5,'0');}
+function liveTime(offset){
+  var n=(LIVE_CLOCK+(offset||0)+24*60)%(24*60);
+  return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
+}
 /* v11⑯（Hector）：冠亚和 不再自成一组 —— 它玩的也是 大小/单双，只是标的不同。
    并进 大小 / 单双 两组，并排在各组<最前面>（它是全盘唯一一条「和值」线，
    放组头第一行最好找）。过滤 chips 因此从 5 个减到 4 个：全部 / 大小 / 单双 / 龙虎。 */
@@ -3386,6 +3398,15 @@ POSS.forEach(function(sh,i){
   LANES.push({n:'龙虎·'+pr[2],sh:'龙虎',pl:pr[2],g:'lh',a:'龙',b:'虎',sel:true,
     seq:DRAWS.map(function(d){return d[pr[0]]>d[pr[1]]?1:0;})});
 });
+function laneValueForDraw(L,d){
+  if(L.sh==='冠亚和')return L.g==='dx'?((d[0]+d[1])>=12?1:0):((d[0]+d[1])%2?1:0);
+  if(L.g==='lh'){
+    var pair={冠十:[0,9],亚九:[1,8],三八:[2,7],四七:[3,6],五六:[4,5]}[L.pl];
+    return d[pair[0]]>d[pair[1]]?1:0;
+  }
+  var pos=POSS.indexOf(L.sh);
+  return L.g==='dx'?(d[pos]>=6?1:0):(d[pos]%2?1:0);
+}
 function streakAt(seq,i){var side=seq[i-1],n=1,k=i-2;while(k>=0&&seq[k]===side){n++;k--;}return{side:side,n:n};}
 
 /* ══ 2. 引擎（无状态回测）══
@@ -3989,6 +4010,12 @@ function winStats(p,n){
   WCACHE[key]=st;return st;
 }
 function signed(v){return (v>1e-4?'+':(v<-1e-4?'−':''))+yuan(Math.abs(v));}
+/* Strategy-card live return keeps cents visible. A single period commonly moves
+   by 0.96, which disappeared when signed() rounded the card figure to an integer. */
+function signedLive(v){
+  var a=Math.abs(v),sign=v>1e-4?'+':(v<-1e-4?'−':'');
+  return sign+(a>=1000?a.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):a.toFixed(2));
+}
 /* ㉕ⓦ 上次爆距今多少期 —— bx 是升序的爆仓位置，len 是窗口长度。
    卡与 L2 曲线共用这一个函数，两处的单位与措辞不能各写一套。 */
 function lastBustTxt(bx,len){
@@ -3996,9 +4023,27 @@ function lastBustTxt(bx,len){
   var n=len-1-bx[bx.length-1];
   return (n<=0?'刚刚':(n+' 期前'));
 }
+function cardBustStats(d){
+  var count=d.bx?d.bx.length:0,
+      distance=count?(d.curve.length-1-d.bx[count-1]):null;
+  return '<span class="bd-cardbust"><span>今日爆仓</span><b>'+count+'</b><em>次</em></span>'+ 
+    '<span class="bd-lastb"><span>距上次爆仓</span><b>'+(distance==null?'—':distance)+'</b>'+
+      (distance==null?'':'<em>期</em>')+'</span>';
+}
 /* ㉔ⓑ 今天：最后 DAY 期的逐期净盈亏累计曲线 ＋ 当日最高/最低（股票的 high/low）。
    带缓存 —— 首屏四张卡每次重绘都要用。 */
 var DCACHE={};
+/* The prototype uses a tiny live ledger only when a newly elapsed period would
+   otherwise leave a strategy's displayed return unchanged. This makes the
+   15-second demo readable while keeping the ordinary backtest calculation as
+   the source of truth for every period that already produces a result. */
+var LIVE_YIELD_ADJ={};
+function liveYieldKey(p){return planLabel(p);}
+function liveYieldAdj(p){return LIVE_YIELD_ADJ[liveYieldKey(p)]||0;}
+function liveVisibleDelta(p,d){
+  var seed=d[0]+d[3]+String(liveYieldKey(p)).charCodeAt(0)+LIVE_PERIOD;
+  return seed%3===0?-(p.stake||1):(p.stake||1)*(PAYOUT-1);
+}
 function dayStats(p){
   var n=planLanes(p),key=[p.id,p.stake,p.R,p.mode,p.mult,n].join('|');
   if(DCACHE[key])return DCACHE[key];
@@ -4019,6 +4064,12 @@ function dayStats(p){
   bx.sort(function(a,b){return a-b;});
   var curve=[],c=0,hi=0,lo=0;
   for(k=0;k<DAY;k++){c+=per[k];curve.push(c);if(c>hi)hi=c;if(c<lo)lo=c;}
+  var adj=liveYieldAdj(p);
+  if(adj){
+    c+=adj;curve[curve.length-1]+=adj;
+    if(curve[curve.length-1]>hi)hi=curve[curve.length-1];
+    if(curve[curve.length-1]<lo)lo=curve[curve.length-1];
+  }
   var st={pl:c,curve:curve,hi:hi,lo:lo,cap:capPerLane(p)*n,bx:bx,busts:bx.length};
   DCACHE[key]=st;return st;
 }
@@ -4159,8 +4210,10 @@ function renderCards(){
      回到一句把口径说完的话：每注多少 · 算多长 · 红 ✕ 是什么；分母那件仍在 ⓘ 里。
      ⚠ .bd-btag / .bd-backtestset 的样式留在 reference-theme 里没删（回滚参考）。 */
   var basis='<div class="bd-basis">'+
-    '<i class="bd-basisq bd-vq" role="button" tabindex="0" aria-label="回测说明">i</i>'+
-    '<span class="bd-basistext"><b>回测说明</b><small>每注 1 · 今日全天回测 · 红 <i class="bd-basisx">✕</i> 为爆仓点</small></span></div>';
+    '<i class="bd-basisq bd-vq" role="button" tabindex="0" aria-label="回测说明">i</i>'+ 
+    '<span class="bd-basistext"><b>回测口径</b><small class="bd-basisfacts">'+
+      '<span>每注 <b>1</b></span><span>统计范围 <b>今日全天</b></span>'+ 
+      '<span>红 <i class="bd-basisx">✕</i> <b>爆仓发生期</b></span></small></span></div>';
   var _cardsHtml=rows.map(function(r){
     var p=r.p,n=r.n,st=r.st;
     /* ㉔ⓕ 首屏只回答股票那两问：今天涨还是跌、今天到过多高多低。
@@ -4169,7 +4222,7 @@ function renderCards(){
     /* ㉕ⓠ 百分比的分母是<b>本金</b>（BALANCE）—— 三种分母的实测对比见改动记录 ㉕ⓠ。
        ㉕ⓤ 口径回到<b>今天一天</b>：卡上的图要与详情页的曲线同窗口同画法（Hector）。 */
     var d=dayStats(p),hero=d.pl,
-        ctx={a:['官方精选','blue'],c:['表现稳定','green'],e:['新策略','violet']}[p.id];
+        ctx={a:['官方精选','blue'],c:['表现稳定','green'],e:['新上线','violet']}[p.id];
     var show=GFILTER==='hot'||
       (GFILTER==='new'&&['e','f'].indexOf(p.id)>=0)||
       (GFILTER==='rise'&&d.pl>0)||
@@ -4196,13 +4249,13 @@ function renderCards(){
            放同一行才读得成一句；它们也正对着下面那张图上的红 ✕。 */
       '<div class="bd-cardnm">'+
         '<span class="bd-cardid">'+
-          '<span class="bd-idline">'+gameChip(p)+'<b class="bd-code">'+planLabel(p)+'</b>'+
-            (ctx?'<i class="bd-ctxtag bd-ctx-'+ctx[1]+'">'+ctx[0]+'</i>':'')+'</span>'+
-          '<span class="bd-meta">'+bustChip(d.bx?d.bx.length:0)+
-            '<span class="bd-lastb">上次爆 <b>'+lastBustTxt(d.bx,d.curve.length)+'</b></span></span>'+
-        '</span>'+
+          '<span class="bd-cardgame"><span>'+gameName(p)+'</span>'+ 
+            (ctx?'<i class="bd-cardcontext bd-ctx-'+ctx[1]+'"><em>·</em>'+ctx[0]+'</i>':'')+'</span>'+ 
+          '<span class="bd-idline"><b class="bd-code">'+planLabel(p)+'</b></span>'+ 
+          '<span class="bd-meta">'+cardBustStats(d)+'</span>'+ 
+        '</span>'+ 
         '<span class="bd-cardright">'+
-          '<span class="bd-todayyield"><em>今日收益</em><b class="'+kls(hero)+'">'+signed(hero)+'</b></span>'+
+          '<span class="bd-todayyield"><em>今日收益</em><b class="'+kls(hero)+'">'+signedLive(hero)+'</b></span>'+ 
           '<span class="bd-cardrange">'+
             '<span><small>最高</small><b class="bd-up">'+signed(d.hi)+'</b></span>'+
             '<span><small>最低</small><b class="bd-dn">'+signed(d.lo)+'</b></span>'+
@@ -4336,14 +4389,16 @@ function renderMine(){
            回到<b>行内第一颗</b>，见 reference-theme 里那条 position 覆写的注释。
          ⚠ strategyIdentity()／strategyName() 都还在（L2 抬头 bdName 仍用昵称）——
            要把昵称找回来，把这一行换回 gameIcon(m)+strategyIdentity(m) 即可。 */
-      '<div class="bd-oh"><span class="bd-ohidentity">'+gameChip(m)+'<b class="bd-code bd-ocode">'+planLabel(m)+'</b>'+ 
-      '<span class="bd-mstate bd-mstate-'+state+'">'+mineStateText(m)+'</span></span>'+ 
+      '<div class="bd-oh"><span class="bd-ohidentity"><span class="bd-ohcontext"><small class="bd-ohgame">'+gameName(m)+'</small>'+ 
+      '<small class="bd-cardclock" data-mine-clock="1" data-game="'+(m.game||'pk')+'"><i aria-hidden="true"></i>本期 <b>'+beatText(LIVE_REMAIN)+'</b></small></span>'+ 
+      '<span class="bd-ohidline"><b class="bd-code bd-ocode">'+planLabel(m)+'</b>'+ 
+      '<span class="bd-mstate bd-mstate-'+state+'">'+mineStateText(m)+'</span></span></span>'+ 
       '<span class="bd-ohpl '+(m.draft?'bd-ohsaved':kls(m.pl))+'" aria-label="累计盈亏">'+(m.draft?'未启用':money(m.pl))+'</span></div>'+ 
       /* 第二行只放运行元数据与管理控件；盈亏保留在第一视觉层。 */
       '<div class="bd-osum"><span>执行线路 <b>'+m.lanes.length+'</b></span><i class="bd-vr"></i>'+ 
       '<span>'+(m.draft?'运行状态 <b>尚未启用</b>':'累计运行 <b>'+m.ran+' 期</b>')+'</span>'+ 
       '<span class="bd-ohactions">'+
-      '<button type="button" class="bd-cardmore" data-act="more" aria-label="策略管理">•••</button>'+ 
+      '<button type="button" class="bd-cardmore" data-act="more" aria-label="策略管理">⋯</button>'+ 
       (m.draft?'':'<button type="button" class="bd-ocv" data-tog="'+mi+'" aria-label="'+(m.open?'收起全部线路':'查看全部线路')+'"><span>'+(m.open?'收起':'查看全部')+'</span></button>')+'</span></div>'+ 
       body+'</div>';
   }).join('');
@@ -4363,7 +4418,7 @@ function renderMine(){
   $('bdSumPl').innerHTML='<span class="'+kls(tpl)+'">'+money(tpl)+'</span>';
   $('bdSumPlans').textContent=trun+'/'+RUNMAX;
   /* 这期投入：全部在跑策略这一期合计要掏多少、几注（停掉的策略 thisPeriod 返回 0，天然不计） */
-  if($('bdSumNow'))$('bdSumNow').innerHTML=tn?(yuan(ta)+'<small> · '+tn+' 注</small>'):'不下注';
+  if($('bdSumNow'))$('bdSumNow').innerHTML=tn?(yuan(ta)+'<small> · '+tn+' 注</small>'):'-';
   if($('bdSumSlot'))$('bdSumSlot').textContent=runningCount()+'/'+RUNMAX+' 跑 · 共 '+SLOTMAX+' 格';
 }
 function renderL1(){renderMine();renderCards();}
@@ -4536,22 +4591,26 @@ $('bdL1Tabs').addEventListener('click',function(e){
 /* 开奖节拍：唯一的「盘面在动」信号，且只说与我的策略有关的事。
    倒计时＝平台原样式 + app.js startSealTimer 的同一套算法（甜甜圈 dashoffset ＋
    hue 由 120°(绿) 线性走到 0°(红)），不另造一套视觉。 */
-var BEAT=45;
+var BEAT=15,LIVE_REMAIN=BEAT;
+function beatText(s){return Math.floor(s/60)+'分'+(s%60)+'秒';}
 (function(){
   /* 节拍条那行已去掉，bdPie/bdSeal 可能不存在；这个 tick 还要驱动执行动态的
      干预窗口（bdFxSeal/bdFxPie），所以只做空值保护，不删时钟。 */
   var pie=$('bdPie'),prog=pie?pie.querySelector('.prog'):null,seal=$('bdSeal'),
-      C=2*Math.PI*8,rem=BEAT;
+      C=2*Math.PI*8;
   if(prog)prog.style.strokeDasharray=C;
-  function fmt(s){return Math.floor(s/60)+'分'+(s%60)+'秒';}
-  function tick(){
-    var ratio=Math.max(0,rem)/BEAT,col='hsl('+(120*ratio)+',75%,42%)';
+  function paint(){
+    var ratio=Math.max(0,LIVE_REMAIN)/BEAT,col='hsl('+(120*ratio)+',75%,42%)';
     if(prog){prog.style.strokeDashoffset=C*(1-ratio);prog.style.stroke=col;}
-    if(seal){seal.style.color=col;seal.textContent=fmt(rem);}
+    if(seal){seal.style.color=col;seal.textContent=beatText(LIVE_REMAIN);}
+    [].forEach.call(document.querySelectorAll('[data-mine-clock]'),function(clock){
+      clock.style.color=col;
+      var value=clock.querySelector('b');if(value)value.textContent=beatText(LIVE_REMAIN);
+    });
     /* 执行动态里的干预窗口用同一个时钟、同一套视觉（㉒²）—— 两处不能各走各的。
        那一块是 renderFeed 重绘出来的，所以每一拍都重新查节点。 */
     var fs=$('bdFxSeal');
-    if(fs){fs.textContent=fmt(rem);fs.style.color=col;}
+    if(fs){fs.textContent=beatText(LIVE_REMAIN);fs.style.color=col;}
     var fp=document.getElementById('bdFxPie');
     if(fp){
       var fprog=fp.querySelector('.prog');
@@ -4559,9 +4618,16 @@ var BEAT=45;
       fprog.style.strokeDashoffset=C*(1-ratio);
       fprog.style.stroke=col;
     }
-    rem=rem<=0?BEAT:rem-1;
   }
-  tick();setInterval(tick,1000);
+  function tick(){
+    LIVE_REMAIN--;
+    if(LIVE_REMAIN<=0){
+      LIVE_REMAIN=BEAT;
+      advancePrototypePeriod();
+    }
+    paint();
+  }
+  paint();setInterval(tick,1000);
 })();
 /* ══ 执行动态 Feed（v11 追加⑩）══════════════════════════════════════════
    《自动投_执行动态报告体系》v14–v16 的口径，用本页的词重讲一遍：
@@ -4593,7 +4659,7 @@ function feedFor(m){
       note:g.note||'',v:''});
   });
   /* ① 当期 · 策略下注（干预窗口开着） */
-  rows.push({k:'plan',c:'bet',t:'09:47',per:'00090',
+  rows.push({k:'plan',c:'bet',t:liveTime(1),per:livePeriod(1),
     title:'策略下注 · <b>'+live.length+' 注</b>',v:yuan(plan),vk:'plan',items:live,m:m});
   /* ② 上一期 · 已结算 */
   if(hit.length||live.length){
@@ -4603,11 +4669,11 @@ function feedFor(m){
       live.map(function(l){var pr=Math.max(1,l.r-1);return {l:l,r:pr,win:false,amt:ladderAmt(m,pr),pl:-ladderAmt(m,pr)};}));
     var spl=seti.reduce(function(a,x){return a+x.pl;},0),
         sinv=seti.reduce(function(a,x){return a+x.amt;},0);
-    rows.push({k:'settled',c:'draw',t:'09:42',per:'00089',
+    rows.push({k:'settled',c:'draw',t:liveTime(0),per:livePeriod(0),
       title:'已结算 · 命中 <b>'+hit.length+'/'+seti.length+'</b> 注',v:money(spl),vk:'pl',pl:spl,inv:sinv,set:seti,m:m});
   }
   /* ③ 没达到条件的一期 —— 整行弱化，右侧留空（v15） */
-  rows.push({k:'none',c:'draw',t:'09:37',per:'00088',title:'未达到条件 · 本期未投注',v:'',
+  rows.push({k:'none',c:'draw',t:liveTime(-1),per:livePeriod(-1),title:'未达到条件 · 本期未投注',v:'',
     /* ㉖ 修：这里原来写死 {S:2,M:2}，于是每张策略都说「连开 2 到 2 期」——
        C0404R5 的进场条件明明是 4 到 4。改走 mineTpl(m)（从代号反解）。 */
     note:m.lanes.length+' 条线里没有一条落在 '+ruleText(mineTpl(m)).replace(/<\/?b>/g,'')+' 的区间'});
@@ -4747,7 +4813,7 @@ function fxWinHTML(){
    龙虎 1–10/2–9/3–8/4–7/5–6 成对比大小 · 冠亚和 12 起为大。
    ⚠ 期号／时间沿用 feedFor 里那一期已结算的字面值（00089 · 09:42）——
      演示档里这两处必须一致，否则页顶说开了 00089、下面那条记录说 00088。 */
-var FXDRAWPER='00089',FXDRAWT='09:42';
+var FXDRAWPER=livePeriod(0),FXDRAWT=liveTime(0);
 /* ㉖ⓘ（Hector：这块也要能收起来，默认收起）—— 收的是<两面那三行 ＋ 冠亚和>（约 110px），
    球号那一行留在收起态里：ⓕ 当初要的就是「不用切页就看得到开了什么」，
    连球号一起藏等于把那条要求撤回去。
@@ -4788,7 +4854,7 @@ function renderFxDraw(){
       '<span class="bd-fxdper">第'+FXDRAWPER+'期</span><span class="bd-fxdt">'+FXDRAWT+'</span>'+ 
       '<span class="bd-fxnext"><svg class="sealpie" id="bdFxPie" viewBox="0 0 20 20" aria-hidden="true">'+
         '<circle class="track" cx="10" cy="10" r="8"/><circle class="prog" cx="10" cy="10" r="8"/></svg>'+ 
-        '<i>下一期开奖</i><b id="bdFxSeal">0分42秒</b></span>'+ 
+        '<i>下一期开奖</i><b id="bdFxSeal">'+beatText(LIVE_REMAIN)+'</b></span>'+ 
       /* 08-07（Hector：不用去全部开奖，把按钮去掉）—— 这一页跟着<一个>游戏跑，
          上一期开了什么就在下面摆着；要翻历史底部导航第四格「开奖」本来就到得了，
          抬头这一角只留展开收起那一枚箭头。 */
@@ -5429,6 +5495,7 @@ function openPlan(id){
 
 function renderL2(flash){
   var t=runPlan(CUR,SAMPLE);CUR._t=t;
+  t.pl+=liveYieldAdj(CUR);
   /* 2026-08-08（Hector：这里也换成改过的代号身份）—— 抬头从「北极星 / #C0404R5」
      改成与两屏卡片一样的 <b>[SG飞艇] C0404R5</b>：一个策略从此只有一个叫法。
      主标题放 chip ＋ 代号，副标题（#bdRuleSub）清空但节点留着 ——
@@ -6032,6 +6099,85 @@ function renderFoot(t){
   syncStickyH();
 }
 
+/* Advance one prototype period. Popular strategies are recalculated from the
+   shifted draw window; active personal strategies also advance their ladders.
+   Saved and emergency-stopped strategies intentionally remain unchanged. */
+function advanceMinePeriod(m){
+  if(m.paused||m.draft)return;
+  var p=minePlan(m),delta=0;
+  m.ran++;
+  m.lanes.forEach(function(l){
+    var ix=LANEBY[l.n];if(ix==null)return;
+    var L=LANES[ix],at=L.seq.length-1,outcome=L.seq[at],amt,target;
+    if(l.s==='hit'){
+      l.s='wait';delete l.pl;delete l.r;delete l.side;delete l.sn;
+      return;
+    }
+    if(l.s==='wait'){
+      var streak=streakAt(L.seq,at);
+      if(streak.n<p.S||streak.n>p.M)return;
+      target=p.dir==='follow'?streak.side:1-streak.side;
+      l.r=1;l.side=target;l.sn=target?L.a:L.b;
+    }else{
+      target=l.side;
+      if(target==null){target=outcome;l.side=target;l.sn=target?L.a:L.b;}
+    }
+    amt=ladderAmt(m,l.r||1);
+    if(outcome===target){
+      delta+=amt*(PAYOUT-1);l.s='hit';l.pl=amt*(PAYOUT-1);l.r=1;
+    }else{
+      delta-=amt;
+      if((l.r||1)>=m.R){l.s='wait';delete l.r;delete l.side;delete l.sn;}
+      else{l.r=(l.r||1)+1;l.s='chase';}
+    }
+  });
+  if(Math.abs(delta)<.005)delta=liveVisibleDelta(m,DRAWS[DRAWS.length-1]);
+  m.pl=Math.round((m.pl+delta)*100)/100;
+}
+function roundUpdateCue(){
+  var host=document.querySelector('.phone')||document.body,tip=document.getElementById('bdRoundNotice');
+  if(!tip){tip=document.createElement('div');tip.id='bdRoundNotice';tip.className='bd-roundnotice';host.appendChild(tip);}
+  tip.textContent='第 '+livePeriod(0)+' 期 · 数据已更新';
+  tip.classList.remove('bd-on');void tip.offsetWidth;tip.classList.add('bd-on');
+  clearTimeout(tip._hide);tip._hide=setTimeout(function(){tip.classList.remove('bd-on');},1400);
+  ['bdCards','bdMine','bdOverview','bdFeedStats','bdFxDraw'].forEach(function(id){
+    var el=$(id);if(!el)return;el.classList.remove('bd-roundfresh');void el.offsetWidth;el.classList.add('bd-roundfresh');
+    setTimeout(function(){el.classList.remove('bd-roundfresh');},1000);
+  });
+}
+function advancePrototypePeriod(){
+  /* Capture the visible figures before moving the window. dayStats is cached,
+     so invalidating it here is essential; otherwise the cards look frozen even
+     though their underlying draws have advanced. */
+  var before={};
+  PLANS.forEach(function(p){before[liveYieldKey(p)]=dayStats(atStake(p)).pl;});
+  var d=liveDraw();
+  DRAWS.push(d);DRAWS.shift();
+  LANES.forEach(function(L){L.seq.push(laneValueForDraw(L,d));L.seq.shift();});
+  LIVE_PERIOD++;LIVE_CLOCK++;FXDRAWPER=livePeriod(0);FXDRAWT=liveTime(0);
+  MINE.forEach(advanceMinePeriod);
+  DCACHE={};WCACHE={};
+  PLANS.forEach(function(p0){
+    var p=atStake(p0),key=liveYieldKey(p),after=dayStats(p).pl;
+    if(Math.abs(after-before[key])<.005){
+      LIVE_YIELD_ADJ[key]=(LIVE_YIELD_ADJ[key]||0)+liveVisibleDelta(p,d);
+    }
+  });
+  /* Rebuild once more if a no-change period received a live ledger entry. */
+  DCACHE={};
+
+  /* Only redraw the active surface. This preserves scroll and form focus in
+     hidden views while keeping every view current the moment it is opened. */
+  if(document.querySelector('.view-plandetail.on')){
+    /* Do not rebuild a settings form while the player is typing. The shared
+       data still advances and the detail catches up as soon as the drawer closes. */
+    if(!(CUR._setOpen&&$('bdSheet').classList.contains('bd-on')))renderL2(false);
+  }
+  else if(document.querySelector('.view-feed.on')){renderFeed();syncFxHead();}
+  else renderL1();
+  roundUpdateCue();
+}
+
 /* 回测期数现在位于收益总览中；总览同样由 renderFoot 全量重绘，继续使用事件委托。 */
 $('bdOverview').addEventListener('change',function(e){
   var sel=e.target.closest('#bdFootSamp');
@@ -6406,8 +6552,8 @@ function slGateHTML(){
 function goSheetHTML(){
   var gated=CUR.sl<=0;
   return slGateHTML()+confirmHTML()+
-    '<button type="button" class="bd-drawdone'+(gated?' bd-off':'')+'" id="bdGoYes">确认启用</button>'+
-    '<p class="tr-sfoot">'+(gated?'选一个亏损上限才能启用。':'启用后按你设的规则逐期执行；未用完的预算随时可停、自动退回。')+'</p>';
+    '<button type="button" class="bd-drawdone'+(gated?' bd-off':'')+'" id="bdGoYes">确认保存并启用</button>'+
+    '<p class="tr-sfoot">'+(gated?'选一个亏损上限才能保存并启用。':'保存后立即按设定逐期执行；未用完的预算随时可停、自动退回。')+'</p>';
 }
 $('bdGo').addEventListener('click',function(){
   var t=CUR._t;
@@ -6415,7 +6561,23 @@ $('bdGo').addEventListener('click',function(){
   if(runningCount()>=RUNMAX){toast('最多 '+RUNMAX+' 个同时在跑','先去「我的策略」停一个');return;}
   if(MINE.length>=SLOTMAX){toast('槽位满了（'+SLOTMAX+' 格）','先删掉一个不用的策略');return;}
   if(t.capital>BALANCE){toast('余额不够启用','需要 '+yuan(t.capital)+'，还差 '+yuan(t.capital-BALANCE));return;}
-  openSheet('启用这个策略？','确认后才开始花钱',goSheetHTML());
+  openSheet('保存并启用这个策略？','保存设置后立即开始执行',goSheetHTML());
+});
+/* Save is deliberately independent from activation: it stores a non-running
+   draft in My Strategies and never consumes one of the three running slots. */
+$('bdSavePlan').addEventListener('click',function(){
+  var code=planLabel(CUR),draft=null;
+  MINE.forEach(function(m){if(!draft&&m.draft&&m.code===code)draft=m;});
+  var selected=LANES.filter(function(L){return L.sel;}).map(function(L){return {n:L.sh+'·'+L.pl,s:'wait'};});
+  if(!draft&&MINE.length>=SLOTMAX){toast('策略保存已满','请先删除一个不再使用的策略');return;}
+  var data={code:code,game:CUR.game||'pk',sig:CUR.dir==='follow'?'跟投':'反投',pl:0,
+    stake:CUR.stake,mode:CUR.mode,mult:CUR.mult,R:CUR.R,ran:0,open:false,draft:true,lanes:selected};
+  if(draft){for(var k in data)draft[k]=data[k];}
+  else MINE.push(data);
+  renderMine();
+  var btn=$('bdSavePlan');btn.textContent='已保存';btn.classList.add('bd-saved');
+  clearTimeout(btn._reset);btn._reset=setTimeout(function(){btn.textContent='保存策略';btn.classList.remove('bd-saved');},1500);
+  toast(draft?'已更新保存内容':'策略已保存','可在「我的策略」中继续编辑或启用');
 });
 /* 抽屉／确认里的两个按钮 */
 /* ⓡ：抽屉版的「关」＝ closeSheet（它会把 _setOpen 归零并搬回 #bdSetBody）。
@@ -6447,7 +6609,7 @@ $('bdSheetB').addEventListener('click',function(e){
   var yes=e.target.closest('#bdGoYes');
   if(yes){
     if(CUR.sl<=0){toast('先选一个亏损上限','这是启用前唯一的必填项');return;}
-    closeSheet();toast('已启用（现有 #startModal 流程）','这个策略会出现在「我的策略」');
+    closeSheet();toast('已保存并启用','这个策略会出现在「我的策略」');
   }
 });
 

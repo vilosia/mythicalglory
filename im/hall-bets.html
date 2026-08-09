@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shared/styles.css?v=20260807k">
 <link rel="stylesheet" href="shared/hall.css?v=20260811jumper1">
-<link rel="stylesheet" href="shared/reference-theme.css?v=20260812refine24">
+<link rel="stylesheet" href="shared/reference-theme.css?v=20260812refine33">
 <script src="shared/ui-consistency.js?v=20260812auth1" defer></script>
 <!--
   游戏厅 · 明细（2026-08-06 结构改版）
@@ -183,6 +183,11 @@
   var firstManual=settled.querySelector('.bet-row');
   if(firstManual)firstManual.insertAdjacentHTML('beforebegin',settledExamples.map(exampleGroup).join(''));
 
+  /* 每一注都有独立注单号。策略卡只显示本期汇总；打开详情后才在各笔注单下展示。 */
+  [].slice.call(document.querySelectorAll('.sbg-line,.bet-row')).forEach(function(row,i){
+    row.dataset.order='220607183850'+String(712+i).padStart(3,'0');
+  });
+
   tabs.addEventListener('click',function(e){
     var t=e.target.closest('.btab');if(!t)return;
     tabs.querySelectorAll('.btab').forEach(function(x){x.classList.toggle('on',x===t);});
@@ -270,6 +275,7 @@
     sbody.innerHTML=
       '<div class="bsheet-id">'+(chip?chip.outerHTML:'')+(code?'<b>'+txt(code)+'</b>':'<b class="bsheet-manual">手动下注</b>')+'</div>'+ 
       kv('投注项',txt(pick))+
+      kv('注单号',row.dataset.order)+
       kv('期号',perTxt.replace('· '+time,'').trim())+
       kv('下注时间',time)+
       kv('投入',yuan(stakeOf(row)))+
@@ -283,6 +289,11 @@
         count=betCount(group),total=stakeOf(group),pnl=pnlOf(group),hit=hitOf(group),
         settledGroup=group.dataset.status==='settled',lines=group.querySelector('.sbg-lines');
     stitle.textContent='策略注单明细';
+    var detailLines=lines?[].slice.call(lines.children).map(function(line){
+      var copy=line.cloneNode(true),meta=copy.querySelector('span');
+      if(meta)meta.insertAdjacentHTML('beforeend','<small class="sbg-order">注单号 '+line.dataset.order+'</small>');
+      return copy.outerHTML;
+    }).join(''):'';
     sbody.innerHTML=
       '<div class="bsheet-id bsheet-strategy-id">'+(chip?chip.outerHTML:'')+'<b>'+code+'</b>'+ 
         '<span>'+group.dataset.period+' · '+group.dataset.time+'</span></div>'+ 
@@ -293,7 +304,7 @@
           '<span><i>状态</i><b class="pending">待开奖</b></span>')+
       '</div>'+ 
       '<div class="bsheet-lines-title"><b>本期注单</b><span>'+count+' 笔</span></div>'+ 
-      '<div class="bsheet-lines">'+(lines?lines.innerHTML:'')+'</div>'+ 
+      '<div class="bsheet-lines">'+detailLines+'</div>'+ 
       '<a class="bsheet-go" href="hall-plans.html#mine='+code+'">进入策略</a>';
     mask.hidden=false;sheet.hidden=false;
   }
