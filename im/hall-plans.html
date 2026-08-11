@@ -2919,11 +2919,11 @@ body.bd-inner .tr-wtop>.bd-fxact,body.bd-inner .tr-wtop>*:last-child{margin-left
 .bd-gf.bd-on{background:var(--tint);color:var(--blue-d);border-color:var(--blue-line);font-weight:500;}
 .bd-name .game-chip{margin-left:6px;vertical-align:2px;}
 </style>
-  <link rel="stylesheet" href="shared/reference-theme.css?v=20260812refine37">
+<link rel="stylesheet" href="shared/reference-theme.css?v=20260812bluecanvas54">
 <script src="shared/ui-consistency.js?v=20260812auth1" defer></script>
 <script src="shared/hint.js?v=20260807f" defer></script>
 </head>
-<body>
+<body class="page-plans">
   <div class="stage">
     <div class="phone" data-game="pk">
       <div class="screen">
@@ -3281,10 +3281,10 @@ body.bd-inner .tr-wtop>.bd-fxact,body.bd-inner .tr-wtop>*:last-child{margin-left
         <div class="bd-toast" id="bdToast"></div>
 
         <nav class="tabbar hallbar" data-component="HallNav">
-          <a class="nav" href="index.html"><svg viewBox="0 0 24 24"><path d="M12 3.2l1.8 5 5 1.8-5 1.8-1.8 5-1.8-5-5-1.8 5-1.8 1.8-5z"/><circle cx="18.2" cy="17.8" r="2.2"/></svg><span>游戏大厅</span></a>
-          <a class="nav on" href="hall-plans.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12h.01"/></svg><span>策略投注</span></a>
-          <a class="nav" href="hall-results.html"><svg viewBox="0 0 24 24"><circle cx="7.5" cy="9" r="3.4"/><circle cx="16.5" cy="9" r="3.4"/><circle cx="12" cy="16.5" r="3.4"/></svg><span>开奖结果</span></a>
-          <a class="nav" href="hall-bets.html"><svg viewBox="0 0 24 24"><path d="M6.5 3.5h11V21l-2.2-1.6L13 21l-1-0.8L11 21l-2.3-1.6L6.5 21V3.5z"/><path d="M9.5 8.5h5M9.5 12h5"/></svg><span>注单明细</span></a>
+          <a class="nav" href="index.html"><svg viewBox="0 0 24 24"><path d="M12 3.2l1.8 5 5 1.8-5 1.8-1.8 5-1.8-5-5-1.8 5-1.8 1.8-5z"/><circle cx="18.2" cy="17.8" r="2.2"/></svg><span>大厅</span></a>
+          <a class="nav on" href="hall-plans.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12h.01"/></svg><span>策略</span></a>
+          <a class="nav" href="hall-results.html"><svg viewBox="0 0 24 24"><circle cx="7.5" cy="9" r="3.4"/><circle cx="16.5" cy="9" r="3.4"/><circle cx="12" cy="16.5" r="3.4"/></svg><span>开奖</span></a>
+          <a class="nav" href="hall-bets.html"><svg viewBox="0 0 24 24"><path d="M6.5 3.5h11V21l-2.2-1.6L13 21l-1-0.8L11 21l-2.3-1.6L6.5 21V3.5z"/><path d="M9.5 8.5h5M9.5 12h5"/></svg><span>明细</span></a>
         </nav>
       </div>
     </div>
@@ -4209,11 +4209,17 @@ function renderCards(){
      而右边那颗「回测设置」是个<b>还没有的功能</b>（点了只弹口径气泡），摆着会被当成入口。
      回到一句把口径说完的话：每注多少 · 算多长 · 红 ✕ 是什么；分母那件仍在 ⓘ 里。
      ⚠ .bd-btag / .bd-backtestset 的样式留在 reference-theme 里没删（回滚参考）。 */
-  var basis='<div class="bd-basis">'+
-    '<i class="bd-basisq bd-vq" role="button" tabindex="0" aria-label="回测说明">i</i>'+ 
-    '<span class="bd-basistext"><b>回测口径</b><small class="bd-basisfacts">'+
-      '<span>每注 <b>1</b></span><span>统计范围 <b>今日全天</b></span>'+ 
-      '<span>红 <i class="bd-basisx">✕</i> <b>爆仓发生期</b></span></small></span></div>';
+  function strategyFilterTag(p,d){
+    var key=GFILTER;
+    if(key==='hot'){
+      key=['e','f'].indexOf(p.id)>=0?'new':
+        (p.id==='a'?'hot':(p.id==='c'?'steady':(d.pl>=50?'high':(d.pl>0?'rise':'hot'))));
+    }
+    return {
+      hot:['热门推荐','hot'],new:['最新上线','violet'],rise:['涨幅最高','green'],
+      steady:['稳健优选','blue'],high:['高收益','orange']
+    }[key]||['热门推荐','hot'];
+  }
   var _cardsHtml=rows.map(function(r){
     var p=r.p,n=r.n,st=r.st;
     /* ㉔ⓕ 首屏只回答股票那两问：今天涨还是跌、今天到过多高多低。
@@ -4221,15 +4227,14 @@ function renderCards(){
        ㉔ⓑ 今天＝最后 DAY 期；最高/最低＝当日累计曲线的峰与谷（股票 high/low 的意思）。 */
     /* ㉕ⓠ 百分比的分母是<b>本金</b>（BALANCE）—— 三种分母的实测对比见改动记录 ㉕ⓠ。
        ㉕ⓤ 口径回到<b>今天一天</b>：卡上的图要与详情页的曲线同窗口同画法（Hector）。 */
-    var d=dayStats(p),hero=d.pl,
-        ctx={a:['官方精选','blue'],c:['表现稳定','green'],e:['新上线','violet']}[p.id];
+    var d=dayStats(p),hero=d.pl,ctx=strategyFilterTag(p,d);
     var show=GFILTER==='hot'||
       (GFILTER==='new'&&['e','f'].indexOf(p.id)>=0)||
       (GFILTER==='rise'&&d.pl>0)||
       (GFILTER==='steady'&&['a','c'].indexOf(p.id)>=0)||
       (GFILTER==='high'&&d.pl>=50);
     if(!show)return '';
-    return '<div class="bd-card" data-p="'+p.id+'" role="button" tabindex="0">'+
+    return '<div class="bd-card'+(p.id==='a'?' bd-card-featured':'')+'" data-p="'+p.id+'" role="button" tabindex="0">'+
       /* ㉕ⓛ 代号就是名字 —— 原来跟在后面那条中文副标题（.bd-alias）撤掉 */
       /* 2026-08-08 同版追加（Hector：需求理解错了，卡现在太空）——
          抬头<b>用回 游戏 chip ＋ 代号</b>（gameChip + .bd-code），
@@ -4252,18 +4257,22 @@ function renderCards(){
           '<span class="bd-cardgame"><span>'+gameName(p)+'</span>'+ 
             (ctx?'<i class="bd-cardcontext bd-ctx-'+ctx[1]+'"><em>·</em>'+ctx[0]+'</i>':'')+'</span>'+ 
           '<span class="bd-idline"><b class="bd-code">'+planLabel(p)+'</b></span>'+ 
-          '<span class="bd-meta">'+cardBustStats(d)+'</span>'+ 
         '</span>'+ 
+        '<span class="bd-cardcta" aria-hidden="true">查看策略 <i>›</i></span>'+ 
+      '</div>'+ 
+      '<div class="bd-cardmarket">'+
         '<span class="bd-cardright">'+
           '<span class="bd-todayyield"><em>今日收益</em><b class="'+kls(hero)+'">'+signedLive(hero)+'</b></span>'+ 
-          '<span class="bd-cardrange">'+
-            '<span><small>最高</small><b class="bd-up">'+signed(d.hi)+'</b></span>'+
-            '<span><small>最低</small><b class="bd-dn">'+signed(d.lo)+'</b></span>'+
-          '</span>'+
         '</span>'+
         /* 08-07（Hector）：推荐 与 官方 两枚标都撤掉 —— 抬头只留 游戏 chip ＋ 代号。
            recId 的算分逻辑留着没删（要是哪天想把「推荐」找回来，直接在这里挂回去即可）。 */
-        '</div>'+
+        '<div class="bd-daygraph">'+miniSpark(d.curve,d.bx)+'</div>'+ 
+      '</div>'+ 
+      '<div class="bd-cardrisk"><span class="bd-meta">'+cardBustStats(d)+'</span>'+ 
+        '<span class="bd-cardrange">'+
+          '<span><small>最高</small><b class="bd-up">'+signed(d.hi)+'</b></span>'+
+          '<span><small>最低</small><b class="bd-dn">'+signed(d.lo)+'</b></span>'+
+        '</span></div>'+ 
       /* 2026-08-08 同版追加（Hector 澄清）——
          规则行（连开 S 到 M 期就进场 · 跟投 ⓘ ＋ 倍投 3× · 追 5 回 药丸）<b>不回卡面</b>：
          它是「这个策略怎么跑」，属于点进 L2 之后的事；卡面只回答「今天赚了多少 · 爆了几次」。
@@ -4288,10 +4297,9 @@ function renderCards(){
          改成<b>横着一条，放在图的上面</b>：主数字那一行只留 钱 · 百分比 · 爆 N（三件事），
          这一条是给图作注解的（图的最高点／最低点／上次爆在哪），贴着图才读得通。
          ⚠ .bd-hilo（右列那一叠）就此退役 —— 三个数没删，只是换了位置与排法。 */
-      '<div class="bd-daygraph">'+miniSpark(d.curve,d.bx)+'</div>'+
     '</div>';
   }).join('');
-  $('bdCards').innerHTML=basis+(_cardsHtml.replace(/\s/g,'')?_cardsHtml:'<div class="bd-oempty">这个分类下还没有策略</div>');
+  $('bdCards').innerHTML=_cardsHtml.replace(/\s/g,'')?_cardsHtml:'<div class="bd-oempty">这个分类下还没有策略</div>';
 }
 /* ⓔ 的底坞现算行（.bd-liverisk / renderLiveRisk）随 ㉒⁶ 退役 ——
    「单线最多」「最高投入」这两个数已经写在每张卡上，底坞那句是第三遍，而且它带的
@@ -6059,6 +6067,19 @@ function syncStickyH(){
   var el=document.querySelector('.bd-msticky');if(!el)return;
   document.documentElement.style.setProperty('--bd-stickyh',el.offsetHeight+'px');
 }
+function detailPerformance(t){
+  var per=[],bx=[],start=TOTAL-SAMPLE,i,j,c=0,curve=[];
+  for(i=0;i<SAMPLE;i++)per.push(0);
+  t.per.forEach(function(r){
+    if(!LANES[r.ix]||LANES[r.ix].sel===false)return;
+    r.bets.forEach(function(b){
+      var at=b.i-start;if(at<0||at>=SAMPLE)return;
+      per[at]+=b.pl;if(b.bust)bx.push(at);
+    });
+  });
+  for(j=0;j<per.length;j++){c+=per[j];curve.push(c);}
+  return {curve:curve,bx:bx};
+}
 function renderFoot(t){
   /* v11⑳（Hector：样本外检验 这四个字看不懂 —— 看不懂就等于没做）：
      入口改成玩家自己会问的那句话。功能一个字没删，只是不再用统计学词汇。 */
@@ -6075,13 +6096,15 @@ function renderFoot(t){
      画法回到两颗按钮的 .bd-vtog（那套样式一直留着，㉓⁴③ 当初换成下拉纯粹是为了省宽度），
      窗口下拉推到行末。行内顺序＝画法 · ⓘ · 合计 · 投中爆 · 窗口。
      ⚠ 放不放得下是<实测>出来的，见这一段下面的注释。 */
+  var perf=detailPerformance(t);
   $('bdOverview').innerHTML=
-    '<div class="bd-ovprofit">'+
+    '<div class="bd-ovtop"><div class="bd-ovprofit">'+
       '<div class="bd-ovlabelrow"><span>回测收益</span><label><select class="bd-ovselect" id="bdFootSamp" aria-label="回测期数">'+
         (function(){var o=SAMPLES.slice();if(o.indexOf(SAMPLE)<0)o.unshift(SAMPLE);
           return o.map(function(v){return '<option value="'+v+'"'+(v===SAMPLE?' selected':'')+'>'+
             (v===DAY?'今日':sampLabel(v))+'</option>';}).join('');})()+
-      '</select></label></div><b class="'+kls(t.pl)+'">'+money(t.pl).replace('¥','')+'</b></div>'+
+      '</select></label></div><b class="'+kls(t.pl)+'">'+money(t.pl).replace('¥','')+'</b></div>'+ 
+      '<div class="bd-ovspark" aria-label="回测资金曲线">'+miniSpark(perf.curve,perf.bx)+'</div></div>'+
     '<div class="bd-ovstats">'+
       '<span><small>投注数量</small><span><b>'+t.trig+'</b></span></span>'+
       '<span><small>命中数量</small><span><b>'+t.hits+'</b></span></span>'+

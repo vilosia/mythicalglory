@@ -9,10 +9,10 @@
 <!-- 样式已迁至 shared/styles.css（2026-07-09 拆分）；新增样式请直接写入该文件 -->
 <!-- 历史试跑「工作台」（V3 · 2026-07-30 移植）的样式单独一档，不混进 530KB 的 styles.css -->
 <link rel="stylesheet" href="shared/trialrun.css?v=20260730g">
-<link rel="stylesheet" href="shared/reference-theme.css?v=20260812refine24">
+<link rel="stylesheet" href="shared/reference-theme.css?v=20260812bluecanvas54">
 <script src="shared/ui-consistency.js?v=20260812auth1" defer></script>
 </head>
-<body data-im168-default="bet">
+<body class="page-game" data-im168-default="bet">
   <div class="stage">
     <div class="phone" data-game="pk">
       <div class="screen">
@@ -543,10 +543,10 @@
              这里是第二条 .tabbar，app.js 用的是 querySelector（只拿第一条），碰不到它。
              ⚠ 高亮给<b>游戏大厅</b>：这一页是从大厅点一张游戏卡进来的，它属于那一格。 -->
         <nav class="tabbar hallbar bet-hallbar" data-component="HallNav">
-          <a class="nav on" href="index.html"><svg viewBox="0 0 24 24"><path d="M12 3.2l1.8 5 5 1.8-5 1.8-1.8 5-1.8-5-5-1.8 5-1.8 1.8-5z"/><circle cx="18.2" cy="17.8" r="2.2"/></svg><span>游戏大厅</span></a>
-          <a class="nav" href="hall-plans.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12h.01"/></svg><span>策略投注</span></a>
-          <a class="nav" href="hall-results.html"><svg viewBox="0 0 24 24"><circle cx="7.5" cy="9" r="3.4"/><circle cx="16.5" cy="9" r="3.4"/><circle cx="12" cy="16.5" r="3.4"/></svg><span>开奖结果</span></a>
-          <a class="nav" href="hall-bets.html"><svg viewBox="0 0 24 24"><path d="M6.5 3.5h11V21l-2.2-1.6L13 21l-1-0.8L11 21l-2.3-1.6L6.5 21V3.5z"/><path d="M9.5 8.5h5M9.5 12h5"/></svg><span>注单明细</span></a>
+          <a class="nav on" href="index.html"><svg viewBox="0 0 24 24"><path d="M12 3.2l1.8 5 5 1.8-5 1.8-1.8 5-1.8-5-5-1.8 5-1.8 1.8-5z"/><circle cx="18.2" cy="17.8" r="2.2"/></svg><span>大厅</span></a>
+          <a class="nav" href="hall-plans.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12h.01"/></svg><span>策略</span></a>
+          <a class="nav" href="hall-results.html"><svg viewBox="0 0 24 24"><circle cx="7.5" cy="9" r="3.4"/><circle cx="16.5" cy="9" r="3.4"/><circle cx="12" cy="16.5" r="3.4"/></svg><span>开奖</span></a>
+          <a class="nav" href="hall-bets.html"><svg viewBox="0 0 24 24"><path d="M6.5 3.5h11V21l-2.2-1.6L13 21l-1-0.8L11 21l-2.3-1.6L6.5 21V3.5z"/><path d="M9.5 8.5h5M9.5 12h5"/></svg><span>明细</span></a>
         </nav>
       </div>
     </div>

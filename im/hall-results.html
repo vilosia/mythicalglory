@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shared/styles.css?v=20260807k">
 <link rel="stylesheet" href="shared/hall.css?v=20260811jumper1">
-<link rel="stylesheet" href="shared/reference-theme.css?v=20260812refine24">
+<link rel="stylesheet" href="shared/reference-theme.css?v=20260812bluecanvas54">
 <script src="shared/ui-consistency.js?v=20260812auth1" defer></script>
 <!--
   游戏厅 · 开奖（08-06 四稿：砍回最简）
@@ -25,7 +25,7 @@
 -->
 <script src="shared/hint.js?v=20260807f" defer></script>
 </head>
-<body>
+<body class="page-results">
   <div class="stage">
     <div class="phone" data-game="pk">
       <div class="screen">
@@ -52,13 +52,6 @@
               <button type="button" class="gfchip" data-g="ssc">极速时时彩</button>
               <button type="button" class="gfchip" data-g="wfc">澳洲幸运5</button>
             </div>
-            <span class="info-wrap" data-component="InfoTip">
-              <button type="button" class="info-i" aria-label="怎么读" aria-expanded="false">i</button>
-              <span class="info-pop" hidden>点一行展开<b>两面</b>：每一列就是那个位置 —— 顺着一列往下读
-                <b>球号 → 位置 → 大小 → 单双</b>（飞艇 / PK10 另有 <b>龙虎</b>，只有 冠十 / 亚九 / 三八 / 四七 / 五六 五组）。
-                <b>策略投注读的就是这个</b>：进场条件数的是某个位置某一边连开了几期。
-                <a href="hall-plans.html">去策略投注 ›</a></span>
-            </span>
           </div>
 
           <div class="rlist" id="resList">
@@ -211,10 +204,10 @@
         </div>
 
         <nav class="tabbar hallbar" data-component="HallNav">
-          <a class="nav" href="index.html"><svg viewBox="0 0 24 24"><path d="M12 3.2l1.8 5 5 1.8-5 1.8-1.8 5-1.8-5-5-1.8 5-1.8 1.8-5z"/><circle cx="18.2" cy="17.8" r="2.2"/></svg><span>游戏大厅</span></a>
-          <a class="nav" href="hall-plans.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12h.01"/></svg><span>策略投注</span></a>
-          <a class="nav on" href="hall-results.html"><svg viewBox="0 0 24 24"><circle cx="7.5" cy="9" r="3.4"/><circle cx="16.5" cy="9" r="3.4"/><circle cx="12" cy="16.5" r="3.4"/></svg><span>开奖结果</span></a>
-          <a class="nav" href="hall-bets.html"><svg viewBox="0 0 24 24"><path d="M6.5 3.5h11V21l-2.2-1.6L13 21l-1-0.8L11 21l-2.3-1.6L6.5 21V3.5z"/><path d="M9.5 8.5h5M9.5 12h5"/></svg><span>注单明细</span></a>
+          <a class="nav" href="index.html"><svg viewBox="0 0 24 24"><path d="M12 3.2l1.8 5 5 1.8-5 1.8-1.8 5-1.8-5-5-1.8 5-1.8 1.8-5z"/><circle cx="18.2" cy="17.8" r="2.2"/></svg><span>大厅</span></a>
+          <a class="nav" href="hall-plans.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12h.01"/></svg><span>策略</span></a>
+          <a class="nav on" href="hall-results.html"><svg viewBox="0 0 24 24"><circle cx="7.5" cy="9" r="3.4"/><circle cx="16.5" cy="9" r="3.4"/><circle cx="12" cy="16.5" r="3.4"/></svg><span>开奖</span></a>
+          <a class="nav" href="hall-bets.html"><svg viewBox="0 0 24 24"><path d="M6.5 3.5h11V21l-2.2-1.6L13 21l-1-0.8L11 21l-2.3-1.6L6.5 21V3.5z"/><path d="M9.5 8.5h5M9.5 12h5"/></svg><span>明细</span></a>
         </nav>
 
       </div>

@@ -548,6 +548,8 @@ body{
 .bd-cardcontext.bd-ctx-blue{color:var(--blue-d);}
 .bd-cardcontext.bd-ctx-green{color:var(--win);}
 .bd-cardcontext.bd-ctx-violet{color:#7558c7;}
+.bd-cardcontext.bd-ctx-orange{color:#d67a13;}
+.bd-cardcontext.bd-ctx-hot{color:#e25443;}
 .bd-cardright{display:flex;flex:none;flex-direction:column;align-items:flex-end;gap:5px;margin-left:auto;padding-top:0;}
 /* 抬头里的爆仓那一行：靠左、并排；.bd-meta 原来是贴在图上方的注解条（右对齐），
    在这里要把它的 margin-left:auto 关掉，否则 上次爆 会被推到左栏最右端。 */
@@ -2101,3 +2103,1089 @@ body.bd-inner .ghead.chrome>.gtop .bd-headhost .tt>b#bdFeedTitle{
 .bd-effecttag.bd-now{background:#fff2df;color:#aa6900;}
 .bd-drawfoot{border-top-color:#dce6ee!important;background:#fff!important;}
 .bd-drawuse,.bd-drawdone{border-radius:9px!important;background:var(--brand)!important;box-shadow:none!important;}
+
+/* 2026-08-10: borrow the hierarchy of a crypto strategy market without copying
+   its dark palette. Identity leads, return and curve share one row, risk closes. */
+.view-board .bd-card{padding:13px 14px 11px;}
+.view-board .bd-cardnm{display:flex;align-items:flex-start;min-height:34px;}
+.view-board .bd-cardid{gap:1px;}
+.view-board .bd-cardgame{line-height:13px;}
+.view-board .bd-cardgame+.bd-idline{margin-top:0;}
+.view-board .bd-cardcta{
+  display:inline-flex;align-items:center;gap:4px;flex:none;margin-left:auto;padding:7px 9px;
+  border:1px solid var(--brand-line);border-radius:9px;background:var(--brand-soft);
+  color:var(--brand-strong);font-size:10.5px;font-weight:750;line-height:1;white-space:nowrap;
+}
+.view-board .bd-cardcta i{font-size:13px;font-weight:600;font-style:normal;line-height:1;}
+.view-board .bd-cardmarket{
+  display:grid;grid-template-columns:116px minmax(0,1fr);align-items:center;gap:10px;margin-top:7px;
+}
+.view-board .bd-cardmarket .bd-cardright{align-items:flex-start;justify-content:center;gap:0;margin:0;padding:0;}
+.view-board .bd-cardmarket .bd-todayyield{align-items:flex-start;gap:2px;}
+.view-board .bd-cardmarket .bd-todayyield b{font-size:24px;line-height:25px;}
+.view-board .bd-cardmarket .bd-daygraph{
+  align-self:stretch;display:flex;align-items:center;min-width:0;margin:0;padding:0;border:0;background:none;
+}
+.view-board .bd-cardmarket .bd-mini{display:block;width:100%;height:66px;}
+.view-board .bd-cardrisk{display:flex;align-items:center;gap:10px;margin-top:8px;padding-top:7px;border-top:1px solid #e8eef4;}
+.view-board .bd-cardrisk .bd-meta{justify-content:flex-start;gap:13px;padding:0;}
+.view-board .bd-cardrisk .bd-lastb{margin-left:0;}
+.view-board .bd-cardrisk .bd-cardrange{align-items:baseline;gap:9px;margin-left:auto;text-align:right;}
+.view-board .bd-cardrisk .bd-cardrange>span{flex-direction:row;align-items:baseline;gap:3px;}
+
+/* One featured strategy keeps the same geometry, but reads as the live hot card. */
+.view-board .bd-card-featured{
+  position:relative;overflow:hidden;
+  border-color:#ffc38e;
+  background:linear-gradient(135deg,#fffaf5 0,#fff 34%,#fff 100%);
+  box-shadow:0 8px 22px rgba(224,105,34,.13),0 2px 5px rgba(42,66,94,.05);
+}
+.view-board .bd-card-featured::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:3px;
+  background:linear-gradient(90deg,#ff7a36 0%,#ffad42 54%,rgba(255,173,66,0) 100%);
+}
+.view-board .bd-card-featured .bd-ctx-hot{
+  display:inline-flex;align-items:center;gap:3px;padding:2px 6px 2px 5px;
+  border-radius:6px;background:#fff0e7;color:#e34e2d;
+}
+.view-board .bd-card-featured .bd-ctx-hot em{display:none;}
+.view-board .bd-card-featured .bd-ctx-hot::before{content:"🔥";font-size:10px;line-height:1;}
+.view-board .bd-card-featured .bd-cardcta{
+  border-color:#168ed3;background:linear-gradient(135deg,#1593dc,#0879c3);color:#fff;
+  box-shadow:0 4px 10px rgba(13,126,198,.18);
+}
+.view-board .bd-card-featured .bd-todayyield b{font-weight:800;}
+
+/* Detail opens like a strategy-market quote: outcome and curve first, counts second. */
+.view-plandetail .bd-overview{display:flex;flex-direction:column;gap:0;padding:10px 13px 9px;}
+.view-plandetail .bd-ovtop{display:flex;align-items:stretch;gap:12px;min-height:61px;}
+.view-plandetail .bd-ovprofit{flex:0 0 132px;justify-content:center;padding:0!important;}
+.view-plandetail .bd-ovprofit>b{margin-top:4px;font-size:24px;}
+.view-plandetail .bd-ovspark{display:flex;flex:1;min-width:0;align-items:flex-end;padding:3px 0 1px;}
+.view-plandetail .bd-ovspark .bd-mini{display:block;width:100%;height:54px;}
+.view-plandetail .bd-ovstats{flex:none;min-height:46px;margin-top:7px;padding-top:7px;border-top:1px solid #e7edf3;}
+.view-plandetail .bd-ovstats>span{grid-template-rows:17px 22px;gap:1px;}
+.view-plandetail .bd-ovstats>span+span::before{top:2px;bottom:2px;}
+.view-plandetail .bd-ovstats>span>span{min-height:22px;padding-bottom:1px;}
+
+/* 2026-08-10 · Clean surface pass.
+   Colour now communicates action or state; spacing carries the hierarchy. */
+:root{
+  --page:#f5f7f9;
+  --fill:#f7f8fa;
+  --line:#eef1f4;
+  --line-strong:#e2e7ec;
+  --shadow-card:0 4px 14px rgba(30,48,67,.045);
+}
+html,body{background:#f3f6f8!important;}
+.screen{background-color:var(--page)!important;background-image:none!important;}
+
+/* Primary headers use typography, not a full-width brand block. */
+.ghead,.ghead.chrome,.statusbar,.apphead,
+.gx-top,.gx-top>.gtop,.gtop.gx-gtop{
+  background:#fff!important;color:var(--ink)!important;
+  border-bottom-color:var(--line)!important;box-shadow:none!important;
+}
+.ghead.chrome .gback,.ghead.chrome .gtitle,.ghead.chrome .gtitle>b,
+.ghead.chrome .gtitle .gname,.ghead.chrome .gtitle .tcaret,
+.ghead.chrome .bet-head-more,.ghead.chrome .bd-headhost .tt>b,
+.statusbar .gback,.apphead .gback{color:var(--ink)!important;}
+.ghead.chrome .gtitle small,
+body.bd-inner .ghead.chrome .bd-headhost .tt>small{color:#7c899a!important;}
+.ghead .bal:not(.low),.ghead.chrome .bal:not(.low),
+.statusbar .bal:not(.low),.apphead .bal:not(.low),
+.gx-top .gx-bal:not(.low),.fg-head .bal:not(.low){
+  border:1px solid var(--brand-line)!important;background:transparent!important;
+  color:var(--brand)!important;box-shadow:none!important;
+}
+.ghead .bal:not(.low) b,.ghead .bal:not(.low) .wic,.ghead .bal:not(.low) svg,
+.ghead.chrome .bal:not(.low) b,.ghead.chrome .bal:not(.low) .wic,.ghead.chrome .bal:not(.low) svg,
+.statusbar .bal:not(.low) b,.statusbar .bal:not(.low) svg,
+.apphead .bal:not(.low) b,.apphead .bal:not(.low) svg,
+.gx-top .gx-bal:not(.low) b,.gx-top .gx-bal:not(.low) svg{
+  color:var(--brand)!important;stroke:currentColor!important;
+}
+.ghead.chrome .gtitle[aria-expanded="true"] .game-menu-icon,
+.ghead.chrome .bet-head-more:active,.ghead.chrome .bet-head-more[aria-expanded="true"]{
+  background:#f2f5f7!important;color:var(--ink)!important;
+}
+
+/* One quiet card treatment across the four main sections. */
+.gx-streak,.gx-card,.res-item,.bet-row,.bd-card,.bd-ocard,.strategy-bet-group,
+.view-plandetail .bd-mrow{
+  border-color:transparent!important;background:#fff!important;
+  box-shadow:var(--shadow-card)!important;
+}
+.gx-top{border-bottom:0!important;}
+.gx-streak{border-radius:12px!important;box-shadow:var(--shadow-card)!important;}
+.gx-gh{padding-left:2px!important;}
+.gx-gh::before{display:none!important;content:none!important;}
+.gx-card{background:#fff!important;box-shadow:none!important;}
+.gx-art{background:#f7f9fb!important;box-shadow:none!important;}
+.gx-tabs button,.gfchip,.fchip,.bday{
+  border-color:transparent!important;background:#fff!important;box-shadow:none!important;
+}
+.gx-tabs button.on,.gfchip.on,.fchip.on,.bday.on{
+  border-color:transparent!important;background:var(--brand-soft)!important;
+  color:var(--brand-strong)!important;box-shadow:none!important;
+}
+
+/* Popular strategies: white cards, no graph paper, no decorative rails. */
+.bd-gf{border-color:transparent!important;background:#fff!important;box-shadow:none!important;}
+.bd-gf.bd-on{
+  border:1px solid var(--brand-line)!important;background:#fff!important;
+  color:var(--brand-strong)!important;box-shadow:none!important;
+}
+.bd-gfi,.bd-gf.bd-on .bd-gfi,
+.bd-gfi.bd-new,.bd-gf.bd-on .bd-gfi.bd-new{background:transparent!important;box-shadow:none!important;}
+.bd-gfi.bd-new,.bd-gf.bd-on .bd-gfi.bd-new{color:#7457d9!important;}
+.bd-card,.view-board .bd-card{background:#fff!important;box-shadow:var(--shadow-card)!important;}
+.bd-card::before,.bd-card-featured::before{display:none!important;content:none!important;}
+.bd-daygraph,.view-board .bd-cardmarket .bd-daygraph{border-top:0!important;background:none!important;}
+.view-board .bd-cardrisk{border-top:0!important;padding-top:2px!important;}
+.view-board .bd-card-featured{
+  border-color:transparent!important;background:#fff!important;
+  box-shadow:0 7px 22px rgba(30,48,67,.085)!important;
+}
+.view-board .bd-card-featured .bd-ctx-hot{
+  background:transparent!important;padding:0!important;color:#e34e2d!important;
+}
+.view-board .bd-card-featured .bd-cardcta{
+  border-color:transparent!important;background:var(--brand)!important;color:#fff!important;box-shadow:none!important;
+}
+.view-board .bd-card:not(.bd-card-featured) .bd-cardcta{
+  background:transparent!important;box-shadow:none!important;
+}
+
+/* My strategies: the status chip carries state; the whole card no longer changes colour. */
+.bd-ocard,.bd-ocard.bd-state-running,.bd-ocard.bd-state-waiting,
+.bd-ocard.bd-state-paused,.bd-ocard.bd-state-saved{
+  border-color:transparent!important;background:#fff!important;box-shadow:var(--shadow-card)!important;
+}
+.bd-ocard .bd-oh,
+.bd-ocard.bd-state-running .bd-oh,.bd-ocard.bd-state-waiting .bd-oh,
+.bd-ocard.bd-state-paused .bd-oh,.bd-ocard.bd-state-saved .bd-oh{
+  background:#fff!important;border-bottom-color:transparent!important;box-shadow:none!important;
+}
+.bd-ocard .bd-olines-preview,.bd-ocard .bd-olines,.bd-ocard .bd-osum.bd-ocol{border-top-color:#f0f2f5!important;}
+.bd-ocard .bd-oline+.bd-oline{border-top-color:#f2f4f6!important;}
+.bd-ocard .bd-ofoot{border-top-color:#f0f2f5!important;background:#fff!important;}
+.bd-ocard .bd-cardmore,.bd-ocard .bd-ocv{background:#f4f6f8!important;box-shadow:none!important;}
+.bd-ocard.bd-state-paused .bd-osum.bd-ocol,.bd-ocard.bd-state-paused .bd-olines{opacity:.62!important;filter:none!important;}
+
+/* Detail, results and history keep only separators that explain a table or expansion. */
+.bd-overview,.view-feed .bd-fxg,.bets-fixedsum,.bets-sum{
+  background:#fff!important;background-image:none!important;box-shadow:none!important;
+}
+.bd-compactbar,.view-plandetail .bd-playbar #bdPlayBody{background:#fff!important;}
+.view-plandetail .bd-mrow{background-image:none!important;}
+.res-item,.bet-row,.strategy-bet-group{box-shadow:var(--shadow-card)!important;}
+.res-item.open .rr-two,.res-item.open .tw-sum,
+.sbg-overview,.bsheet-strategy-summary,.bd-settingpreview{
+  background:#fff!important;border-color:#eef1f4!important;
+}
+.strategy-bet-group .sbg-overview{border-top-color:#eef1f4!important;}
+
+/* Selected navigation stays blue; unselected navigation and controls stay neutral. */
+.bd-l1tabs,.fg-btabs,#betsTabs{background:#fff!important;}
+.bd-l1tab.bd-on::after,.btab.on::after{background:var(--brand)!important;}
+.tabbar,.hallbar{box-shadow:0 -3px 14px rgba(31,49,68,.035)!important;}
+
+/* 2026-08-10 · The top of each page is one continuous atmosphere, not stacked bands. */
+.screen{
+  background:linear-gradient(180deg,#fff 0%,#fbfcfd 16%,#f6f8fa 38%,#f2f5f7 100%)!important;
+}
+.body,.hall-body,.view,.bd-l1pane{background:transparent!important;}
+.ghead,.ghead.chrome,.statusbar,.apphead,
+.gx-top,.gx-top>.gtop,.gtop.gx-gtop{
+  background:transparent!important;border-bottom-color:transparent!important;
+}
+.bd-l1tabs,.fg-btabs,#betsTabs{
+  background:transparent!important;border-bottom-color:transparent!important;
+}
+.bd-beat,.bd-fxg,.bd-beatg,.view-feed .bd-fxg,
+.bd-overview,.bets-sum,.bets-fixedsum,.stat-row{
+  background:transparent!important;background-image:none!important;
+  border-color:transparent!important;box-shadow:none!important;
+}
+.bd-fxc+.bd-fxc,.stat-row .st+.st,.bets-sum .bs+.bs{
+  border-left-color:transparent!important;
+}
+.stat-row::before,.bets-sum::before{display:none!important;content:none!important;}
+.bd-compactbar{background:transparent!important;border-bottom-color:transparent!important;}
+.filter-row{background:transparent!important;}
+
+/* 2026-08-10 · Consistent actions and a continuous detail canvas. */
+.view-board .bd-cardcta,
+.view-board .bd-card-featured .bd-cardcta,
+.view-board .bd-card:not(.bd-card-featured) .bd-cardcta{
+  border:1px solid var(--brand-line)!important;background:transparent!important;
+  color:var(--brand-strong)!important;box-shadow:none!important;
+}
+.view-plandetail,.view-plandetail .bd-mwrap,.view-plandetail .bd-matrix{
+  background:transparent!important;background-image:none!important;
+}
+.view-plandetail .bd-mrow.bd-in{
+  border:1px solid var(--brand)!important;box-shadow:none!important;
+}
+.view-plandetail .bd-mrow.bd-in .bd-mck{
+  border-color:var(--brand)!important;background:var(--brand)!important;
+  color:#fff!important;box-shadow:none!important;
+}
+.view-plandetail .tr-tab.on::after{background:var(--brand)!important;}
+.view-plandetail .tr-dockbar>button#bdGo{
+  border-color:var(--brand)!important;background:var(--brand)!important;
+  color:#fff!important;box-shadow:none!important;
+}
+.view-plandetail .bd-saveplan{
+  border-color:var(--brand-line)!important;background:transparent!important;
+  color:var(--brand-strong)!important;box-shadow:none!important;
+}
+.view-plandetail .bd-filterbtn,
+.view-plandetail .bd-mrow.bd-in .bd-mval{color:var(--brand-strong)!important;}
+
+/* The mine overview is compact and visually attached to its tabs. */
+.view-board .bd-l1tabs{min-height:40px!important;padding-inline:16px!important;}
+.view-board .bd-l1tab{padding-top:8px!important;padding-bottom:8px!important;}
+.view-board .bd-beat{padding:0 12px 7px!important;}
+.view-board .bd-beatg .bd-fxc{padding:4px 9px 6px!important;}
+.view-board .bd-beatg .bd-fxc i{line-height:14px!important;}
+.view-board .bd-beatg .bd-fxc b{margin-top:0!important;line-height:20px!important;}
+
+/* 2026-08-11 · Clean cool-grey canvas.
+   The page is one quiet material: cool-grey canvas, pure-white cards and
+   stronger typography. Colour is reserved for actions, state and P/L. */
+:root{
+  --brand:#1677ee;
+  --brand-strong:#0f63ce;
+  --brand-soft:#edf5ff;
+  --brand-line:#a9d0f7;
+  --blue:#1677ee;
+  --blue-d:#0f63ce;
+  --blue-dark:#0f63ce;
+  --blue-soft:#edf5ff;
+  --blue-line:#bad9f8;
+  --ink:#172033;
+  --muted:#66738a;
+  --faint:#98a3b5;
+  --page:#f3f5f7;
+  --fill:#f6f7f9;
+  --line:#edf0f3;
+  --line-strong:#e2e7ec;
+  --shadow-card:0 5px 16px rgba(30,45,65,.055);
+}
+html,body{background:#eef2f5!important;}
+.screen{
+  background:#f3f5f7!important;
+  background-image:none!important;
+}
+.body,.hall-body,.view,.bd-l1pane{background:transparent!important;}
+
+/* Header and primary tabs belong to the canvas rather than another band. */
+.ghead,.ghead.chrome,.statusbar,.apphead,
+.gx-top,.gx-top>.gtop,.gtop.gx-gtop,
+.bd-l1tabs,.fg-btabs,#betsTabs{
+  background:transparent!important;
+  background-image:none!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+}
+.gtitle,.gtitle>b,.bd-l1tab,.btab,.gx-gh b,
+.bd-code,.bd-ocode,.sbg-code,.br-pick,.rr-per{
+  color:var(--ink)!important;
+}
+.bd-l1tab:not(.bd-on),.btab:not(.on){color:#77849a!important;}
+.bd-l1tab.bd-on,.btab.on{color:var(--brand-strong)!important;}
+.bd-l1tab.bd-on::after,.btab.on::after{
+  height:3px!important;background:var(--brand)!important;border-radius:999px!important;
+}
+
+/* Cards stand out by material contrast, never by decorative borders. */
+.gx-streak,.gx-card,.res-item,.bet-row,.strategy-bet-group,
+.bd-card,.bd-ocard,.view-plandetail .bd-mrow{
+  border-color:transparent!important;
+  background:#fff!important;
+  background-image:none!important;
+  box-shadow:var(--shadow-card)!important;
+}
+.bd-card,.bd-ocard,.strategy-bet-group,.res-item,.bet-row{
+  border-radius:17px!important;
+}
+.bd-cardgame,.bd-cardbust span,.bd-cardid .bd-lastb span,
+.bd-cardbust em,.bd-cardid .bd-lastb em,
+.sbg-per,.br-sub,.rr-time{color:var(--muted)!important;}
+
+/* Strategy filters no longer read as a row of white cards on white. */
+.bd-gfilter{gap:6px!important;}
+.bd-gf{
+  border-color:transparent!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#738097!important;
+}
+.bd-gf.bd-on{
+  border-color:var(--brand-line)!important;
+  background:var(--brand-soft)!important;
+  color:var(--brand-strong)!important;
+  box-shadow:none!important;
+}
+.bd-gfi,.bd-gf.bd-on .bd-gfi{background:transparent!important;}
+
+/* Strategy shelf: keep the chart and return as the visual focus. */
+.view-board .bd-card{
+  box-shadow:0 6px 18px rgba(30,45,65,.06)!important;
+}
+.view-board .bd-card-featured{
+  background:#fff!important;
+  box-shadow:0 8px 22px rgba(30,45,65,.085)!important;
+}
+.view-board .bd-cardcta,
+.view-board .bd-card-featured .bd-cardcta,
+.view-board .bd-card:not(.bd-card-featured) .bd-cardcta{
+  border-color:var(--brand-line)!important;
+  background:#fff!important;
+  color:var(--brand-strong)!important;
+}
+.bd-todayyield em,.bd-cardrange small{color:#66738a!important;}
+.bd-cardrange b,.bd-cardid .bd-lastb b{color:#445169!important;}
+
+/* Bet summaries use spacing instead of a boxed sub-panel or vertical rule. */
+.strategy-bet-group .sbg-overview{
+  gap:28px!important;
+  padding-top:7px!important;
+  border-top:1px solid var(--line)!important;
+  background:#fff!important;
+}
+.strategy-bet-group .sbg-overview>span{
+  padding-right:0!important;
+}
+.strategy-bet-group .sbg-overview>span+span{
+  padding-left:0!important;
+  border-left:0!important;
+}
+.sbg-overview i{color:var(--muted)!important;}
+.sbg-overview b{color:var(--ink)!important;}
+.sbg-status.pending{color:#a86a00!important;}
+
+/* Secondary surfaces remain readable without creating another colour zone. */
+.bd-overview,.view-feed .bd-fxg,.bets-fixedsum,.bets-sum,
+.bd-compactbar,.filter-row{
+  background:transparent!important;
+  background-image:none!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+}
+.tabbar,.hallbar{
+  background:#fff!important;
+  border-top-color:var(--line)!important;
+  box-shadow:0 -4px 16px rgba(30,45,65,.045)!important;
+}
+
+/* 2026-08-11 · Contrast pass for a familiar Chinese mobile-product rhythm.
+   Clean does not mean pale: stronger type and one clear action per region. */
+:root{
+  --win:#12a150;
+  --positive:#12a150;
+  --red:#ee3d49;
+  --warning:#e98216;
+}
+
+/* Primary copy carries the hierarchy; secondary copy remains comfortably legible. */
+.gtitle,.gtitle>b,.gx-gh b,.bd-code,.bd-ocode,.sbg-code,
+.br-pick,.rr-per,.bd-planname,.bd-fxcode,.bd-fxrtitle,
+.bd-mrow h3,.bd-oh strong,.bd-oh b{
+  color:#172033!important;
+  font-weight:800!important;
+}
+.gx-gh small,.bd-cardgame,.bd-meta,.bd-cardrange small,
+.bd-ocolmeta,.bd-oline-sub,.bd-fxsub,.sbg-per,.br-sub,.rr-time,
+.bets-sum i,.stat-row i{
+  color:#68758b!important;
+}
+.bd-code,.bd-ocode,.sbg-code{
+  font-variant-numeric:tabular-nums!important;
+  letter-spacing:.35px!important;
+}
+
+/* Selected and actionable elements use a more decisive, saturated blue. */
+.tabbar .nav.on,.hallbar .nav.on,
+.bd-l1tab.bd-on,.btab.on,.tr-tab.on,
+.bd-filterbtn,.bd-saveplan,.bd-cardcta{
+  color:var(--brand-strong)!important;
+}
+.cta,.amount-page__next,.cfm button.ok,.quickfoot button,
+.tplapply,.followbtn,.ownerbtn,.abtn,
+.bd-ocard .bd-cardentry,.bd-ocard .bd-ofoot .bd-enter,
+.bd-stateacts .bd-activatebtn,.view-plandetail .tr-dockbar>button#bdGo{
+  border-color:var(--brand)!important;
+  background:var(--brand)!important;
+  background-image:none!important;
+  color:#fff!important;
+  box-shadow:none!important;
+}
+.view-plandetail .bd-saveplan,
+.bd-ocard .bd-ofoot .bd-enter-secondary{
+  border-color:var(--brand-line)!important;
+  background:#fff!important;
+  color:var(--brand-strong)!important;
+  box-shadow:none!important;
+}
+
+/* Compact semantic chips remain the only coloured surfaces inside data cards. */
+.bd-mstate-running{
+  border-color:#12a150!important;background:#12a150!important;color:#fff!important;
+}
+.bd-mstate-waiting{
+  border-color:#f4d49c!important;background:#fff4df!important;color:#986000!important;
+}
+.bd-mstate-paused{
+  border-color:#ee3d49!important;background:#ee3d49!important;color:#fff!important;
+}
+.bd-ocard .bd-mstate-saved{
+  border-color:#dce5ee!important;background:#edf2f6!important;color:#48627c!important;
+}
+.bd-cardcontext.bd-ctx-hot{color:#e94a3d!important;}
+.bd-cardcontext.bd-ctx-green{color:#15985a!important;}
+.bd-cardcontext.bd-ctx-violet{color:#7653d6!important;}
+.bd-cardcontext.bd-ctx-orange{color:#dc7814!important;}
+
+/* Numbers are easier to scan without introducing more panels. */
+.bd-todayyield b,.bd-ovprofit>b,.bd-cardpl b,
+.sbg-overview b,.br-amt,.bets-sum b,.stat-row b{
+  font-weight:800!important;
+  font-variant-numeric:tabular-nums!important;
+}
+.bd-todayyield b,.bd-cardpl.bd-up,.bd-cardpl.bd-up b,
+.sbg-pnl.win b,.br-amt.win{color:var(--win)!important;}
+.bd-cardpl.bd-dn,.bd-cardpl.bd-dn b,
+.sbg-pnl.lose b,.br-amt.lose{color:var(--red)!important;}
+
+/* Results and bet history use the same card language as the hall. */
+.hall-body[data-component="Results"] .res-item,
+.hall-body[data-component="MyBets"] .bet-row,
+.hall-body[data-component="MyBets"] .strategy-bet-group{
+  border:0!important;background:#fff!important;
+  box-shadow:0 5px 16px rgba(30,45,65,.055)!important;
+}
+.hall-body[data-component="Results"] .rr-per,
+.hall-body[data-component="MyBets"] .br-pick,
+.hall-body[data-component="MyBets"] .sbg-code{color:#172033!important;}
+.hall-body[data-component="Results"] .rr-time,
+.hall-body[data-component="MyBets"] .br-per,
+.hall-body[data-component="MyBets"] .sbg-per{color:#68758b!important;}
+
+/* Wallet outline stays light while its amount remains unmistakably active. */
+.ghead .bal:not(.low),.ghead.chrome .bal:not(.low),
+.statusbar .bal:not(.low),.apphead .bal:not(.low),
+.gx-top .gx-bal:not(.low),.fg-head .bal:not(.low){
+  border-color:#9bcaf6!important;background:rgba(255,255,255,.52)!important;
+}
+.ghead .bal:not(.low) b,.ghead.chrome .bal:not(.low) b,
+.statusbar .bal:not(.low) b,.apphead .bal:not(.low) b,
+.gx-top .gx-bal:not(.low) b,.fg-head .bal:not(.low) b{
+  color:#0f6edc!important;font-weight:700!important;
+}
+
+/* 2026-08-11 · Page-scoped surfaces.
+   Do not flatten every product screen into the same grey slab. */
+
+/* Group list: a messaging list, not a promotional landing page. */
+.page-groups .screen,.page-groups .body,.page-groups .view-groups,
+.page-groups .imlist,.page-groups .siterow,.page-groups .imchips{
+  background:#fff!important;
+}
+.page-groups .imsearch{
+  border:0!important;background:#f5f6f8!important;box-shadow:none!important;
+}
+.page-groups .view-groups .imrow-hall{
+  margin:0!important;padding:12px 16px!important;border:0!important;border-radius:0!important;
+  background:#fff!important;background-image:none!important;box-shadow:none!important;
+}
+.page-groups .view-groups .imrow-hall::before{display:none!important;content:none!important;}
+.page-groups .view-groups .imrow-hall::after{
+  display:block!important;left:0!important;background:var(--line)!important;
+}
+.page-groups .view-groups .imrow-hall:active{background:#f6f7f9!important;}
+.page-groups .view-groups .imrow-hall .sq.sq-game{
+  width:48px!important;height:48px!important;background:#eef6ff!important;
+  box-shadow:0 4px 10px rgba(24,119,204,.12)!important;
+}
+.page-groups .view-groups .imrow-hall .gx b{font-weight:800!important;color:#172033!important;}
+.page-groups .view-groups .imrow-hall .gx span{color:#68758b!important;}
+
+/* Game hall: white is the main stage; the banner supplies atmosphere. */
+.page-hall .screen,.page-hall .hall-body{
+  background:#fff!important;background-image:none!important;
+}
+.page-hall .ghead{background:#fff!important;}
+.page-hall .gx-welcome{
+  box-shadow:0 8px 20px rgba(24,93,155,.13)!important;
+}
+.page-hall .gx-streak{
+  border:0!important;background:#f7f8fa!important;box-shadow:none!important;
+}
+.page-hall .gx-tabs{background:#fff!important;}
+.page-hall .gx-tabs button{
+  border:0!important;background:transparent!important;box-shadow:none!important;color:#69768c!important;
+}
+.page-hall .gx-tabs button.on{
+  background:var(--brand-soft)!important;color:var(--brand-strong)!important;
+}
+.page-hall .gx-list{background:#fff!important;}
+.page-hall .gx-card{
+  border:0!important;background:#f7f8fa!important;box-shadow:none!important;
+}
+.page-hall .gx-card:active{background:#eef5ff!important;}
+.page-hall .gx-art{background:#edf4fb!important;}
+.page-hall .gx-gh b{font-weight:800!important;color:#172033!important;}
+.page-hall .gx-gh small{color:#7b8799!important;}
+
+/* Strategy centre: white controls above, a quiet shelf only behind cards. */
+.page-plans .screen,.page-plans .body,.page-plans .view-board,
+.page-plans .bd-l1tabs,.page-plans .bd-l1pane{
+  background:#fff!important;background-image:none!important;
+}
+.page-plans .bd-gfilter{
+  background:#fff!important;
+}
+.page-plans #bdCards,.page-plans #bdMine{
+  background:#f3f5f7!important;
+  padding-top:8px!important;
+}
+.page-plans #bdCards::after,.page-plans #bdMine::after{
+  content:"";display:block;height:8px;
+}
+.page-plans .bd-card,.page-plans .bd-ocard{
+  border:0!important;background:#fff!important;
+  box-shadow:0 4px 14px rgba(30,45,65,.05)!important;
+}
+.page-plans .bd-beat,.page-plans .bd-beatg{
+  background:#fff!important;
+}
+.page-plans .bd-l1tab.bd-on::after{height:3px!important;}
+
+/* Strategy detail: overview remains white; only the dense matrix gets a shelf. */
+.page-plans .view-plandetail{
+  background:#fff!important;background-image:none!important;
+}
+.page-plans .view-plandetail .bd-mwrap,
+.page-plans .view-plandetail .bd-matrix{
+  background:#f3f5f7!important;background-image:none!important;
+}
+.page-plans .view-plandetail .bd-msticky,
+.page-plans .view-plandetail .bd-overview,
+.page-plans .view-plandetail .bd-compactbar{
+  background:#fff!important;
+}
+.page-plans .view-plandetail .bd-mrow,
+.page-plans .view-plandetail .bd-mrow.bd-in{
+  border:0!important;background:#fff!important;
+  box-shadow:0 3px 12px rgba(30,45,65,.045)!important;
+}
+.page-plans .view-plandetail .bd-mrow.bd-in{
+  background:#fafdff!important;
+  box-shadow:inset 0 0 0 1px rgba(22,119,238,.24),0 3px 12px rgba(30,45,65,.045)!important;
+}
+.page-plans.bd-inner .ghead .game-chip,
+.page-plans .view-plandetail .game-chip{
+  background:var(--brand-soft)!important;color:var(--brand-strong)!important;
+  border-color:transparent!important;
+}
+
+/* Results and bet history: white chrome, grey list shelf, white rows. */
+.page-results .screen,.page-bets .screen{
+  background:#fff!important;background-image:none!important;
+}
+.page-results .ghead,.page-bets .ghead,
+.page-results .filter-row,.page-bets #betsTabs{
+  background:#fff!important;
+}
+.page-results .hall-body[data-component="Results"],
+.page-bets .hall-body[data-component="MyBets"]{
+  background:#f3f5f7!important;
+}
+.page-results .filter-row,.page-bets #betsTabs{
+  margin-bottom:0!important;
+}
+.page-results .rlist,.page-bets .bet-list{
+  padding-top:10px!important;
+}
+.page-results .res-item,.page-bets .bet-row,.page-bets .strategy-bet-group{
+  border:0!important;background:#fff!important;
+  box-shadow:0 4px 14px rgba(30,45,65,.05)!important;
+}
+
+/* 2026-08-11 · Fresh ambient canvas.
+   These are chromatic greys with broad, asymmetric light—not visible bands. */
+html,body{
+  background:#eaf0f5!important;
+}
+.phone{
+  border-color:rgba(206,219,231,.78)!important;
+  box-shadow:0 26px 64px -34px rgba(46,88,124,.30)!important;
+}
+.screen{
+  background:
+    radial-gradient(circle at 86% 2%,rgba(107,158,244,.09),transparent 29%),
+    radial-gradient(circle at 4% 48%,rgba(87,199,218,.04),transparent 34%),
+    linear-gradient(180deg,#fbfdff 0%,#f5f8fb 38%,#eef3f7 100%)!important;
+}
+
+/* Lobby: the liveliest atmosphere, tuned to the blue image carousel. */
+.page-hall .screen{
+  background:
+    radial-gradient(circle at 88% 3%,rgba(99,158,255,.14),transparent 30%),
+    radial-gradient(circle at 3% 43%,rgba(89,205,228,.075),transparent 34%),
+    linear-gradient(180deg,#f9fcff 0%,#f3f8fc 42%,#edf3f8 100%)!important;
+}
+.page-hall .ghead,.page-hall .hall-body,.page-hall .gx-list{
+  background:transparent!important;
+}
+.page-hall .gx-tabs{background:transparent!important;}
+.page-hall .gx-card{
+  background:rgba(255,255,255,.94)!important;
+  box-shadow:0 4px 14px rgba(37,70,102,.045)!important;
+}
+.page-hall .gx-streak{
+  background:rgba(255,255,255,.82)!important;
+  box-shadow:0 3px 12px rgba(37,70,102,.035)!important;
+}
+
+/* Strategy centre: a restrained blue-green haze supports live curves. */
+.page-plans .screen{
+  background:
+    radial-gradient(circle at 93% 8%,rgba(100,158,255,.115),transparent 30%),
+    radial-gradient(circle at 4% 54%,rgba(71,199,177,.052),transparent 35%),
+    linear-gradient(180deg,#fbfdff 0%,#f4f8fb 38%,#edf3f7 100%)!important;
+}
+.page-plans .body,.page-plans .view-board,.page-plans .bd-l1tabs,
+.page-plans .bd-l1pane,.page-plans .bd-gfilter,
+.page-plans #bdCards,.page-plans #bdMine{
+  background:transparent!important;
+}
+.page-plans .bd-card,.page-plans .bd-ocard{
+  background:rgba(255,255,255,.96)!important;
+  box-shadow:0 5px 16px rgba(31,58,84,.052)!important;
+}
+
+/* Detail: nearly white above, slightly cooler around the dense matrix. */
+.page-plans .view-plandetail{
+  background:
+    radial-gradient(circle at 86% 6%,rgba(105,164,255,.10),transparent 29%),
+    linear-gradient(180deg,#fbfdff 0%,#f6f9fc 36%,#edf3f7 100%)!important;
+}
+.page-plans .view-plandetail .bd-mwrap,
+.page-plans .view-plandetail .bd-matrix{
+  background:transparent!important;
+}
+.page-plans .view-plandetail .bd-msticky{
+  background:rgba(250,252,255,.94)!important;
+}
+.page-plans .view-plandetail .bd-overview,
+.page-plans .view-plandetail .bd-compactbar{
+  background:transparent!important;
+}
+
+/* Results and bets stay calm, with only a faint blue ambience. */
+.page-results .screen,.page-bets .screen{
+  background:
+    radial-gradient(circle at 88% 2%,rgba(105,161,244,.09),transparent 29%),
+    linear-gradient(180deg,#fbfdff 0%,#f5f8fb 34%,#eef3f7 100%)!important;
+}
+.page-results .ghead,.page-bets .ghead,
+.page-results .hall-body[data-component="Results"],
+.page-bets .hall-body[data-component="MyBets"],
+.page-results .filter-row,.page-bets #betsTabs{
+  background:transparent!important;
+}
+
+/* Groups: closest to white, with a small blue-violet glow around the chrome. */
+.page-groups .screen{
+  background:
+    radial-gradient(circle at 84% 0%,rgba(119,141,255,.105),transparent 27%),
+    radial-gradient(circle at 8% 29%,rgba(91,198,224,.045),transparent 31%),
+    linear-gradient(180deg,#fbfcff 0%,#f6f8fb 34%,#f0f4f7 100%)!important;
+}
+.page-groups .body,.page-groups .view-groups{
+  background:transparent!important;
+}
+.page-groups .view-groups .imsearch,
+.page-groups .view-groups .siterow,
+.page-groups .view-groups .imchips{
+  background:rgba(255,255,255,.72)!important;
+}
+.page-groups .view-groups .imlist{
+  background:rgba(255,255,255,.78)!important;
+}
+.page-groups .view-groups .imrow,
+.page-groups .view-groups .imrow-hall{
+  background:transparent!important;
+}
+
+/* 2026-08-11 · Structural calibration.
+   The canvas remains clean; alignment, a single rail and grouped metrics now
+   provide the missing hierarchy instead of adding more colour blocks. */
+
+/* Strategy detail quote: one shared baseline for return, curve and counters. */
+.page-plans .view-plandetail .bd-overview{
+  padding:12px 14px 10px!important;
+}
+.page-plans .view-plandetail .bd-ovtop{
+  display:grid!important;
+  grid-template-columns:124px minmax(0,1fr)!important;
+  align-items:end!important;
+  gap:16px!important;
+  min-height:66px!important;
+}
+.page-plans .view-plandetail .bd-ovprofit{
+  width:auto!important;
+  min-width:0!important;
+  justify-content:flex-end!important;
+  padding:0 0 3px!important;
+}
+.page-plans .view-plandetail .bd-ovlabelrow{
+  min-height:28px!important;
+  align-items:center!important;
+  gap:6px!important;
+}
+.page-plans .view-plandetail .bd-ovprofit>b{
+  margin-top:5px!important;
+  font-size:23px!important;
+  line-height:1!important;
+  letter-spacing:-.35px!important;
+}
+.page-plans .view-plandetail .bd-ovspark{
+  min-width:0!important;
+  height:66px!important;
+  padding:0!important;
+  align-items:flex-end!important;
+}
+.page-plans .view-plandetail .bd-ovspark .bd-mini{
+  width:100%!important;
+  height:58px!important;
+}
+.page-plans .view-plandetail .bd-ovstats{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  min-height:48px!important;
+  margin-top:10px!important;
+  padding-top:9px!important;
+  border-top:1px solid rgba(113,137,164,.16)!important;
+}
+.page-plans .view-plandetail .bd-ovstats>span{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:4px!important;
+  min-height:38px!important;
+}
+.page-plans .view-plandetail .bd-ovstats>span+span::before{
+  top:5px!important;
+  bottom:5px!important;
+  background:rgba(113,137,164,.16)!important;
+}
+.page-plans .view-plandetail .bd-ovstats>span>span{
+  min-height:18px!important;
+  align-items:center!important;
+  padding:0!important;
+}
+.page-plans .view-plandetail .bd-ovstats small{
+  font-size:11px!important;
+  font-weight:600!important;
+  color:#697991!important;
+}
+.page-plans .view-plandetail .bd-ovstats b{
+  font-size:16px!important;
+  line-height:18px!important;
+}
+
+/* Tabs and filter read as one toolbar, with one fine structural rail. */
+.page-plans .view-plandetail .bd-compactbar{
+  min-height:48px!important;
+  padding:6px 12px 8px!important;
+  gap:10px!important;
+  border-top:1px solid rgba(113,137,164,.12)!important;
+  border-bottom:1px solid rgba(113,137,164,.14)!important;
+}
+.page-plans .view-plandetail .bd-compactbar .bd-vtog{
+  align-self:stretch!important;
+  min-width:154px!important;
+}
+.page-plans .view-plandetail .bd-filterbtn{
+  min-height:36px!important;
+  border-color:rgba(22,119,238,.24)!important;
+  background:rgba(255,255,255,.72)!important;
+}
+
+/* Quiet header rails: enough structure for the light canvas, no new colour zone. */
+.page-plans .view-board>.bd-l1tabs,
+.page-bets #betsTabs{
+  position:relative!important;
+  border-bottom:1px solid rgba(112,137,163,.16)!important;
+}
+.page-plans .view-board>.bd-l1tabs::before,
+.page-bets #betsTabs::before{
+  content:"";
+  position:absolute;
+  left:14px;
+  right:14px;
+  bottom:-1px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(22,119,238,.18) 28%,rgba(22,119,238,.18) 72%,transparent);
+  pointer-events:none;
+}
+.page-plans .bd-gfilter{
+  border-bottom:1px solid rgba(112,137,163,.10)!important;
+}
+
+/* Bet summary is a fixed information dock, not a loose line of footer text. */
+.page-bets .bets-fixedsum{
+  margin:0 10px 8px!important;
+  padding:7px!important;
+  gap:6px!important;
+  border:1px solid rgba(112,137,163,.14)!important;
+  border-radius:16px!important;
+  background:rgba(255,255,255,.96)!important;
+  box-shadow:0 -8px 24px -16px rgba(32,65,96,.34),0 6px 18px rgba(32,65,96,.07)!important;
+}
+.page-bets .bets-fixedsum .bs{
+  display:flex!important;
+  min-height:49px!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  padding:7px 8px!important;
+  border:0!important;
+  border-radius:11px!important;
+  background:#f6f8fb!important;
+}
+.page-bets .bets-fixedsum .bs i{
+  font-size:10.5px!important;
+  font-weight:600!important;
+  color:#687891!important;
+}
+.page-bets .bets-fixedsum .bs b{
+  margin-top:3px!important;
+  font-size:15px!important;
+  line-height:18px!important;
+}
+
+/* Execution header and its metrics form one compact identity block. */
+.page-plans .view-feed .bd-fxstats{
+  padding:8px 12px 10px!important;
+  background:transparent!important;
+}
+.page-plans .view-feed .bd-fxg{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:6px!important;
+  border:1px solid rgba(112,137,163,.13)!important;
+  border-radius:14px!important;
+  background:rgba(255,255,255,.82)!important;
+  padding:6px!important;
+}
+.page-plans .view-feed .bd-fxc{
+  min-height:50px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  padding:6px 8px!important;
+  border:0!important;
+  border-radius:9px!important;
+  background:#f6f8fb!important;
+}
+.page-plans .view-feed .bd-fxc i{
+  font-size:10.5px!important;
+  line-height:14px!important;
+}
+.page-plans .view-feed .bd-fxc b{
+  margin-top:2px!important;
+  font-size:15px!important;
+  line-height:18px!important;
+}
+body.page-plans.bd-inner .ghead{
+  border-bottom:1px solid rgba(112,137,163,.14)!important;
+}
+
+/* The create drawer had the sheet padding plus another 16px inset. */
+#bdSheetB>.bd-setbody{
+  width:100%!important;
+  box-sizing:border-box!important;
+  padding:0 0 18px!important;
+}
+#bdSheetB>.bd-setbody .bd-settingsteps{
+  margin-left:0!important;
+  margin-right:0!important;
+}
+
+/* Results and bet records inherit the lobby card geometry.  Keep the larger
+   17px radius for strategy-market cards only. */
+.page-results .hall-body[data-component="Results"] .res-item,
+.page-bets .hall-body[data-component="MyBets"] .bet-row,
+.page-bets .hall-body[data-component="MyBets"] .strategy-bet-group{
+  border-radius:12px!important;
+}
+
+/* 2026-08-11 · Metric rhythm refinement. */
+.page-plans .view-board .bd-beat{
+  padding:7px 14px 9px!important;
+}
+.page-plans .view-board .bd-beatg{
+  min-height:54px!important;
+  align-items:stretch!important;
+}
+.page-plans .view-board .bd-beatg .bd-fxc{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  padding:6px 10px 7px!important;
+}
+.page-plans .view-board .bd-beatg .bd-fxc i{
+  line-height:15px!important;
+}
+.page-plans .view-board .bd-beatg .bd-fxc b{
+  margin-top:2px!important;
+  line-height:19px!important;
+}
+
+/* Execution summary: remove the nested frame and grey tiles.  Three values sit
+   directly on the ambient canvas with only short, soft rhythm markers. */
+.page-plans .view-feed .bd-fxstats{
+  padding:5px 18px 8px!important;
+}
+.page-plans .view-feed .bd-fxg{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.page-plans .view-feed .bd-fxc{
+  position:relative!important;
+  min-height:46px!important;
+  padding:4px 12px 5px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+}
+.page-plans .view-feed .bd-fxc+.bd-fxc::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:10px;
+  bottom:10px;
+  width:1px;
+  background:rgba(103,125,150,.13);
+}
+.page-plans .view-feed .bd-fxc i{
+  line-height:14px!important;
+}
+.page-plans .view-feed .bd-fxc b{
+  margin-top:2px!important;
+  line-height:18px!important;
+}
+
+/* Results disclosure control: centre the complete glyph inside one fixed box.
+   The previous nested transforms centred the 16px glyph box, not its visible V. */
+.page-results .rr-cv{
+  display:grid!important;
+  place-items:center!important;
+  flex:0 0 28px!important;
+  width:28px!important;
+  height:28px!important;
+  margin-left:auto!important;
+  border-radius:9px!important;
+  background:#f2f5f8!important;
+  color:#718198!important;
+}
+.page-results .rr-cv i{
+  display:block!important;
+  width:16px!important;
+  height:16px!important;
+  margin:0!important;
+  transform:none!important;
+}
+.page-results .rr-cv i::before{
+  left:50%!important;
+  top:50%!important;
+  width:7px!important;
+  height:7px!important;
+  transform:translate(-50%,-68%) rotate(45deg)!important;
+}
+.page-results .res-item.open .rr-cv i{
+  transform:rotate(180deg)!important;
+}
+
+/* 2026-08-11 · One light blue-grey canvas for the three game workflows.
+   White is reserved for actual content cards, not page-sized slabs. */
+.page-game .screen,
+.page-plans .view-feed{
+  background:
+    radial-gradient(circle at 88% 1%,rgba(91,153,239,.10),transparent 30%),
+    radial-gradient(circle at 4% 54%,rgba(85,190,214,.045),transparent 34%),
+    linear-gradient(180deg,#f9fcff 0%,#f2f6fa 42%,#eaf1f7 100%)!important;
+}
+.page-game .body,
+.page-game .view-bet,
+.page-game .view-bets,
+.page-game .view-bets .scroll2,
+.page-game .view-bets .btabpanel,
+.page-game .view-bets .btabs,
+.page-game .view-bets .ctl-row,
+.page-game .view-bet .gboard,
+.page-game .view-bet .main,
+.page-game .view-bet .list,
+.page-plans .view-feed .bd-feedstats{
+  background:transparent!important;
+}
+.page-game .ghead.chrome,
+.page-game .ghead.chrome>.gtop,
+.page-game .roundbar,
+.page-game .view-bets .subhead{
+  background:rgba(249,252,255,.76)!important;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+.page-game .view-bets .blist{
+  background:transparent!important;
+}
+.page-game .view-bets .bi{
+  background:rgba(255,255,255,.96)!important;
+}
+
+/* Execution metrics: one calm summary card.  The three values remain
+   unboxed inside it, avoiding both the empty slab and three grey tiles. */
+.page-plans .view-feed .bd-fxstats{
+  padding:8px 12px 10px!important;
+  background:transparent!important;
+}
+.page-plans .view-feed .bd-fxg{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:0!important;
+  padding:7px 8px!important;
+  border:1px solid rgba(111,139,168,.13)!important;
+  border-radius:14px!important;
+  background:rgba(255,255,255,.95)!important;
+  box-shadow:0 5px 16px rgba(37,70,102,.055)!important;
+}
+.page-plans .view-feed .bd-fxc{
+  position:relative!important;
+  min-height:46px!important;
+  padding:5px 12px 6px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+}
+.page-plans .view-feed .bd-fxc+.bd-fxc::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:11px;
+  bottom:11px;
+  width:1px;
+  background:rgba(103,125,150,.12);
+}
