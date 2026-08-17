@@ -44,7 +44,7 @@
 .bd-ocv:active{background:var(--fill);}
 .bd-ocard{margin:0 12px 10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;
   overflow:hidden;cursor:pointer;box-shadow:0 1px 2px rgba(20,40,80,.045);}
-.bd-ocard.bd-stopcard{border-color:var(--red-line,#F3C9C9);}
+.bd-ocard.bd-stopcard{border-color:var(--red-line);}
 .bd-ocard.bd-selcard{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue);}
 /* ㉗ 抬头：两端各一个大字（代号 · 盈亏），中间全是小字 */
 .bd-oh{display:flex;align-items:center;gap:7px;padding:12px 13px 7px;}
@@ -73,7 +73,7 @@
 .bd-ofoot button.bd-pri{margin-left:auto;font-size:11px;color:var(--blue-d);border:1px solid var(--blue-line);
   background:var(--tint);border-radius:var(--radius-pill);padding:7px 15px;}
 .bd-ofoot button.bd-ostopb{margin-left:auto;flex:none;font-size:11px;color:var(--red);
-  border:1px solid var(--red-line,#F3C9C9);background:#FFFAFA;border-radius:var(--radius-pill);padding:7px 15px;}
+  border:1px solid var(--red-line);background:#FFFAFA;border-radius:var(--radius-pill);padding:7px 15px;}
 .bd-ofoot button.bd-ostopb.bd-armed{border-color:var(--red);background:var(--red);color:#fff;}
 .bd-oempty{margin:12px;padding:22px 14px;text-align:center;font-size:12px;color:var(--muted);border:1px dashed var(--line-strong);border-radius:12px;line-height:1.6;}
 .bd-card{margin:0 12px 9px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 13px 11px;cursor:pointer;}
@@ -98,8 +98,35 @@
 .bd-basis{display:flex;align-items:center;gap:6px;margin:0 12px 8px;padding:6px 9px; background:var(--fill);border:1px solid var(--line);border-radius:var(--radius-md); font-size:10px;line-height:1.4;color:var(--muted);}
 .bd-basis b{flex:none;font-size:10.5px;font-weight:700;color:var(--ink);}
 .bd-basis em{font-style:normal;color:var(--faint);}
-.bd-mini .bd-bhalo{stroke:#fff;stroke-width:3.2;vector-effect:non-scaling-stroke;opacity:.9;}
-.bd-mini .bd-bmark{stroke:var(--red);stroke-width:1.6;vector-effect:non-scaling-stroke;}
+/* ══ 爆仓 ✕（2026-08-11 二稿）：改成 HTML，不再是 svg 里的线 ═══════════════════
+   小图 preserveAspectRatio="none"（曲线要铺满卡宽），svg 里任何图形都会被非等比拉，
+   ✕ 会被压成窄高的十字。改成绝对定位小方块 ＋ 两条定长横杠旋转 ±45°，容器多宽都是正的。
+   位置由 hall-plans.html 的 miniSpark 用百分比写在 style 上（取<b>峰</b>，不是谷底）。
+   ⚠ 这份是 hall-plans.html 内联那份卡样式的<b>副本</b>（给退役的 hall.html 用）——
+     两边必须一起改，否则同一张卡在两页长得不一样。 */
+.bd-spk{position:relative;display:block;}
+.bd-bxm{position:absolute;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;pointer-events:none;
+  filter:drop-shadow(0 0 1px var(--surface)) drop-shadow(0 0 1px var(--surface));}
+.bd-bxm::before,.bd-bxm::after{content:"";position:absolute;left:50%;top:50%;
+  width:9px;height:1.7px;margin:-.85px 0 0 -4.5px;border-radius:1px;background:var(--red);}
+.bd-bxm::before{transform:rotate(45deg);}
+.bd-bxm::after{transform:rotate(-45deg);}
+/* ══ 爆仓并点的计数（2026-08-11 三稿）════════════════════════════════════════
+   照平台<b>页签角标</b>那一套（.bd-l1tab em「我的策略 ⑤」）：实心红药丸 ＋ 白色粗体数字
+   ＋ 一点红色投影。Hector 指定用这个 look，全站计数长一样才不用学第二种。
+   ⚠ 上一版糊在<b>数字没有 flex 居中</b> —— 靠 line-height 去凑高度，一位数偏上、
+     两位数还会把圆挤扁。页签角标的做法是 display:flex ＋ line-height:1 ＋ min-width，
+     这里照抄：一位数是正圆、两位数自然长成药丸。
+   ⚠ 白色描边不用自己加：父层 .bd-bxm / .ax-bxm 有两道 drop-shadow(0 0 1px 白)，
+     会连这枚角标一起勾一圈白边，正好把它与底下的曲线断开。
+   ⚠ 不写就等于把「这里爆了 3 次」说成「爆了 1 次」—— 这枚角标是口径的一部分，别删。 */
+.bd-bxm>b{position:absolute;left:10px;top:-4px;box-sizing:border-box;
+  display:flex;align-items:center;justify-content:center;
+  min-width:12px;height:12px;padding:0 2.5px;
+  border-radius:999px;background:var(--red);color:#fff;
+  font-size:9px;font-weight:700;line-height:1;
+  font-variant-numeric:tabular-nums;
+  box-shadow:0 1px 3px rgba(255,63,65,.30);}
 .bd-mini{width:100%;height:22px;display:block;opacity:.85;}
 .bd-rec{flex:none;margin-left:5px;font-size:10px;font-weight:700;color:var(--win); background:var(--positive-soft);border:1px solid var(--win);border-radius:var(--radius-pill);padding:1px 7px;}
 .bd-rec .bd-term{border-bottom-color:rgba(22,163,74,.55);}

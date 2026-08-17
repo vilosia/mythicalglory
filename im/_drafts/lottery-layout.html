@@ -1,0 +1,507 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>彩票 · 别再像首页 · 改前改后 · IM168</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<!--
+  ══ 2026-08-12 · lottery-layout.html · v1 ═══════════════════════════════════
+
+  ① Hector：「This page to make it look less like the home page. suggest another layout」
+
+     先认一件事：<b>这个问题有一半是我这一轮弄出来的。</b>
+     Hector 让我把欢迎轮播「也放进策略页」，于是<b>两个页签现在都用同一条 banner 开场</b> ——
+     两屏并排看，上面三分之一几乎一样。彩票于是读起来像第二个首页。
+
+     更准的一刀在文案上：那条轮播写的是
+       「今天想玩点什么？」「下午好，欢迎来到幸运组。」「熟悉的玩法都在下面」
+     这是<b>迎客词</b>，只有落地页才该说。而 08-11 改版之后玩家落的是<b>策略</b>，
+     不是彩票 —— 也就是说彩票在欢迎一个<b>上一屏已经被欢迎过</b>的人。
+     这一条就解释了大半的「像首页」。
+
+  ② 那彩票到底是什么？<b>一块发车时刻表。</b>
+     它的内容是 14 款游戏 / 5 个分类，而每张卡上<b>唯一会变的数就是倒计时</b>
+     （00:28 / 01:12 / 04:24…）。玩家来这一屏的问题只有一个：
+     「哪个马上要开？」现在的版式却把这个数<b>藏在每张卡的第二行</b>，
+     并且按分类排 —— 分类是<b>商品目录</b>的排法，不是时刻表的排法。
+
+  ③ 我一开始的建议是「排序 ＋ 换成密集单列」（A）。
+     <b>量完之后我改了主意，请看 B。</b>三栏都在同一个 336px 壳里量的：
+
+       | 版式                  | 首屏看到 | 整页高 | banner |
+       | 现状（分类 ＋ 双列大图卡）  |   8 款  |  954px |  有   |
+       | A 排序 ＋ 密集单列        |   7 款  | 1042px |  无   |
+       | B 排序 ＋ 保留双列        |  10 款  |  826px |  无   |
+       | 最终（复用现状卡 ＋ 切换）  | 8–10 款 | 745–801px | 无 |  ← 区间＝那条提示在不在
+
+     也就是说：<b>「换成列表更密」这个说法是错的</b>，我原本那半个论点站不住 ——
+     双列一行装两个，单列一行装一个，单列必然更高。
+     单列真正换来的只有「可排序」；而<b>双列排完序照样可读</b>
+     （先左后右、逐行往下，本来就是正常阅读顺序），所以两件都能拿到。
+     ⚠ 大图卡也没必要整个丢掉：B 保留双列，只是把<b>倒计时提成主角</b>（大号在上）、
+       插画降成 22px 识别图，卡因此矮了一截 —— 这才是 826px 的来源。
+     ⚠ banner 从这一屏<b>撤掉</b>（留在策略页）。连开条<b>留着</b>：
+       那是彩票独有的活信号，时刻表就该有这种东西。
+
+  ④ <b>「顺序什么时候刷」——通知撤掉之后必须回答的问题</b>（Hector：remove the notification）：
+     按倒计时排序，列表<b>不能跟着秒数实时重排</b> —— 每一秒都在跳，手指按下去时
+     那一行已经不是原来那一行了（误点直接进错游戏）。
+     现在的做法：<b>只在本来就要重画列表的时刻重排</b> —— 切筛选、切视图、重新进这一屏。
+     不提示、不自动跳，顺序在玩家自己动手的那一刻就是最新的。
+     ⚠ <b>绝不</b>跟着秒数重排：那会让列表在手指底下跳，按下去时那一行已经换成别的游戏。
+       这是这个版式唯一真正的坑，通知撤掉了但这条约束不能撤。
+
+  ⑤ <b>Demo-data 说明</b>：14 款游戏名、分类、款数、「即将上线」都取自
+     hall-lottery.html 现有的真实内容；倒计时初值取自 Hector 截图那一刻
+     （00:28 / 01:01 / 01:12 …），周期是按各分类的节奏估的，会真的走秒。
+     分类计数（PK10 4 · 时时彩 4 · PC28 2 · 快开 2 · 六合 2）是<b>数出来的</b>，不是写死的。
+
+  ⑥ <b>没做</b>：C 方案（只列 5 个分类、点进去再看游戏）没画 ——
+     它最短、最不像首页，但每个游戏都多一次点击，所以我排在第三。要看再说。
+-->
+<script src="../shared/ui-consistency.js?v=20260813title1" defer></script>
+<style>
+  em,i,cite,dfn,var,address{font-style:normal}
+:root{--blue:#1677ee;--blue-d:#0f63ce;--tint:#e7f4fd;--ink:#172033;--muted:#66738a;--faint:#98a3b5;
+ --line:#edf0f3;--line-2:#e2e7ec;--win:#12a150;--red:#ee3d49;--page:#f3f5f7;--blue-line:#bad9f8;
+ --fill:#f6f7f9;--amber:#e98216;--amber-soft:#fff8e0;--amber-ink:#8a5b14}
+*{box-sizing:border-box}
+body{margin:0;background:#e9ecf2;font-family:"Noto Sans SC","PingFang SC",-apple-system,sans-serif;color:var(--ink)}
+.wrap{max-width:1360px;margin:0 auto;padding:22px 16px 46px}
+h1{font-size:19px;margin:0 0 4px}
+.lede{font-size:13px;color:var(--muted);line-height:1.75;margin:0 0 18px;max-width:92ch}
+.lede b{color:var(--ink)}
+.row{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start}
+.col{flex:1 1 340px;min-width:336px}
+.cap{font-size:13.5px;font-weight:700;margin:0 0 4px;display:flex;align-items:center;gap:7px}
+.tag{font-size:10.5px;font-weight:700;border-radius:999px;padding:1px 8px}
+.tag.now{background:#fbe9e9;color:#b03a3a}
+.tag.rec{background:#e6f6ee;color:#0e7a46}
+.tag.alt{background:var(--tint);color:var(--blue-d)}
+.why{font-size:12px;color:var(--muted);line-height:1.7;margin:0 0 10px;min-height:132px}
+.why b{color:var(--ink)}
+.hintbar{font-size:11px;color:var(--faint);margin:0 0 8px}
+
+/* 手机壳 */
+.ph{width:100%;max-width:336px;height:740px;background:var(--page);border-radius:18px;overflow:hidden;
+ display:flex;flex-direction:column;box-shadow:0 5px 18px rgba(20,40,80,.13)}
+.ptop{flex:none;display:flex;align-items:center;gap:8px;padding:12px 14px 10px}
+.ptop .bk{font-size:17px}
+.ptop b{font-size:17px}
+.ptop small{font-size:12px;color:var(--faint)}
+.ptop .sp{flex:1}
+.ptop .bal{border:1px solid var(--blue-line);color:var(--blue-d);border-radius:999px;padding:5px 10px;
+ font-size:11px;font-weight:700;white-space:nowrap}
+.pbody{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding-bottom:8px}
+.pbody::-webkit-scrollbar{width:0}
+.pnav{flex:none;display:flex;background:#fff;border-top:1px solid var(--line);padding:7px 0 9px}
+.pnav span{flex:1;text-align:center;font-size:9.5px;color:var(--faint);line-height:1.6}
+.pnav span.on{color:var(--blue);font-weight:700}
+.pnav i{display:block;font-size:15px;font-style:normal}
+
+/* ── 现状：banner ── */
+.bnr{margin:0 14px;height:118px;border-radius:14px;overflow:hidden;position:relative;
+ background:linear-gradient(112deg,#04203f,#0a3d78 46%,#1173c8);color:#fff;padding:16px 16px 0}
+.bnr::after{content:"";position:absolute;right:-14px;top:-24px;width:190px;height:170px;border-radius:50%;
+ background:radial-gradient(circle,rgba(120,200,255,.42),rgba(120,200,255,0) 66%)}
+.bnr .kick{font-size:10.5px;color:#bcdcff;position:relative;z-index:1}
+.bnr .h{font-size:19px;font-weight:700;margin-top:5px;position:relative;z-index:1}
+.bnr .s{font-size:11.5px;color:#d6e8ff;margin-top:4px;position:relative;z-index:1}
+.bnr .idx{position:absolute;right:12px;top:10px;font-size:10.5px;color:rgba(255,255,255,.66)}
+.bnr .dots{position:absolute;left:16px;bottom:11px;display:flex;gap:4px;z-index:1}
+.bnr .dots i{width:5px;height:5px;border-radius:3px;background:rgba(255,255,255,.42)}
+.bnr .dots i.on{width:15px;background:#fff}
+
+/* 连开条（两屏都留） */
+.streak{display:flex;align-items:center;gap:8px;margin:12px 14px 0;background:#fff;
+ border-radius:12px;padding:11px 12px;font-size:12.5px}
+.streak .ar{color:var(--faint);font-size:13px}
+.streak .nm{color:var(--blue-d);font-weight:700}
+.streak .sp{flex:1}
+.streak .hot{color:var(--red);font-weight:700;white-space:nowrap}
+.streak .ball{width:22px;height:22px;border-radius:50%;background:var(--red);color:#fff;
+ font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+
+/* 分类 chip */
+.cats{display:flex;gap:8px;padding:12px 14px 2px;overflow:hidden;
+ -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
+/* ── 08-12H（Hector：too many rows / park the toggle beside filters）─────────
+   原来内容之上叠了<b>四条通栏</b>：连开条 / 分类筛选 / 「排序 ＋ 切换」/ 「顺序已更新」。
+   现在切换<b>停进筛选行</b>、通知整条撤掉 —— 通栏从 4 条降到 <b>2 条</b>。
+   ⚠ 渐隐只能盖在<b>chip 那一段</b>上：整行加 mask 会把右边的切换钮也一起淡掉。
+     所以 chip 单独包一层 .catchips 承担滚动与渐隐，切换钮是这一行的 flex:none 兄弟。 */
+.catsrow{display:flex;align-items:center;gap:8px;padding:12px 14px 2px}
+.catsrow .catchips{flex:1;min-width:0;display:flex;gap:8px;overflow:hidden;
+ -webkit-mask-image:linear-gradient(90deg,#000 84%,transparent);mask-image:linear-gradient(90deg,#000 84%,transparent)}
+.catsrow .catchips button{flex:none;border:1px solid var(--line-2);background:#fff;color:var(--muted);
+ border-radius:10px;padding:7px 12px;font-size:12px;font-family:inherit;white-space:nowrap;cursor:pointer}
+.catsrow .catchips button.on{border-color:var(--blue-line);background:var(--tint);color:var(--blue-d);font-weight:700}
+.catsrow .catchips button em{color:var(--faint);margin-left:4px;font-size:11px}
+.catsrow .catchips button.on em{color:var(--blue-d)}
+.cats button{flex:none;border:1px solid var(--line-2);background:#fff;color:var(--muted);border-radius:10px;
+ padding:7px 12px;font-size:12px;font-family:inherit;white-space:nowrap;cursor:pointer}
+.cats button.on{border-color:var(--blue-line);background:var(--tint);color:var(--blue-d);font-weight:700}
+.cats button em{color:var(--faint);margin-left:4px;font-size:11px}
+.cats button.on em{color:var(--blue-d)}
+
+/* ── 现状：分类分区 ＋ 2×2 大图卡 ── */
+.grp{padding:14px 14px 0}
+.gh{display:flex;align-items:baseline;gap:7px;margin-bottom:9px}
+.gh b{font-size:15px}
+.gh small{font-size:11.5px;color:var(--faint)}
+.gg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gcard{background:#fff;border-radius:13px;padding:9px;display:flex;gap:9px;align-items:center;position:relative}
+.gcard .art{flex:none;width:56px;height:44px;border-radius:9px;background:linear-gradient(150deg,#eaf4ff,#d3e9ff);
+ display:flex;align-items:center;justify-content:center;color:var(--blue-d)}
+.gcard .art svg{width:36px;height:26px}
+.gcard .tx{min-width:0}
+.gcard .tx b{display:block;font-size:13px;line-height:1.3}
+.gcard .tx .t{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--blue);font-weight:700;
+ margin-top:4px;font-variant-numeric:tabular-nums}
+.gcard .bdg{position:absolute;left:6px;top:-6px;font-size:9.5px;font-weight:700;border-radius:5px;padding:1px 6px}
+.bdg.hot{background:#ffe9d9;color:#c2560f}
+.bdg.new{background:#ece7ff;color:#5a3fc0}
+
+/* ── 改后：密集单列 ── */
+/* .resort（顺序已更新那条通知）退役 —— 见时钟那段的说明。 */
+.lsec{font-size:11.5px;color:var(--faint);padding:14px 14px 6px;display:flex;align-items:center;gap:6px}
+.lsec i{flex:1;height:1px;background:var(--line-2)}
+.list{margin:0 14px;background:#fff;border-radius:13px;overflow:hidden}
+.lrow{display:flex;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid var(--line);
+ width:100%;background:none;border-left:0;border-right:0;border-bottom:0;text-align:left;
+ font-family:inherit;cursor:pointer}
+.list .lrow:first-child{border-top:0}
+.lrow .th{flex:none;width:34px;height:34px;border-radius:9px;background:linear-gradient(150deg,#eaf4ff,#d3e9ff);
+ display:flex;align-items:center;justify-content:center;color:var(--blue-d)}
+.lrow .th svg{width:22px;height:16px}
+.lrow .id{flex:1;min-width:0}
+.lrow .id b{display:block;font-size:13.5px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lrow .id small{font-size:11px;color:var(--faint)}
+.lrow .id .bdg{margin-left:5px;font-size:9.5px;font-weight:700;border-radius:5px;padding:1px 5px}
+.lrow .cd{flex:none;width:62px;text-align:right;font-size:15px;font-weight:700;color:var(--blue);
+ font-variant-numeric:tabular-nums;white-space:nowrap}
+.lrow .cd.soon{color:var(--red)}
+.lrow .cd.off{color:var(--faint);font-size:11.5px;font-weight:400}
+.lrow .chev{flex:none;color:var(--faint);font-size:13px}
+.lrow.dim{opacity:.55}
+.lrow.drawing .cd{color:var(--win);font-size:11.5px}
+
+/* ── .scard（倒计时当主角的那版双列卡）已退役 ────────────────────────────────
+   Hector 要保留「游戏名大于倒计时」的层级，所以双列视图改回复用现状的 .gcard。
+   这一整段样式因此没有用户了，删掉而不是留着 —— 留一份没人用的卡样式，
+   下一个人会不知道该改哪一个。要找回「倒计时当主角」那一版，看本档 v1 的这一节。 */
+.gcard.dim{opacity:.55}
+
+/* ── 视图切换（列表 ⇄ 双列）── */
+/* .vbar 退役：那一整行只为放「排序 ＋ 切换」，切换停进筛选行之后它没有内容了。 */
+/* ── 视图切换＝复用投注页那枚 .bd-vtog（Hector：use back same style as the betting
+   page toggle）。取值照 shared/reference-theme.css 的 .bd-mfoot .bd-vtog 那一档：
+   容器 16px 圆角 / #f4f7fa 底 / #e1e8f0 描边；按钮 13px 圆角、min-height 28px；
+   选中态白底 ＋ blue-d ＋ 0 1px 4px rgba(39,78,117,.12)。
+   ⚠ class 名沿用 <b>.bd-vtog / button.bd-on</b>，不自造 .vseg —— 前端已经有这个组件，
+     换个名字等于要求他们再实现一遍。
+   ⚠ icon 用 currentColor，所以选中与否只切一处 color。 */
+.bd-vtog{display:inline-flex;flex:none;background:#f4f7fa;border:1px solid #e1e8f0;
+ border-radius:16px;padding:2px;gap:2px}
+.bd-vtog button{border:0;background:transparent;font-family:inherit;cursor:pointer;
+ min-height:28px;min-width:34px;padding:5px 9px;border-radius:13px;color:var(--ink);
+ display:flex;align-items:center;justify-content:center}
+.bd-vtog button.bd-on{background:#fff;color:var(--blue-d);box-shadow:0 1px 4px rgba(39,78,117,.12)}
+.bd-vtog svg{display:block;width:16px;height:16px;fill:currentColor}
+.vwrap-list,.vwrap-grid{display:none}
+.mode-list .vwrap-list{display:block}
+.mode-grid .vwrap-grid{display:block}
+
+.foot{margin-top:28px;border-top:1px solid #d8dee8;padding-top:16px}
+.foot h2{font-size:14px;margin:0 0 8px}
+.foot ul{margin:0;padding-left:18px;font-size:12.5px;color:var(--muted);line-height:1.85}
+.foot li b{color:var(--ink)}
+.hint{background:#fff;border:1px solid var(--line-2);border-left:4px solid var(--blue-line);border-radius:10px;
+ padding:11px 13px;font-size:12.5px;color:var(--muted);line-height:1.8;margin-top:12px}
+.hint b{color:var(--ink)}
+.hint.amber{border-left-color:#eac54f;background:#fffdf4}
+.hint code{background:var(--fill);border-radius:4px;padding:1px 5px;font-size:12px;color:var(--blue-d)}
+</style></head><body><div class="wrap">
+
+<h1>彩票 · 别再像首页</h1>
+<p class="lede">先认一件事：<b>这个问题有一半是我上一轮弄出来的</b> —— 欢迎轮播搬进策略页之后，
+两个页签都用<b>同一条 banner 开场</b>。而那条轮播写的是「下午好，欢迎来到幸运组」，
+那是<b>迎客词</b>，只有落地页该说；08-11 之后玩家落的是策略，彩票在欢迎一个上一屏已经被欢迎过的人。<br>
+彩票真正的身份是<b>一块发车时刻表</b>：14 款游戏，每张卡上唯一会变的数就是倒计时。
+所以右边把它按<b>最快开奖</b>排、换成密集单列。</p>
+
+<div class="row">
+  <div class="col">
+    <p class="cap">现状<span class="tag now">像首页</span></p>
+    <p class="why">banner ＋ 分类页签 ＋ 2×2 大图卡 —— 这三件是<b>商店首页的标准套件</b>。
+      而玩家来这一屏只想知道「<b>哪个马上要开</b>」，那个数却被压在每张卡的第二行，
+      并且按分类排（分类是目录的排法，不是时刻表的排法）。
+      14 款要滚过 <b>3 屏多</b>；首屏只看得到 4 款。</p>
+    <p class="hintbar">↓ 可以滚动 · 倒计时在走</p>
+    <div class="ph" id="phNow"></div>
+  </div>
+
+  <div class="col">
+    <p class="cap">改后 · 排序 ＋ 视图切换<span class="tag rec">建议</span></p>
+    <p class="why">A 与 B <b>合成一屏</b>，右上角一枚 <b>列表 ⇄ 双列</b> 切换（Hector）。
+      两种视图<b>共用同一份排序、同一条「顺序已更新」</b> —— 切的只是密度，不是内容。
+      默认<b>双列</b>，而且<b>卡片层级一个字没动</b>（Hector：title 要大于 timer）——
+      缩略图 56px、游戏名 13px 粗、倒计时 12px 蓝色，与现状的 GameCard 完全一样。
+      这一栏改的只有<b>顺序</b>与<b>不再分类分区</b>。<br>
+      <b>通栏从 4 条降到 2 条</b>（Hector：too many rows）—— 切换<b>停进筛选行</b>右端，
+      「顺序已更新」那条通知<b>整条撤掉</b>。<br>
+      实测（336px 壳）：双列 <b>首屏 12 款 / 整页 670px</b>；现状 <b>8 款 / 954px</b> ——
+      首屏多一半，整页矮 <b>284px</b>。分类筛选是<b>真的在筛</b>（PK10→4 款、PC28→2 款）。</p>
+    <p class="hintbar">↓ 筛选行右端切换视图 · 点分类真的会筛 · 顺序在「切筛选／切视图／重进这屏」时刷新</p>
+    <div class="ph" id="phNew"></div>
+  </div>
+</div>
+
+<div class="foot">
+  <h2>三件要一起说清的事</h2>
+  <ul>
+    <li><b>① 列表不能跟着秒数实时重排。</b>每秒都在跳的话，手指按下去时那一行已经换成别的游戏了 ——
+      直接点进错的。所以：<b>进屏排一次，之后不动</b>；顺序过期时顶上出一条小提示，
+      <b>玩家点一下才重排</b>。这不是偷懒，是这个版式能不能用的关键。</li>
+    <li><b>② banner 该留在策略页，不是两边都放。</b>它是迎客词，一个 App 只欢迎一次。
+      顺带解决我上一轮制造的「两屏开头一样」。</li>
+    <li><b>③ 大图卡不是白删的。</b>它在卖东西的页面（首页、活动页）是对的；
+      在「从 14 个里挑一个」的选择器上，它把每屏能看到的选项砍到 4 个。
+      识别游戏靠的是缩略图 ＋ 名字，34px 够用。</li>
+  </ul>
+  <p class="hint"><b>落地范围</b>：只动 <code>hall-lottery.html</code> —— 撤掉 <code>.gx-welcome</code> 那一段、
+    把 <code>.gx-grp</code> / <code>.gx-cards</code> 的分区网格换成一列 <code>.gx-list</code>、
+    分类页签从 jumper 改回筛选。<b>不动</b>游戏数据、不动 <code>game-bet.html</code>、不动底部导航。
+    倒计时逻辑本来就在页内（<code>gx-timer</code>），只是从卡里搬到行右侧。</p>
+  <p class="hint amber"><b>Demo-data 说明。</b>14 款游戏名／分类／款数／「即将上线」全部取自
+    <code>hall-lottery.html</code> 现有内容；倒计时初值取自 Hector 截图那一刻（00:28 / 01:01 / 01:12…），
+    周期按各分类节奏估的，会真的走秒。分类计数是<b>数出来的</b>，加一款不用改两处。<br>
+    <b>没画的：</b>C 方案（只列 5 个分类、点进去再看游戏）—— 最短、最不像首页，
+    但每个游戏都多一次点击，所以排第三。</p>
+</div>
+
+</div>
+
+<script>
+/* ══ 数据：全部取自 hall-lottery.html 现有内容 ══════════════════════════════
+   left＝Hector 截图那一刻的剩余秒数；period＝这一款的开奖周期（按分类节奏估）。 */
+var CATS=[['race','PK10'],['ssc','时时彩'],['pc28','PC28'],['kl8','快开'],['lhc','六合']];
+var GAMES=[
+  {cat:'race',name:'极速赛车',        left:72,  period:75,  badge:'hot', icon:'car'},
+  {cat:'race',name:'极速飞艇',        left:61,  period:75,  icon:'boat'},
+  {cat:'race',name:'极速赛车（自选）',  left:50,  period:75,  icon:'car'},
+  {cat:'race',name:'澳洲幸运10',      left:264, period:300, badge:'new', icon:'ball'},
+  {cat:'ssc', name:'极速时时彩',      left:28,  period:75,  icon:'clock'},
+  {cat:'ssc', name:'幸运飞艇',        left:242, period:300, icon:'boat'},
+  {cat:'ssc', name:'澳洲幸运5',       left:231, period:300, icon:'ball'},
+  {cat:'ssc', name:'极速时时彩（自选）',left:70,  period:75,  icon:'clock'},
+  {cat:'pc28',name:'PC28',          left:118, period:210, icon:'ball'},
+  {cat:'pc28',name:'加拿大PC28',     left:187, period:210, icon:'ball'},
+  {cat:'kl8', name:'极速快乐十分',    left:44,  period:75,  icon:'clock'},
+  {cat:'kl8', name:'极速快3',        left:96,  period:180, icon:'ball'},
+  {cat:'lhc', name:'极速六合彩',      left:155, period:210, icon:'ball'},
+  {cat:'lhc', name:'香港六合彩',      soon:true, icon:'ball'}
+];
+var ICON={
+  car:'<path d="M4 27h44M10 27l4-9h20l6 9" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="16" cy="30" r="3.4" fill="currentColor"/><circle cx="40" cy="30" r="3.4" fill="currentColor"/>',
+  boat:'<path d="M6 26c5 3 11 3 16 0s11-3 16 0" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M14 22l8-12 10 12" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linejoin="round"/>',
+  clock:'<circle cx="26" cy="22" r="11" stroke="currentColor" stroke-width="2.4" fill="none"/><path d="M26 16v7l5 3" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round"/>',
+  ball:'<circle cx="20" cy="22" r="8" stroke="currentColor" stroke-width="2.3" fill="none"/><circle cx="36" cy="22" r="8" stroke="currentColor" stroke-width="2.3" fill="none"/>'
+};
+/* 两枚图标照 Hector 截图：列表＝两条圆角横杠，双列＝四个圆角方块。 */
+var ICO_LIST='<svg viewBox="0 0 20 20" aria-hidden="true">'+
+  '<rect x="3" y="5.5" width="14" height="3.2" rx="1.6"/>'+
+  '<rect x="3" y="11.3" width="14" height="3.2" rx="1.6"/></svg>';
+var ICO_GRID='<svg viewBox="0 0 20 20" aria-hidden="true">'+
+  '<rect x="3" y="3" width="6" height="6" rx="1.8"/><rect x="11" y="3" width="6" height="6" rx="1.8"/>'+
+  '<rect x="3" y="11" width="6" height="6" rx="1.8"/><rect x="11" y="11" width="6" height="6" rx="1.8"/></svg>';
+function svg(k,w,h){return '<svg viewBox="0 0 52 40" width="'+w+'" height="'+h+'">'+ICON[k]+'</svg>';}
+function mmss(s){var m=Math.floor(s/60),x=s%60;return (m<10?'0':'')+m+':'+(x<10?'0':'')+x;}
+function catName(c){for(var i=0;i<CATS.length;i++)if(CATS[i][0]===c)return CATS[i][1];return c;}
+function countOf(c){return GAMES.filter(function(g){return g.cat===c;}).length;}
+function badgeHTML(g){
+  if(g.soon)return '<span class="bdg" style="background:var(--fill);color:var(--faint)">即将上线</span>';
+  if(g.badge==='hot')return '<span class="bdg hot">热门</span>';
+  if(g.badge==='new')return '<span class="bdg new">NEW</span>';
+  return '';
+}
+var TOPBAR='<div class="ptop"><span class="bk">‹</span><b>彩票</b><small>· 幸运组</small>'+
+  '<span class="sp"></span><span class="bal">240,000.00</span></div>';
+var STREAK='<div class="streak"><span class="ar">‹</span><span class="nm">极速快乐十分</span>'+
+  '<span style="color:var(--muted)">· 第九名</span><span class="sp"></span>'+
+  '<span class="hot">连开 8 期</span><span class="ball">大</span><span class="ar">›</span></div>';
+function navIco(t){return '<i>'+t+'</i>';}
+var NAV='<div class="pnav">'+
+  '<span>'+navIco('◎')+'策略</span><span>'+navIco('◧')+'动态</span>'+
+  '<span class="on">'+navIco('▦')+'彩票</span><span>'+navIco('◍')+'开奖</span>'+
+  '<span>'+navIco('▤')+'明细</span></div>';
+/* 只吐 chip，不带外层 div —— 筛选行现在还要装切换钮，外层由调用方给。 */
+function catChips(active){
+  var total=GAMES.length;
+  var s='<button class="'+(active==='all'?'on':'')+'">全部<em>'+total+'</em></button>';
+  CATS.forEach(function(c){s+='<button class="'+(active===c[0]?'on':'')+'">'+c[1]+'<em>'+countOf(c[0])+'</em></button>';});
+  return s;
+}
+function catsHTML(active){
+  var total=GAMES.length;
+  var s='<div class="cats"><button class="'+(active==='all'?'on':'')+'">全部<em>'+total+'</em></button>';
+  CATS.forEach(function(c){s+='<button class="'+(active===c[0]?'on':'')+'">'+c[1]+'<em>'+countOf(c[0])+'</em></button>';});
+  return s+'</div>';
+}
+
+/* ── 现状：banner ＋ 分类分区 ＋ 2×2 大图卡 ── */
+(function(){
+  var groups='';
+  CATS.forEach(function(c){
+    var list=GAMES.filter(function(g){return g.cat===c[0];});
+    var sub=c[0]==='race'?'共4款游戏 · 最快约75秒开奖':
+            c[0]==='ssc'?'共4款游戏 · 热门玩法':
+            c[0]==='pc28'?'共2款游戏 · 经典玩法':
+            c[0]==='kl8'?'共2款游戏 · 最快约75秒开奖':'共2款游戏 · 经典玩法';
+    groups+='<div class="grp"><div class="gh"><b>'+c[1]+'</b><small>'+sub+'</small></div><div class="gg">'+
+      list.map(function(g){
+        return '<div class="gcard">'+badgeHTML(g)+
+          '<span class="art">'+svg(g.icon,36,26)+'</span>'+
+          '<span class="tx"><b>'+g.name+'</b>'+
+            (g.soon?'<span class="t" style="color:var(--faint)">—</span>'
+                   :'<span class="t">◷ <span data-now="'+g.name+'">'+mmss(g.left)+'</span></span>')+
+          '</span></div>';
+      }).join('')+'</div></div>';
+  });
+  document.getElementById('phNow').innerHTML=
+    TOPBAR+'<div class="pbody"><div class="bnr"><span class="idx">01 / 05</span>'+
+      '<div class="kick">策略投注</div><div class="h">先看表现，再选策略</div>'+
+      '<div class="s">今日各策略表现</div>'+
+      '<span class="dots"><i class="on"></i><i></i><i></i><i></i><i></i></span></div>'+
+      STREAK+catsHTML('all')+groups+'</div>'+NAV;
+})();
+
+/* ── 改后：一屏两视图（列表 ⇄ 双列），共用同一份排序 ────────────────────────
+   Hector：「Mix A and B. have a toggle to allow people to change between two views」。
+   两个视图<b>同时渲染、靠 body 上的 mode- 类切换显示</b> —— 不重排、不重算，
+   所以切换是瞬时的，而且两边永远是<b>同一份顺序</b>（切密度，不切内容）。
+   ⚠ 默认<b>双列</b>：实测首屏 10 款 / 826px，比列表（7 款 / 1042px）都好。
+   ⚠ 真做的时候把选择<b>记住</b>（localStorage）——「每次进来都要再切一次」
+     是这种切换最常见的翻车点。 */
+(function(){
+  var el=document.getElementById('phNew');
+  var order=GAMES.slice().sort(function(a,b){
+    if(a.soon)return 1; if(b.soon)return -1; return a.left-b.left;});
+
+  /* 列表行（原 A） */
+  function rowHTML(g){
+    var cd=g.soon?'<span class="cd off">即将上线</span>'
+                 :'<span class="cd'+(g.left<=60?' soon':'')+'" data-new="'+g.name+'">'+mmss(g.left)+'</span>';
+    return '<button type="button" class="lrow'+(g.soon?' dim':'')+'">'+
+      '<span class="th">'+svg(g.icon,22,16)+'</span>'+
+      '<span class="id"><b>'+g.name+(g.badge==='hot'?'<span class="bdg hot">热门</span>':
+                                    g.badge==='new'?'<span class="bdg new">NEW</span>':'')+'</b>'+
+        '<small>'+catName(g.cat)+'</small></span>'+
+      cd+'<span class="chev">›</span></button>';
+  }
+  var fast=order.filter(function(g){return !g.soon&&g.left<=60;}),
+      rest=order.filter(function(g){return !g.soon&&g.left>60;}),
+      soon=order.filter(function(g){return g.soon;});
+  function sec(label,arr){
+    if(!arr.length)return '';
+    return '<div class="lsec">'+label+'<i></i></div><div class="list">'+arr.map(rowHTML).join('')+'</div>';
+  }
+  var listView='<div class="vwrap-list">'+sec('马上开（1 分钟内）',fast)+sec('稍后',rest)+sec('未开放',soon)+'</div>';
+  /* 重排＝重算 order 再重画两个视图。只有「切筛选 / 切视图 / 重进这一屏」会调它。 */
+  var ACTIVE='all';
+  function resort(){
+    /* 筛选是<b>真的</b>在筛：chip 一旦可点又带选中态，点了却还是 14 款就会被读成坏了。 */
+    var pool=GAMES.filter(function(g){return ACTIVE==='all'||g.cat===ACTIVE;});
+    order=pool.slice().sort(function(a,b){
+      if(a.soon)return 1; if(b.soon)return -1; return a.left-b.left;});
+    var f=order.filter(function(g){return !g.soon&&g.left<=60;}),
+        r=order.filter(function(g){return !g.soon&&g.left>60;}),
+        n=order.filter(function(g){return g.soon;});
+    var lw=el.querySelector('.vwrap-list'), gw=el.querySelector('.vwrap-grid');
+    if(lw)lw.innerHTML=sec('马上开（1 分钟内）',f)+sec('稍后',r)+sec('未开放',n);
+    if(gw)gw.innerHTML='<div class="gg" style="margin:0 14px">'+order.map(cardHTML).join('')+'</div>';
+  }
+
+  /* 双列卡 —— <b>直接复用现状那张 .gcard</b>（Hector：still prefer title bigger than
+     timer for this part so remain it）。
+     我上一版把倒计时提成 19px 主角、游戏名压到 12.5px，Hector 不要这个层级：
+     游戏名才是「我要找的那个东西」，倒计时是它的属性。所以这一版<b>层级原样不动</b> ——
+     缩略图 56px、游戏名 13px 粗、倒计时 12px 蓝色带钟表图标，
+     与 hall-lottery.html 现在的 GameCard <b>一模一样</b>。
+     这一栏改的只有两件事：<b>顺序</b>（按最快开奖）与<b>不再按分类分区</b>。
+     ⚠ 这样也更好交付：前端不用改卡，只改列表的排序与分组。 */
+  function cardHTML(g){
+    return '<div class="gcard'+(g.soon?' dim':'')+'">'+badgeHTML(g)+
+      '<span class="art">'+svg(g.icon,36,26)+'</span>'+
+      '<span class="tx"><b>'+g.name+'</b>'+
+        (g.soon?'<span class="t" style="color:var(--faint)">—</span>'
+               :'<span class="t">◷ <span data-b="'+g.name+'">'+mmss(g.left)+'</span></span>')+
+      '</span></div>';
+  }
+  var cards=order.map(cardHTML).join('');
+  /* ⚠ 这里<b>不要</b>再放一条「按最快开奖排序」的分节标题：切换条左边已经写着同一句，
+     两处并排出现是同一句话说两遍（实测截图里就是上下两行一样的字）。 */
+  var gridView='<div class="vwrap-grid" style="padding-top:8px">'+
+               '<div class="gg" style="margin:0 14px">'+cards+'</div></div>';
+
+  el.innerHTML=TOPBAR+'<div class="pbody mode-grid" id="newBody">'+
+    STREAK+
+    /* 筛选 ＋ 切换<b>同一行</b>；「顺序已更新」那条通知已撤（见 resort 那段说明）。 */
+    '<div class="catsrow"><span class="catchips">'+catChips('all')+'</span>'+
+      '<span class="bd-vtog">'+
+        '<button type="button" data-mode="list" aria-label="列表视图">'+ICO_LIST+'</button>'+
+        '<button type="button" class="bd-on" data-mode="grid" aria-label="双列视图">'+ICO_GRID+'</button>'+
+      '</span></div>'+
+    listView + gridView +
+    '</div>'+NAV;
+
+  var body=document.getElementById('newBody');
+  el.addEventListener('click',function(e){
+    var b=e.target.closest('[data-mode]');
+    if(b){
+      body.classList.toggle('mode-list',b.dataset.mode==='list');
+      body.classList.toggle('mode-grid',b.dataset.mode==='grid');
+      [].forEach.call(el.querySelectorAll('[data-mode]'),function(x){x.classList.toggle('bd-on',x===b);});
+      /* 切视图＝一次自然的重画 → 顺手把顺序刷新到最新（不提示、不打扰） */
+      resort();
+      return;
+    }
+    var c=e.target.closest('.catchips button');
+    if(c){
+      var chips=[].slice.call(el.querySelectorAll('.catchips button'));
+      var i=chips.indexOf(c);
+      ACTIVE=(i===0)?'all':CATS[i-1][0];
+      chips.forEach(function(x){x.classList.toggle('on',x===c);});
+      resort(); /* 切筛选＝一次自然的重画，顺序顺手刷新 */
+    }
+  });
+})();
+
+/* ── 一个时钟驱动两屏；顺序过期只提示、不自动重排 ── */
+(function(){
+  var stale=false;
+  setInterval(function(){
+    GAMES.forEach(function(g){
+      if(g.soon)return;
+      g.left--;
+      if(g.left<0){g.left=g.period;stale=true;}
+      var a=document.querySelector('[data-now="'+g.name+'"]');
+      if(a)a.textContent=mmss(g.left);
+      var b=document.querySelector('[data-new="'+g.name+'"]');
+      if(b){
+        b.textContent=mmss(g.left);
+        b.classList.toggle('soon',g.left<=60);
+      }
+      var c=document.querySelector('[data-b="'+g.name+'"]');
+      if(c){
+        c.textContent=mmss(g.left);
+        c.classList.toggle('soon',g.left<=60);
+      }
+    });
+    /* 08-12H：「顺序已更新」那条通知<b>整条撤掉</b>（Hector：remove the notification）。
+       那就必须回答：顺序什么时候刷？答案是<b>只在本来就要重画列表的时刻</b> ——
+       切筛选、切视图、重新进这一屏。<b>绝不</b>跟着秒数重排：那会让列表在手指底下跳，
+       按下去时那一行已经换成别的游戏了（这是这个版式唯一真正的坑）。
+       所以现在：不提示、不自动跳；顺序在你自己动手的那一刻就是最新的。 */
+  },1000);
+})();
+</script>
+</body></html>

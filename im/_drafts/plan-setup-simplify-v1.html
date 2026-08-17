@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>策略设置抽屉 · 简化三案 v1</title>
+<!--
+  ══ 变更记录 ═══════════════════════════════════════════════════════════════
+  v1 · 2026-08-17
+  Hector：「Suggest how to simplify this. draft first」——「策略设置」抽屉（原「新建策略设置」）。
+  现状：三步向导（策略规则 / 投注执行 / 风控计划），一步一屏，底部「上一步 / 下一步」。
+
+  先把现状的账算清楚（375 实测）：
+    · 抽屉高 492，其中<b>固定壳</b>就吃掉 57（标题）＋ 76（步骤条）＋ 24（说明句）＋ 53（页脚）＝ 210，
+      真正放设置的只剩 <b>282</b>；
+    · 三步一共 <b>8 个设置项</b>（线路 / 连开进场 / 投注方向 / 最大追投回合 ｜ 每注 / 倍投 /
+      单线上限 ｜ 止盈 / 止损），平均<b>一屏 2.7 项</b> —— 为 2.7 项付了 3 次翻页的成本；
+    · 「每次只处理一组设置，修改会同步更新回测与最高投入」这句<b>常驻</b>说明，
+      是在替步骤条解释自己为什么存在。一个需要解释的导航，多半是多余的导航。
+  三案的分歧：<b>要不要向导</b>，以及<b>不要向导之后靠什么分组</b>。
+  ⚠ 三案都不动：设置项本身、回测联动、底坞那两颗按钮的语义。
+-->
+<style>
+  :root{
+    --ink:#172033;--muted:#66738A;--faint:#9AA6B8;--line:#E6ECF2;--fill:#F3F6FA;
+    --blue:#2F6BE8;--blue-d:#0F63CE;--soft:#E8F1FF;--win:#12A150;--red:#E0454F;
+    --font:"Noto Sans SC","PingFang SC",sans-serif;
+    --data:"DIN Alternate","Arial Narrow",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#D6DCE4;font-family:var(--font);color:var(--ink);padding:26px 0 70px;}
+  h1{font-size:17px;text-align:center;}
+  .lede{font-size:12px;color:#4A5567;text-align:center;margin:6px auto 20px;max-width:840px;line-height:1.75;}
+  .lede b{color:var(--ink);}
+  .row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;align-items:flex-start;}
+  .opt{width:390px;}
+  .opt h2{font-size:14px;margin:0 2px 3px;}
+  .rec{display:inline-block;font-size:10px;font-weight:800;color:#fff;background:var(--blue);
+    border-radius:6px;padding:2px 7px;vertical-align:2px;margin-left:5px;}
+  .kpi{display:inline-block;font-size:10px;font-weight:800;color:var(--blue-d);background:var(--soft);
+    border:1px solid #BAD9F8;border-radius:6px;padding:1px 6px;margin-left:5px;}
+  .why{font-size:11.5px;line-height:1.65;color:#4A5567;margin:0 2px 10px;}
+  .why b{color:var(--ink);}
+
+  .sheet{background:#fff;border-radius:18px 18px 0 0;overflow:hidden;
+    box-shadow:0 -8px 26px rgba(23,32,51,.18);display:flex;flex-direction:column;height:560px;}
+  .sh{display:flex;align-items:center;gap:8px;padding:16px 14px 13px;border-bottom:1px solid var(--line);}
+  .sh b{font-size:16px;font-weight:800;}
+  .sh i{width:16px;height:16px;border-radius:50%;background:#C8D2E0;flex:none;}
+  .sh .x{margin-left:auto;width:30px;height:30px;border-radius:50%;background:var(--fill);
+    display:grid;place-items:center;color:var(--muted);font-size:15px;}
+  .sb{flex:1;min-height:0;overflow:auto;padding:12px 14px 8px;}
+  .foot{position:sticky;bottom:0;display:flex;align-items:center;gap:10px;
+    padding:10px 14px 12px;border-top:1px solid var(--line);background:#fff;}
+  .foot .l{flex:1;min-width:0;}
+  .foot .n{font-size:15px;font-weight:800;}
+  .foot .s{font-size:11px;color:var(--muted);margin-top:2px;}
+  .btn{height:44px;border-radius:12px;display:grid;place-items:center;font-size:14px;font-weight:800;
+    background:var(--blue);color:#fff;padding:0 20px;}
+  .btn.g{background:#fff;color:var(--blue-d);border:1px solid #BAD9F8;}
+
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  .card+.card{margin-top:10px;}
+  .r{display:flex;align-items:center;gap:10px;padding:12px 13px;}
+  .r+.r{border-top:1px solid var(--line);}
+  .r .t{min-width:0;flex:1;}
+  .r .t b{display:block;font-size:14px;font-weight:700;}
+  .r .t small{display:block;font-size:11px;color:var(--muted);margin-top:2px;}
+  .pill{border:1px solid #BAD9F8;background:var(--soft);color:var(--blue-d);
+    border-radius:9px;padding:6px 11px;font-size:12.5px;font-weight:800;flex:none;}
+  .step{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:10px;
+    background:var(--fill);overflow:hidden;flex:none;}
+  .step s{width:32px;height:34px;display:grid;place-items:center;color:var(--muted);
+    text-decoration:none;font-size:15px;}
+  .step em{min-width:34px;text-align:center;font:800 14px/1 var(--data);font-style:normal;background:#fff;height:34px;
+    display:grid;place-items:center;}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;flex:none;background:var(--fill);}
+  .seg s{padding:8px 13px;font-size:12.5px;color:var(--muted);text-decoration:none;}
+  .seg s.on{background:#fff;color:var(--blue-d);font-weight:800;}
+
+  /* 分节抬头（B 案） */
+  .sec{display:flex;align-items:baseline;gap:7px;margin:14px 2px 7px;}
+  .sec b{font-size:13px;}
+  .sec small{font-size:11px;color:var(--faint);}
+  .sec:first-child{margin-top:2px;}
+
+  /* 折叠（C 案） */
+  .fold{border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  .fold+.fold{margin-top:10px;}
+  .fh{display:flex;align-items:center;gap:9px;padding:13px;}
+  .fh b{font-size:14px;font-weight:700;}
+  .fh .sum{margin-left:auto;font-size:11.5px;color:var(--muted);text-align:right;}
+  .fh .cv{color:var(--faint);font-size:13px;}
+  .fb{border-top:1px solid var(--line);}
+  .fold.open .fh .cv{transform:rotate(180deg);}
+
+  /* 现状对照里的步骤条 */
+  .steps{display:flex;align-items:center;gap:0;background:var(--fill);border:1px solid var(--line);
+    border-radius:14px;padding:12px 10px;}
+  .steps span{flex:1;text-align:center;font-size:11.5px;color:var(--muted);}
+  .steps span b{display:block;width:26px;height:26px;border-radius:50%;margin:0 auto 6px;
+    background:#D4DDE8;color:#fff;font:800 12px/26px var(--data);}
+  .steps span.on{color:var(--blue-d);font-weight:800;}
+  .steps span.on b{background:var(--blue);}
+  .hintline{font-size:11.5px;color:var(--muted);margin:10px 2px 12px;}
+  .note{font-size:11px;color:var(--muted);text-align:center;padding:9px 6px 0;line-height:1.65;}
+  .note b{color:var(--ink);}
+</style>
+</head>
+<body>
+  <h1>策略设置抽屉 · 简化三案</h1>
+  <p class="lede">
+    现状是<b>三步向导</b>。375 实测：抽屉高 492，固定壳（标题 57 ＋ 步骤条 76 ＋ 说明句 24 ＋ 页脚 53）
+    就吃掉 <b>210</b>，留给设置的只剩 <b>282</b>；而三步一共只有 <b>8 个设置项</b>，
+    平均一屏 2.7 项 —— <b>为 2.7 项付了 3 次翻页</b>。<br>
+    另一个信号：「每次只处理一组设置…」那句常驻说明，是在替步骤条解释自己为什么存在 ——
+    <b>需要解释的导航，多半是多余的导航</b>。三案的分歧：要不要向导、不要之后靠什么分组。
+  </p>
+
+  <div class="row">
+
+    <!-- 现状 -->
+    <div class="opt">
+      <h2>现状 · 三步向导<span class="kpi">可用高 282 / 8 项</span></h2>
+      <p class="why">一步一屏，底部「上一步 / 下一步」。问题不在每一屏太满，
+        而在<b>为很少的内容付了导航成本</b>：想改一个止损，要先翻两页。</p>
+      <div class="sheet">
+        <div class="sh"><b>策略设置</b><i></i><span class="x">✕</span></div>
+        <div class="sb">
+          <div class="steps"><span class="on"><b>1</b>策略规则</span><span><b>2</b>投注执行</span><span><b>3</b>风控计划</span></div>
+          <p class="hintline">每次只处理一组设置，修改会同步更新回测与最高投入。</p>
+          <div class="card">
+            <div class="r"><span class="t"><b>投注线路</b><small>决定策略监测和执行的项目</small></span><span class="pill">已选 27/27</span></div>
+            <div class="r"><span class="t"><b>连开进场</b><small>达到区间后触发策略</small></span>
+              <span class="step"><s>−</s><em>4</em><s>+</s></span></div>
+            <div class="r"><span class="t"><b>投注方向</b><small>跟随或反向选择长龙结果</small></span>
+              <span class="seg"><s class="on">跟投</s><s>反投</s></span></div>
+            <div class="r"><span class="t"><b>最大追投回合</b><small>追满未中后从第一回重新监测</small></span>
+              <span class="step"><s>−</s><em>8</em><s>+</s></span></div>
+          </div>
+        </div>
+        <div class="foot"><span class="l"><span class="n">最高投入 6,885</span><span class="s">余额 20,000 · 剩 13,115</span></span>
+          <span class="btn">下一步</span></div>
+      </div>
+      <p class="note">对照组</p>
+    </div>
+
+    <!-- A -->
+    <div class="opt">
+      <h2>A · 一屏到底 · 分节不分页<span class="rec">推荐</span><span class="kpi">可用高 382 / 翻页 0</span></h2>
+      <p class="why">向导整个撤掉，八项<b>顺着滚一屏</b>，用<b>分节抬头</b>（规则 / 执行 / 风控）
+        代替三个步骤。省下步骤条 76 ＋ 说明句 24 ＝ <b>100px</b>，可用高从 282 涨到 382。<br>
+        底部页脚只剩一颗<b>保存</b>——没有「下一步」，也就不需要「上一步」。<br>
+        为什么可行：这八项<b>彼此不依赖</b>（改止损不必先定线路），本来就没有必须的先后。
+        向导适合「上一步决定下一步」的流程，这里不是。</p>
+      <div class="sheet">
+        <div class="sh"><b>策略设置</b><i></i><span class="x">✕</span></div>
+        <div class="sb">
+          <div class="sec"><b>策略规则</b><small>什么时候进场</small></div>
+          <div class="card">
+            <div class="r"><span class="t"><b>投注线路</b><small>决定监测与执行的项目</small></span><span class="pill">已选 27/27</span></div>
+            <div class="r"><span class="t"><b>连开进场</b></span><span class="step"><s>−</s><em>4</em><s>+</s></span></div>
+            <div class="r"><span class="t"><b>投注方向</b></span><span class="seg"><s class="on">跟投</s><s>反投</s></span></div>
+            <div class="r"><span class="t"><b>最大追投回合</b></span><span class="step"><s>−</s><em>8</em><s>+</s></span></div>
+          </div>
+          <div class="sec"><b>投注执行</b><small>每次下多少</small></div>
+          <div class="card">
+            <div class="r"><span class="t"><b>每注</b></span><span class="step"><s>−</s><em>1</em><s>+</s></span></div>
+            <div class="r"><span class="t"><b>倍投</b></span><span class="seg"><s class="on">2×</s><s>1.5×</s></span></div>
+          </div>
+          <div class="sec"><b>风控计划</b><small>什么时候收手</small></div>
+          <div class="card">
+            <div class="r"><span class="t"><b>止盈</b></span><span class="step"><s>−</s><em>500</em><s>+</s></span></div>
+            <div class="r"><span class="t"><b>止损</b></span><span class="step"><s>−</s><em>800</em><s>+</s></span></div>
+          </div>
+        </div>
+        <div class="foot"><span class="l"><span class="n">最高投入 6,885</span><span class="s">余额 20,000 · 剩 13,115</span></span>
+          <span class="btn">保存</span></div>
+      </div>
+      <p class="note">分节抬头做<b>分组</b>，滚动做<b>翻页</b> —— 两件事都在，只是不再互相收费</p>
+    </div>
+
+    <!-- B -->
+    <div class="opt">
+      <h2>B · 折叠三组 · 默认只开第一组<span class="kpi">首屏 3 行</span></h2>
+      <p class="why">保留「一次处理一组」的意图，但把三步变成<b>三个可折叠的组</b>：
+        收起时每组一行、右侧写着<b>当前值摘要</b>（连开 4 · 跟投 · 追 8 回），
+        想改哪组点开哪组，不必按顺序。<br>
+        比向导强的地方：<b>八项的现值一眼全在</b>（这正是复查设置时最想要的），
+        而向导里你永远只看得见三分之一。<br>
+        代价：多一层展开/收起的操作；组内项数不均（4/2/2）时，展开的高度会跳。</p>
+      <div class="sheet">
+        <div class="sh"><b>策略设置</b><i></i><span class="x">✕</span></div>
+        <div class="sb">
+          <div class="fold open">
+            <div class="fh"><b>策略规则</b><span class="sum">27 条线 · 连开 4 · 跟投 · 追 8 回</span><span class="cv">⌄</span></div>
+            <div class="fb">
+              <div class="r"><span class="t"><b>投注线路</b></span><span class="pill">已选 27/27</span></div>
+              <div class="r"><span class="t"><b>连开进场</b></span><span class="step"><s>−</s><em>4</em><s>+</s></span></div>
+              <div class="r"><span class="t"><b>投注方向</b></span><span class="seg"><s class="on">跟投</s><s>反投</s></span></div>
+              <div class="r"><span class="t"><b>最大追投回合</b></span><span class="step"><s>−</s><em>8</em><s>+</s></span></div>
+            </div>
+          </div>
+          <div class="fold"><div class="fh"><b>投注执行</b><span class="sum">每注 1 · 倍投 2×</span><span class="cv">⌄</span></div></div>
+          <div class="fold"><div class="fh"><b>风控计划</b><span class="sum">止盈 500 · 止损 800</span><span class="cv">⌄</span></div></div>
+        </div>
+        <div class="foot"><span class="l"><span class="n">最高投入 6,885</span><span class="s">余额 20,000 · 剩 13,115</span></span>
+          <span class="btn">保存</span></div>
+      </div>
+      <p class="note">收起时那行摘要 ＝ <b>把三步的结果一次说完</b></p>
+    </div>
+
+    <!-- C -->
+    <div class="opt">
+      <h2>C · 先给三档预设 · 要细调再展开<span class="kpi">常见路径 1 次点击</span></h2>
+      <p class="why">承认一件事：多数人<b>不改这八项</b>，他们只想要「稳一点 / 标准 / 激进一点」。
+        抽屉打开先给<b>三档预设</b>，每档下面写清它把八项设成了什么；
+        真要细调的人点「自定义」再展开 A 案那一屏。<br>
+        这是三案里唯一<b>减少决策数量</b>的（另两案只是把同样的决策排得更好看）。<br>
+        代价：预设的三档要运营给口径 —— 定不出来就退回 A。</p>
+      <div class="sheet">
+        <div class="sh"><b>策略设置</b><i></i><span class="x">✕</span></div>
+        <div class="sb">
+          <div class="card">
+            <div class="r" style="background:var(--soft)"><span class="t"><b>稳一点</b>
+              <small>连开 5 进场 · 追 5 回 · 止损 400</small></span><span class="pill">已选</span></div>
+            <div class="r"><span class="t"><b>标准</b><small>连开 4 进场 · 追 8 回 · 止损 800</small></span></div>
+            <div class="r"><span class="t"><b>激进一点</b><small>连开 3 进场 · 追 12 回 · 止损 1,500</small></span></div>
+          </div>
+          <div class="sec"><b>自定义</b><small>八项全部自己定</small></div>
+          <div class="fold"><div class="fh"><b>展开全部设置</b><span class="sum">线路 / 进场 / 执行 / 风控</span><span class="cv">⌄</span></div></div>
+          <p class="hintline" style="margin-top:12px">预设只是把八项一次填好，填完仍可逐项改 —— 不是另一种模式。</p>
+        </div>
+        <div class="foot"><span class="l"><span class="n">最高投入 4,120</span><span class="s">余额 20,000 · 剩 15,880</span></span>
+          <span class="btn">保存</span></div>
+      </div>
+      <p class="note">唯一<b>减少决策数量</b>的一案；另两案只是把决策排得更好看</p>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>指挥区 v8 · 高 tab 横滑 + 追高警报条</title>
+<!--
+  ══ 变更记录 ═══════════════════════════════════════════════════════════
+  v8 · 2026-08-16
+  背景：v7 两皮被否（深色不合现有 look&feel）。Hector 给出方向：
+        「Taller tabs 横滑（一套一枚）＋ 下方 alert bar 报追高在场的线」。
+  本稿照此执行，皮完全回到现有语言（淡蓝顶＋精工白瓷片）：
+    · 高 tab 68px：上行 游戏徽+代号，下行 这一期的动静（在场金额+封盘 / 刚命中 / 爆仓 / 未启用）
+    · tab=电梯：点哪枚滚到哪张卡；当前视野内的卡对应 tab 亮边（bd-cur 同语义）
+    · 警报条：只报「高回合在场」的线（R≥4 或自定义阈值）——这是钱压得最重的时刻；
+      多条时轮播，无警报整条不画
+    · 爆仓/未启用不进警报条（它们不随期紧迫）——住在自己 tab 的状态行里，tab 变色
+-->
+<style>
+  :root{
+    --blue:#2F6BE8;--blue-d:#1D4FD8;--ink:#172033;--muted:#66738A;--faint:#9AA6B8;
+    --line:#E6ECF2;--fill:#F1F5F9;--page:#F5F7F9;--win:#0E9F5B;--red:#E0454F;--amber:#B8741A;
+    --font:"Noto Sans SC","PingFang SC",sans-serif;--data:"DIN Alternate","Arial Narrow",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#D8DEE6;font-family:var(--font);color:var(--ink);padding:26px 0 60px;}
+  h1{font-size:16px;text-align:center;margin-bottom:4px;}
+  .sub{font-size:12px;color:var(--muted);text-align:center;margin:0 auto 20px;max-width:680px;}
+  .wrap{display:flex;gap:26px;justify-content:center;flex-wrap:wrap;align-items:flex-start;}
+  .num{font-family:var(--data);font-variant-numeric:tabular-nums;}
+  .up{color:var(--win);}
+  .phone{width:375px;border:1px solid #B9C6D3;border-radius:18px;overflow:hidden;
+    background:linear-gradient(180deg,#4372E9 0%,#5F8AEF 30%,#A3BEF5 52%,var(--page) 66%);
+    padding:14px 0 16px;}
+  .px{padding-left:12px;padding-right:12px;}
+  .hero-lab{font-size:11px;color:rgba(255,255,255,.78);display:flex;align-items:center;gap:6px;}
+  .hero-lab i{width:6px;height:6px;border-radius:50%;background:#7CF5B4;}
+  .hero-num{font-family:var(--data);font-size:31px;font-weight:800;color:#fff;line-height:1.08;letter-spacing:-.5px;}
+  .hero-num em{font-style:normal;color:#CBF7DD;}
+
+  /* 高 tab 横滑 */
+  .ptabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:12px 12px 2px;}
+  .ptabs::-webkit-scrollbar{display:none;}
+  .ptab{flex:none;min-width:148px;border-radius:13px;padding:9px 12px 8px;cursor:pointer;
+    background:linear-gradient(168deg,rgba(255,255,255,.98),rgba(247,250,255,.94));
+    border:1px solid rgba(255,255,255,.75);
+    box-shadow:inset 0 1.5px 0 rgba(255,255,255,.95),0 10px 22px -16px rgba(30,60,120,.4);}
+  .ptab .t{display:flex;align-items:center;gap:6px;}
+  .ptab .g{font-size:9.5px;font-weight:800;color:var(--blue-d);background:#EAF1FF;border-radius:5px;padding:2px 5px;}
+  .ptab b{font-size:13px;font-weight:800;}
+  .ptab .s{margin-top:4px;font-size:10.5px;color:var(--muted);white-space:nowrap;}
+  .ptab .s .m{font-family:var(--data);font-weight:800;color:var(--ink);}
+  .ptab .s .cd{font-family:var(--data);font-weight:800;color:var(--blue-d);}
+  .ptab .s .hit{font-family:var(--data);font-weight:800;color:var(--win);}
+  .ptab.cur{border-color:#8FB4FF;box-shadow:0 0 0 2px rgba(80,130,255,.35),inset 0 1.5px 0 rgba(255,255,255,.95),0 10px 22px -16px rgba(30,60,120,.4);}
+  .ptab.bust{background:linear-gradient(168deg,#FFF6F6,#FDEDED);border-color:#F6CDD0;}
+  .ptab.bust .g{color:#C43A44;background:#FBE2E4;}
+  .ptab.bust .s{color:#B24A52;}
+  .ptab.idle{opacity:.62;}
+
+  /* 追高警报条 */
+  .alert{display:flex;align-items:center;gap:8px;margin:9px 12px 0;border-radius:11px;padding:9px 12px;
+    background:linear-gradient(90deg,#FFF3E2,#FFF9EF);border:1px solid #F5DFB8;font-size:11.5px;color:#7A5210;}
+  .alert .rb{flex:none;font:800 10px/1 var(--data);color:#fff;background:linear-gradient(180deg,#F0A93C,#D98414);
+    border-radius:7px;padding:4px 7px;}
+  .alert b{color:#5C3D06;}
+  .alert .m{font-family:var(--data);font-weight:800;color:#5C3D06;}
+  .alert em{font-style:normal;margin-left:auto;font-weight:800;color:var(--blue-d);white-space:nowrap;}
+  .alert .dots{flex:none;display:flex;gap:3px;margin-left:6px;}
+  .alert .dots s{width:4px;height:4px;border-radius:50%;background:#E4C489;text-decoration:none;}
+  .alert .dots s.on{background:#C88A1E;}
+
+  .card{background:linear-gradient(168deg,rgba(255,255,255,.98),rgba(247,250,255,.94));
+    border:1px solid rgba(255,255,255,.72);border-radius:14px;margin:12px 12px 0;
+    box-shadow:inset 0 1.5px 0 rgba(255,255,255,.95),0 2px 10px -2px rgba(30,60,120,.08),0 12px 28px -20px rgba(30,60,120,.28);}
+  .b-h{display:flex;align-items:center;gap:8px;padding:11px 14px 0;}
+  .b-h .g{font-size:11px;color:var(--muted);}
+  .b-h .code{font-size:16px;font-weight:800;}
+  .b-cd{margin-left:auto;display:inline-flex;align-items:center;gap:5px;background:#12306E;color:#fff;
+    border-radius:999px;padding:4px 11px;font-size:11px;font-weight:700;}
+  .b-cd .num{color:#8FE7FF;}
+  .b-f{display:flex;align-items:center;padding:9px 14px 12px;font-size:11px;color:var(--muted);gap:12px;}
+  .b-f .pl{margin-left:auto;font-size:13px;font-weight:800;font-family:var(--data);}
+  .note{opacity:.55;text-align:center;font-size:11px;color:var(--muted);padding:10px 12px 2px;}
+
+  .why{width:390px;font-size:12px;line-height:1.7;color:#3A4557;}
+  .why h3{font-size:13px;margin:14px 0 4px;}
+  .why p{margin-bottom:6px;}
+  .why b{color:var(--ink);}
+</style>
+</head>
+<body>
+  <h1>指挥区 v8 · 高 tab 横滑 ＋ 追高警报条</h1>
+  <div class="sub">照 Hector 方向执行，皮回现有语言（淡蓝顶＋精工白）。tab 一套一枚、下行报这一期的动静；警报条只属于「高回合在场」。</div>
+  <div class="wrap">
+
+    <div class="phone">
+      <div class="px">
+        <div class="hero-lab"><i></i>总盈亏 · 3 套运行中</div>
+        <div class="hero-num num"><em>+767.00</em></div>
+      </div>
+      <div class="ptabs">
+        <span class="ptab cur"><span class="t"><span class="g">飞艇</span><b>C0404R5</b></span><span class="s">在场 <span class="m">150</span> · 封盘 <span class="cd">0:07</span></span></span>
+        <span class="ptab"><span class="t"><span class="g">赛车</span><b>C0506R5</b></span><span class="s">刚命中 <span class="hit">+41.40</span> · 下期 <span class="cd">0:19</span></span></span>
+        <span class="ptab bust"><span class="t"><span class="g">时时彩</span><b>B0405R4</b></span><span class="s">已爆仓 · 若继续 +35.20</span></span>
+        <span class="ptab idle"><span class="t"><span class="g">飞艇</span><b>C0304R6</b></span><span class="s">未启用</span></span>
+      </div>
+      <div class="alert">
+        <span class="rb">R4/5</span>
+        <span><b>极速赛车 C0506R5</b> 第四·大小 追至高回合 · 本期在场 <span class="m">270</span></span>
+        <em>查看 ›</em>
+        <span class="dots"><s class="on"></s><s></s></span>
+      </div>
+      <div class="card">
+        <div class="b-h"><span><span class="g">极速飞艇</span><div class="code">C0404R5 ›</div></span><span class="b-cd">封盘 <span class="num">0:07</span></span></div>
+        <div class="b-f"><span>3 注在场 · 待触发 3</span><span class="pl up num">+726.00</span></div>
+      </div>
+      <div class="note">tab=电梯：点哪枚滚到哪张卡；视野内的卡对应 tab 亮边。<br>无追高警报时整条不画。</div>
+    </div>
+
+    <div class="why">
+      <h3>照你的构想执行时做的几个小决定</h3>
+      <p><b>① tab 下行只放一句</b>——「这一期的动静」：在场+封盘 / 刚命中 / 爆仓 / 未启用。
+        四种状态四种写法，不塞第二行（塞了就回到 v5 的密度）。</p>
+      <p><b>② 爆仓/未启用不进警报条</b>——警报条只属于「高回合在场」（钱压得最重、且随封盘倒数
+        越来越紧）。爆仓不随期紧迫，住在自己 tab 里、tab 变粉底就够。职责分开，
+        警报条才有「响了就要看」的信用。</p>
+      <p><b>③ 多条警报轮播</b>（右侧圆点计数），10 秒一换；无警报整条不画——
+        条的出现本身就是信号。</p>
+      <p><b>④ tab 选中态=亮边不变色</b>——与筛选 chip 的「满白 vs 降透明」同一逻辑族，
+        不再引入第三种选中语言。</p>
+      <p><b>⑤ 游戏徽缩名不删名</b>（飞艇/赛车/时时彩）——同代号可跨游戏，铁律。</p>
+    </div>
+
+  </div>
+</body>
+</html>

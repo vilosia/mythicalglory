@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>最新动态 · 幸运组 · IM168 原型</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css"><!-- 唯一令牌来源，必须排在其它样式表之前 -->
+<link rel="stylesheet" href="shared/styles.css?v=20260807k">
+<link rel="stylesheet" href="shared/hall.css?v=20260816stick6">
+<link rel="stylesheet" href="shared/reference-theme.css?v=20260817f1">
+<script src="shared/ui-consistency.js?v=20260817f1" defer></script>
+<script src="shared/role.js?v=20260813role4" defer></script>
+<script src="shared/hint.js?v=20260807f" defer></script>
+<!-- 分享卡上的数字与曲线是<b>跑出来的</b>（node gen-curve-study.js .），不是手抄 ——
+     与 gen-featured-cards.js 同一条原则。引擎有变动就重跑，否则动态页会与策略页对不上。 -->
+<script src="shared/activity-sparks.js?v=20260811a"></script>
+<!--
+  ══ 游戏厅 · 动态（新页 · 2026-08-11 · Latest 3 · R1）════════════════════════
+  Alex 会上定的第三格。原话拼起来是这么一件东西：
+
+    「不是群聊啦，就是大家不能讲话，但是还是一个群」
+    「所有在这个游戏里面，他们都能看到那个群…就是一个公告这样子的东西」
+    「可以 share 可以看，管理员可以 react，但是不能做什么东西」
+    「反正就是有一个地方让我一直做 broadcasting 的东西就好了 ——
+      之后这些什么赢了，我就这样丢出去，『谁叫你不跟呢』那种感觉」
+    名字也是会上定的：Activity → <b>动态</b>。
+
+  所以这一页 = <b>只读广播频道</b>，两类内容：
+   ① <b>策略分享卡</b>（主角）—— 别人把一条策略丢进来，你一眼看懂、点进去就能跟。
+   ② <b>系统播报</b>（配角）—— 长龙、开奖、中奖，窄条，不抢卡片的位置。
+
+  分享卡上放哪几个数，是 Alex 指定的：
+   · 代号 ＋ 游戏 ＋ 方向 —— 「他 Subscribe 的不是内容，他 Subscribe 这个 Code」
+   · <b>玩法定位</b>（冠军 · 大小）—— 「我 share 出去应该有一个 indicator，
+     第一眼就看到你这个 plan 的特点在于你是冠军大小」
+   · <b>执行线路几条</b> —— 「你这个 6 应该是一个 hyperlink 的感觉」；手机没有 hover，
+     所以这里<b>不做</b>悬停展开，整张卡点进策略详情看（Alex：「你直接点进去看这样就好了」）。
+   · <b>今日爆仓几次 ＋ 距上次爆仓多少期</b> —— 「这两个都要记得放出去在分享里面」。
+     这两个数 hall-plans.html 的 cardBustStats() 已经在算，R3 接线时直接取，别另写一套。
+   · <b>快照时间</b> ＋ 一句「分享后不再更新」—— Tex 说 live update 做不到
+     （「100 个人分享，一个人分享 10 次就 1000 个 job，cost 很高而且容易断线」），
+     所以分享出去的是<b>冻结快照</b>，这一点要写在卡上，不能让人以为它在跑。
+
+  官方/专家账号：Alex「可不可以做一个 indicator，这个 account 就是有这样子的 frame，
+  比较漂亮一点点，内容是一样的，只是那个 frame 不一样」——
+  这里用 .ax-expert：金线外框 ＋ 金角标，<b>卡内结构与普通卡一字不差</b>。
+  配套的「不看 TA」也是他要的（「那些垃圾的你不要看…他就可以直接 mute 掉」）。
+
+  ⚠ <b>一个撞名，要 Alex 拍板</b>：策略页里 `.view-feed` 已经叫「<b>执行动态</b>」
+    （一条策略的实盘明细），现在底部导航第三格也叫「动态」。同一个 App 里两个动态，
+    玩家会以为点进去是同一样东西。备选：这一页叫「广场 / 播报 / 频道」，
+    或者把内页那个改叫「实盘」。这一版<b>先按 Alex 说的字面用「动态」</b>，不自作主张。
+  ⚠ pagenav 的路由名刻意用 'activity' 而不是 'feed' —— 'feed' 会被 here() 认成策略页的内页。
+  ⚠ 本页数据是<b>形态样本</b>：代号、线路数、爆仓数与 hall-plans 的引擎<b>还没接线</b>，
+    只是照它的口径手写成一致的样子（C0303R12 / B0404R10 都是那边真有的模板代号）。
+    接线是 R3 分享流程那一轮的事。
+-->
+<style>
+/* 本页专用（.ax- ＝ activity）。前缀是查过的：styles/hall/plancard/trialrun/reference-theme
+   五档里 .ac- 已被日历占用（.ac-hero/.ac-row…），.ax- 干净。颜色全部走 design-tokens。 */
+/* ══ 2026-08-11 四稿（Hector：只有卡片该有框；发布者那一行与播报同一层）════════════
+   之前是<b>框里套框</b>：外面一张白卡（专家还多一圈金边）＋ 里面一块蓝色策略卡。
+   两层框在一屏里叠六七次，眼睛读不出哪一层才是重点。
+   现在整条动态只有<b>一个</b>框 —— 策略卡本身。发布者、那句话、点赞行全部
+   直接落在页面底色上，与系统播报（极速快乐十分 · 第九名 连开 8 期 大）同一层。
+   条与条之间用一道细线分开，不再靠「各自一张卡」区隔。
+   ⚠ 官方/专家的区分<b>没有丢</b>：金边从外层白卡搬到<b>策略卡</b>上（那是唯一的框），
+     加上作者名旁那枚「官方专家」标 —— Alex 要的「这个 account 的 frame 不一样」还在。 */
+/* ══ 2026-08-15（Hector：「最新动态 to leave gap between each post」）══════════════
+   条与条之间<b>改用 gap 隔开</b>，不再靠一条细线。
+   为什么线要撤：现在每一条动态都是一张卡（08-15 那两轮改的），
+   <b>卡与卡之间再加一条分隔线就是同一件事说两遍</b> —— 卡的边界本身已经把它们分开了。
+   线撤掉、留白顶上，读起来才是「一条一条」而不是「一张长表被划了几刀」。 */
+.ax-list{padding:4px 12px 16px;display:flex;flex-direction:column;gap:10px;}
+
+/* 一条动态：不再是卡，只是一段内容 ＋ 一道分隔线 */
+/* 08-15：外边距与分隔线都归零 —— 间距由 .ax-list 的 gap 统一给，
+   每种卡自己的内边距写在各自的规则里（.ax-share / .ax-castgrp）。 */
+.ax-item{padding:0;border-top:0;}
+
+/* ── ① 策略分享 ───────────────────────────────────────────────── */
+/* ══ 2026-08-15（Hector：「for 动态，also wrap the sender and message in the same card」）══
+   分享动态<b>整条进一张卡</b>：抬头（谁 · 什么时候）＋ 那句话 ＋ 策略块，同一个容器。
+   原来是「无框抬头 ＋ 引用竖线」浮在底色上、下面再挂一张白卡 —— 一条动态两个层级，
+   正是 Alex 说「其它讯息没整理过」的同一个毛病，只是发生在分享卡自己身上。
+   ⚠ 关键一步：<b>把里面那张 .ax-plan 的卡样式扒掉</b>（底色／投影／圆角），
+     否则就是<b>盒子里的盒子</b> —— 全档硬规矩「一条动态最多一个有底色的容器」。
+     策略块与那句话之间改用<b>一条细线</b>分隔，线本身就够说明「上面是人话、下面是数据」。
+   ⚠ 卡的圆角沿用策略块原来那枚 17px（全站分享卡就是这个半径），不引入第 N 种圆角。 */
+.ax-share{padding:11px 13px 12px;background:var(--card);border-radius:17px;
+  box-shadow:var(--x-card-shadow);}
+.ax-who{display:flex;align-items:center;gap:8px;}
+.ax-av{width:30px;height:30px;flex:none;border-radius:50%;background:var(--tint);color:var(--blue-d);
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;}
+.ax-name{display:flex;align-items:center;gap:5px;min-width:0;}
+.ax-name b{font-size:var(--fs-body);color:var(--ink);}
+.ax-badge{font-size:var(--fs-badge);line-height:1;padding:3px 6px;border-radius:var(--radius-pill);
+  background:var(--warning-soft);color:var(--warning);border:1px solid var(--x-warning-line);font-style:normal;}
+.ax-time{font-size:var(--fs-caption);color:var(--faint);flex:none;}
+.ax-say{margin:7px 0 0;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
+
+/* ══ 08-13S · B 栏「引用式」落地（Hector 选的）════════════════════════════════
+   Hector：现在这套<b>不够干净、不合简约风格</b>。数出来的病因是<b>盒子套盒子</b>：
+   一条动态有 3 个有底色/描边的容器（留言框 ＋ 白卡 ＋ 卡内动作行）、4 枚药丸、
+   2 条卡内分隔线、3 颗按钮，而样板（策略页那张卡）是 1／1／1／2。
+   B 栏的减法是<b>零个额外容器</b>：
+     · 抬头（头像 ＋ 名字 ＋ 官方标 ＋ 时间）<b>完全不加框</b>
+     · 那句话用<b>一条 2px 竖线</b>标成引用（不是气泡、不是底色）
+     · 底下是<b>策略页那张卡原样</b> —— 动态与策略页于是看起来是同一套东西
+   <b>签名做法</b>：引用线的缩进量＝卡的内距（12px），抬头、引用、卡内文字<b>对在同一条光学线</b>上。
+   ⚠ 官方身份：留言框没有了，所以改成<b>引用线转琥珀 ＋ 名字旁那枚标</b>。
+     这是 B 栏自己写明的代价：没有色块，Alex 那句「官方的 frame 要不一样」力度最弱。
+     要更强就只能回到色块（＝又多一个容器），两者不可兼得。
+   ⚠ .ax-msg 那一族样式<b>整块删掉</b>（不是留着不用）——留着下一个人会以为还能用。
+     要回滚看 README 08-13M／08-13S 两段。 */
+/* 08-13X：那句话与<b>播报那一行同字号</b>（Hector）—— 实测播报是 12px / 行高 17px / 400，
+   原来这里是 14px / 21px。两者都是「一句话」，同一屏上没有理由用两个字号；
+   而且缩到 12px 之后，一条动态的重心自然落到<b>卡上的数字</b>，那才是要被读的东西。 */
+.ax-say{
+  margin:6px 0 8px;padding-left:10px;border-left:2px solid var(--x-primary-line);
+  font-size:12px;line-height:17px;color:var(--muted);
+}
+.ax-expert .ax-say{border-left-color:var(--accent);}
+.ax-who{display:flex;align-items:center;gap:7px;font-size:var(--fs-caption);color:var(--muted);}
+.ax-who .ax-av{width:20px;height:20px;font-size:10px;}
+.ax-who .ax-name b{font-size:var(--fs-body);color:var(--ink);}
+
+/* ══ 08-13U · 卡的样式：逐条抄 hall-plans.html 那张 .bd-card ═══════════════════
+   下面每一个数字都能在那边找到出处（reference-theme.css 的 .bd-card* 与 hall-plans 的
+   .view-board 覆写）。抄值而不是共用类名，是因为那张卡的样式<b>有 64 条写在
+   hall-plans.html 的页内 <style> 里</b>（不是 shared），本页取不到。
+   ⚠ <b>真正该做的是把那 64 条搬进 shared/plancard.css 并两页共用</b>（那个文件已经存在、
+     但现在两页都没加载，等于闲置）。那是一次跨档重构，且这一轮浏览器不可用、无法回归验证
+     策略页，所以<b>没有在这一轮动它</b>。搬完之后本段应当整块删掉、改成共用类名。 */
+/* 内距与影子都照货架卡实测值（13/14/11 与 0 5px 16px），不是 12px + --shadow */
+/* 08-15：外层 .ax-share 成了卡之后，这一块<b>不再自己是卡</b> —— 只留一条上分隔线。 */
+.ax-plan{display:block;margin-top:10px;padding:10px 0 0;background:transparent;border:0;
+  border-radius:0;box-shadow:none;border-top:1px solid var(--border);}
+.ax-planlink{display:block;text-decoration:none;color:inherit;}
+@media (hover:hover){.ax-planlink:hover .ax-code{color:var(--blue-d);}}
+.ax-planlink:active{opacity:.92;}
+.ax-planlink:focus-visible{outline:2px solid var(--ring,var(--blue));outline-offset:2px;}
+
+/* ① 抬头：彩种一行 ＋ 代号一行；右上角＝快照证据 */
+.ax-cardnm{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.ax-cardid{display:flex;flex-direction:column;min-width:0;}
+/* 色值抄货架卡时一律换令牌：那边写的是字面 #718198／#66738a／#445169（reference-theme 的
+   既有字面值，交付检查一直在报），这里不跟着再制造三处。小标签一律 --muted-foreground、
+   数据字 --foreground —— 与那边肉眼差一档，换来的是「值只有一个来源」。 */
+.ax-cardgame{color:var(--muted-foreground);font-size:10px;font-weight:650;line-height:13px;white-space:nowrap;}
+.ax-idline{margin-top:-1px;}
+/* ⚠ 08-13V 修：代号<b>不是等宽</b>。我原来照 plancard.css 抄了 font-family:var(--font-code)，
+   但那不是最终生效的值 —— reference-theme.css 里有一条更晚的 !important 把
+   .bd-code 换成了<b>系统无衬线栈</b> ＋ 800 ＋ 字距 .15 ＋ tabular-nums。
+   截图里「字体不一样」就是这个：我的是等宽、那边是系统无衬线。照最终值抄一遍。 */
+.ax-code{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",Arial,sans-serif;
+  font-size:15.5px;font-weight:800;letter-spacing:.35px;color:var(--ink);
+  font-variant-numeric:tabular-nums;font-feature-settings:"tnum";
+}
+.ax-snapwrap{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
+.ax-snapwrap small{color:var(--faint);font-size:10px;line-height:1;white-space:nowrap;}
+.ax-snaptag{display:inline-flex;align-items:center;min-height:18px;padding:2px 6px;border-radius:7px;
+  background:var(--x-surface-sunken);color:var(--x-muted-on-sky);
+  font-size:10px;font-style:normal;font-weight:800;line-height:1;white-space:nowrap;}
+.ax-plan.ax-stale .ax-snaptag{background:var(--x-warning-soft);color:var(--warning);}
+.ax-plan.ax-stale .ax-snapwrap small{color:var(--warning);}
+
+/* ② 收益 ＋ 曲线（「今日收益」在数字上面，与那张卡一致） */
+.ax-cardmarket{display:flex;align-items:flex-end;gap:12px;margin-top:8px;}
+.ax-todayyield{flex:none;display:flex;min-width:0;flex-direction:column;align-items:flex-start;gap:2px;}
+.ax-todayyield em{color:var(--muted-foreground);font-size:11px;font-weight:600;font-style:normal;letter-spacing:.1px;white-space:nowrap;}
+/* ⚠ 大数字用 --data-font（DIN Alternate 那条窄体数字栈）—— 货架卡就是它。
+   这是最后一处「字体不一样」：我原来让它继承正文 Noto Sans SC，同样 7 个字符宽了 15px
+   （实测 90 vs 75），并排一看数字宽窄不同。 */
+.ax-todayyield b{font-family:var(--data-font);font-size:24px;font-weight:800;
+  line-height:25px;letter-spacing:-.35px;font-variant-numeric:tabular-nums;font-feature-settings:"tnum";}
+.ax-todayyield b.ax-up{color:var(--win);}
+.ax-todayyield b.ax-dn{color:var(--red);}
+.ax-daygraph{flex:1;min-width:0;padding:3px 0 0;}
+
+/* ③ 风险行：最高／最低 在左，今日爆仓／已稳 在右 */
+.ax-cardrisk{display:flex;align-items:baseline;gap:10px;margin-top:6px;}
+.ax-cardrange{display:flex;flex:none;align-items:baseline;gap:9px;}
+.ax-cardrange>span{display:flex;flex-direction:row;align-items:baseline;gap:3px;}
+.ax-cardrange small{color:var(--muted-foreground);font-size:10px;font-weight:500;line-height:1.15;white-space:nowrap;}
+/* ⚠ 这两个数字<b>不用语义色</b>：货架卡上有一条 !important 把 .bd-up/.bd-dn 盖成石板灰，
+   只有「今日收益」那个大数字才是绿/红。实测确认（+468 与 −311 都是 rgb(68,81,105)）。 */
+.ax-cardrange b{font-size:11.5px;font-weight:700;line-height:1.1;white-space:nowrap;color:var(--x-card-range-ink);}
+/* 与货审卡的 .bd-meta 一致：字号 10px、两组之间 13px、组内 3px */
+.ax-cardmeta{margin-left:auto;display:flex;align-items:baseline;gap:13px;
+  color:var(--muted);font-size:10.5px;white-space:nowrap;}
+.ax-cardmeta>span,.ax-bust,.ax-lastb{display:inline-flex;align-items:baseline;gap:3px;}
+.ax-cardmeta em{font-style:normal;color:var(--muted);}
+.ax-lastb b{font-weight:700;color:var(--muted);}
+.ax-cardmeta b{color:var(--ink);font-weight:700;}
+.ax-bust b{font-size:11px;font-weight:800;}      /* 与 .bd-cardbust b 一致 */
+.ax-lastb b{font-size:10.5px;font-weight:700;}   /* 与 .bd-lastb b 一致 */
+.ax-cardmeta b.ax-bad{color:var(--red);}
+.ax-cardmeta i{color:var(--faint);font-style:normal;}
+
+/* ④ 跟投行：一条<b>虚线</b>（那张卡就是 dashed）＋ 三枚重叠头像 */
+.ax-cardsocial{display:flex;align-items:center;gap:6px;margin-top:8px;padding-top:8px;
+  border-top:1px dashed var(--line);font-size:11px;color:var(--muted);
+  white-space:nowrap;min-width:0;overflow:hidden;}
+.ax-cardsocial b{color:var(--ink);font-weight:700;}
+.ax-cardsocial em{flex:none;color:var(--win);font-weight:700;font-style:normal;}  /* 今日 +N，与货架卡一致 */
+.ax-avs{display:inline-flex;flex:none;}
+.ax-avs i{width:17px;height:17px;border-radius:50%;border:1.5px solid var(--surface);margin-left:-6px;
+  background:linear-gradient(135deg,var(--x-avatar-a),var(--x-avatar-b));}
+.ax-avs i:first-child{margin-left:0;}
+
+/* ⑤ 动作行：与货架卡完全一样的两颗 */
+.ax-cardact{display:flex;gap:8px;margin-top:9px;}
+/* 08-15：代号右边那枚 › —— 撤掉动作行之后，它是「这张卡能点」唯一的提示。 */
+.ax-cardgo{margin-left:5px;font-style:normal;font-weight:400;color:var(--faint);}
+.ax-cardfollow{flex:1;display:inline-flex;align-items:center;justify-content:center;
+  border:0;background:var(--blue);color:var(--primary-foreground);border-radius:9px;padding:9px 0;
+  font-size:13px;font-weight:700;font-family:inherit;text-decoration:none;}
+@media (hover:hover){.ax-cardfollow:hover{background:var(--blue-d);}}
+.ax-cardfollow:active{background:var(--blue-d);}
+.ax-cardback{flex:none;display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid var(--line);background:var(--surface);color:var(--muted);
+  border-radius:9px;padding:9px 13px;font-size:12.5px;font-family:inherit;text-decoration:none;}
+@media (hover:hover){.ax-cardback:hover{background:var(--fill);}}
+.ax-cardback:active{background:var(--fill);}
+.ax-cardfollow:focus-visible,.ax-cardback:focus-visible{outline:2px solid var(--ring,var(--blue));outline-offset:2px;}
+
+/* 曲线：与那张卡同一个高度口径（.bd-daygraph .bd-mini{height:38px}） */
+.ax-spk{position:relative;display:block;}
+/* ══ 08-13V：爆仓 ✕ 与末端点<b>补回来</b>（Hector：missing the X 爆仓 indication）══════
+   ✕ 一直在 markup 里（axSpark 就吐 .ax-bxm），但<b>全站没有一条样式命中它</b> ——
+   唯一提到 .ax-bxm 的地方是 shared/plancard.css 的一句注释，而那个文件<b>两个页面都没加载</b>。
+   所以它渲染成一个 0×0 的空 <i>：不报错、就是看不见。几何照货架卡的 .bd-bxm 抄：
+   16×16、以点为中心（margin −8）、两道 9×1.7 的杠 ±45°、外描两道白（压在曲线上也看得清）。 */
+.ax-bxm{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;pointer-events:none;
+  filter:drop-shadow(0 0 1px var(--surface)) drop-shadow(0 0 1px var(--surface));}
+.ax-bxm::before,.ax-bxm::after{content:"";position:absolute;left:50%;top:50%;
+  width:9px;height:1.7px;margin:-.85px 0 0 -4.5px;border-radius:1px;background:var(--red);}
+.ax-bxm::before{transform:rotate(45deg);}
+.ax-bxm::after{transform:rotate(-45deg);}
+/* 同一处爆仓挤在一起时并成一枚并写次数（axSpark 已经在并组，这里只给那枚数字一个底） */
+.ax-bxm>b{position:absolute;left:10px;top:-4px;display:flex;align-items:center;justify-content:center;
+  min-width:12px;height:12px;padding:0 2px;border-radius:6px;background:var(--red);
+  color:var(--primary-foreground);font-size:9px;font-weight:800;line-height:1;}
+/* 末端点：<b>不呼吸</b>。货架卡那颗会脉冲，因为那是活卡；这里是<b>冻结快照</b>，
+   一颗会跳的点与「快照 · 14:32 定格」自相矛盾。所以只留静态的点，标住曲线终点。 */
+.ax-spkdot{position:absolute;width:6px;height:6px;border-radius:50%;
+  transform:translate(-50%,-50%);background:var(--win);
+  box-shadow:0 0 0 1.5px var(--surface);}
+.ax-spkdot.ax-dn{background:var(--red);}
+.ax-mini{display:block;width:100%;height:66px;}  /* 与货架卡一致（.view-board .bd-cardmarket .bd-mini） */
+
+/* ══ 08-13U · 点赞与 ··· 搬到抬头那一行（对「这条动态」的动作，不是对策略的）══════ */
+/* ══ 08-13Y：··· 原来是<b>死的</b>（Hector：这三点是干什么的，没用就删）══════════
+   它<b>不是没用</b> —— 它是「不看 TA」的入口，而「不看 TA」是 Hector 早前点名要的
+   （本档开头第 47 行记着他的原话：「那些垃圾的你不要看…他就可以直接 mute 掉」）。
+   08-13S 我把那颗按钮从卡面收进 ···，但<b>只搬走了按钮、没做菜单</b>，
+   而演示脚本里的 mute 处理仍在监听已经不存在的 .ax-mute —— 于是点 ··· 什么都不会发生。
+   现在补一个<b>一项的小菜单</b>（留着位给将来的 举报／复制代号）：
+   点 ··· 展开、点菜单项收起并隐藏这条动态、点别处或按 Esc 关闭。
+   ⚠ 负向动作放在菜单里而不是卡面上：卡面留给正向动作（跟这一套／点赞）。
+   要彻底不要这个功能：把 ··· 与这段菜单一起删掉，并把第 47 行那条需求划掉。 */
+.ax-postacts{position:relative;margin-left:auto;display:flex;align-items:center;gap:2px;}
+.ax-menu{position:absolute;right:0;top:calc(100% + 4px);z-index:20;min-width:104px;padding:4px;
+  border:1px solid var(--line);border-radius:10px;background:var(--surface);
+  box-shadow:var(--x-popover-shadow);display:none;}
+.ax-menu[data-open]{display:block;}
+.ax-menu button{display:flex;align-items:center;width:100%;min-height:36px;padding:0 10px;
+  border:0;border-radius:7px;background:transparent;color:var(--ink);
+  font-family:inherit;font-size:12.5px;text-align:left;cursor:pointer;}
+@media (hover:hover){.ax-menu button:hover{background:var(--fill);}}
+.ax-menu button:active{background:var(--fill);}
+.ax-menu button:focus-visible{outline:2px solid var(--ring,var(--blue));outline-offset:-2px;}
+.ax-react{position:relative;display:inline-flex;align-items:center;gap:4px;height:32px;padding:0 6px;
+  border:0;border-radius:8px;background:transparent;color:var(--muted);
+  font-family:inherit;font-size:var(--fs-caption);font-weight:700;cursor:pointer;}
+.ax-react svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round;}
+.ax-react.on{color:var(--blue-d);}
+.ax-more{position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;
+  width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:var(--muted);cursor:pointer;}
+.ax-more svg{width:18px;height:18px;fill:currentColor;stroke:none;}
+/* 视觉 32、热区 44 */
+.ax-react::after,.ax-more::after{content:"";position:absolute;left:0;right:0;top:50%;
+  height:44px;transform:translateY(-50%);}
+@media (hover:hover){.ax-react:hover,.ax-more:hover{background:var(--fill);color:var(--ink);}}
+.ax-react:active,.ax-more:active{background:var(--tint);color:var(--blue-d);}
+.ax-react:focus-visible,.ax-more:focus-visible{outline:2px solid var(--ring,var(--blue));outline-offset:1px;}
+
+/* 官方/专家＝<b>一道金色细线</b>，仅此而已（底色、光环、文字色全部不动）。
+   ⚠ 别再加回 box-shadow 光环：1px 金线在白卡上已经很清楚，光环只会盖住卡里的数据。
+   身份还有第二个信号：作者名旁那枚「官方专家」标（.ax-badge）。 */
+/* 08-13M：这条退役 —— 金线搬到 .ax-msg 左侧那道竖条（「官方」形容的是人，不是策略）。 */
+.ax-expert .ax-av{background:var(--warning-soft);color:var(--warning);}
+
+/* ── ② 系统播报：窄条，不做成卡，别跟分享卡抢眼 ──────────────────── */
+/* 播报：灰底去掉 —— 发布者那一行要与它「同一层」，两边都不该有自己的容器 */
+.ax-cast{display:flex;align-items:center;gap:9px;padding:9px 0;}
+.ax-cast .ax-cic{width:24px;height:24px;flex:none;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;background:var(--fill);}
+.ax-cast .ax-cic svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;}
+.ax-cast .ax-cic.streak{color:var(--warning);}
+.ax-cast .ax-cic.win{color:var(--win);}
+.ax-cast .ax-cic.draw{color:var(--blue-d);}
+.ax-cast p{margin:0;flex:1;min-width:0;font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--muted);}
+.ax-cast p b{color:var(--ink);font-weight:600;}
+.ax-cast p em{font-style:normal;color:var(--win);font-weight:600;}
+.ax-cast time{font-size:var(--fs-badge);color:var(--faint);flex:none;}
+
+/* ══ 2026-08-15 · 播报改成「同类合卡」（Alex：其它讯息没整理过；Hector 选 B）═══════
+   诊断（08-14 实测）：这条流原来交替出现<b>两个层级</b> —— 分享卡 319/320/320px 有容器，
+   播报 76/43/43px <b>没有容器</b>，直接坐在页面底色上，比卡矮 7 倍。
+   读到那 43px 一行时，眼睛分不清「它是上面那张卡的附注还是自己一条」。这才是「乱」的机制。
+   改法：播报<b>也进卡</b>，并且<b>同类合成一张</b>，卡上给标题（长龙提醒 / 跟单战报 / 开奖播报）。
+   ⚠ <b>Hector 追加的那一条</b>：「if its different timing still split them up」——
+     所以合卡有<b>时间闸</b>：同类且相隔<b>在 1 小时内</b>才合；超过 1 小时<b>另起一张卡</b>。
+     本档演的正好两种都有：长龙 14:29＋14:07（相隔 22 分 → 合）；
+     开奖 14:26 与 09:47（相隔 4 小时 39 分 → <b>拆成两张</b>）。
+   ⚠ 卡与卡之间仍按<b>各组最新那一条</b>倒序排：14:32 分享 → 14:29 长龙组 → 14:26 开奖 →
+     14:11 分享 → 13:58 战报组 → 11:20 分享 → 09:47 开奖。加了时间闸之后，
+     这条流<b>逐条都是降序的</b> —— 也就是 08-14 那份对比稿里 B 的唯一代价（会打乱倒序）
+     被这条规矩<b>消掉了</b>。
+   ⚠ 组内的行<b>不再各自加底色</b>，只用一条细线分隔 —— 否则又变成「盒子里的盒子」，
+     那正是 08-13 那一轮减掉的东西。 */
+.ax-castgrp{display:block;padding:11px 14px 9px;background:var(--card);border-radius:17px;
+  box-shadow:var(--x-card-shadow);}
+.ax-cgt{display:flex;align-items:center;gap:7px;font-size:var(--fs-body);font-weight:700;color:var(--ink);}
+/* ⚠ 类名<b>不能叫 .draw / .win / .streak</b>：`.draw` 在共享样式里已经是别人的类
+   （实测它给这枚图标塞了 background #1677ee ＋ color #fff ＋ border-radius 10px，
+   还把 svg 压成 0px 宽 —— 屏上就是一颗蓝色实心圆点，不是时钟）。
+   所以本组用 <b>.ax-k-*</b> 前缀，并把 fill/stroke/颜色<b>全部显式写死</b>，不靠继承。 */
+.ax-cgt .ax-cic{width:22px;height:22px;flex:none;display:flex;align-items:center;justify-content:center;
+  background:transparent;border-radius:0;}
+.ax-cgt .ax-cic svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;}
+.ax-cgt .ax-k-streak{color:var(--warning);}
+.ax-cgt .ax-k-win{color:var(--win);}
+.ax-cgt .ax-k-draw{color:var(--blue-d);}
+.ax-cgt em{font-style:normal;margin-left:auto;font-size:var(--fs-badge);font-weight:700;
+  color:var(--x-muted-on-sky);}
+.ax-crow{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;padding:8px 0 7px;
+  font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--muted);
+  border-top:1px solid var(--border);}
+.ax-crow:first-of-type{border-top:0;}
+.ax-crow b{color:var(--ink);font-weight:600;}
+.ax-crow em{font-style:normal;color:var(--win);font-weight:700;}
+/* ⚠ 行内排版用 order/flex-basis 定死，别靠自然换行：
+   实测自然换行下第一行的 CTA 与时间同排、第二行的时间被挤到下一行，两行长得不一样。
+   现在<b>时间永远在第一行右端</b>（order 2），<b>CTA 永远独占第二行</b>（order 3 ＋ 100% 基宽）。 */
+.ax-crow>time{order:2;margin-left:auto;flex:none;font-size:var(--fs-badge);color:var(--faint);}
+.ax-crow>.ax-crowcta,.ax-crow>.ax-crowend{order:3;flex:0 0 100%;margin-top:1px;}
+/* 行内 CTA：与 .ax-castcta 同一套（文字链 ＋ 外扩 44px 热区），不做实心钮 */
+.ax-crowcta{position:relative;display:inline-flex;align-items:center;gap:2px;
+  color:var(--blue-d);font-size:var(--fs-caption);font-weight:600;text-decoration:none;}
+.ax-crowcta svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.2;
+  stroke-linecap:round;stroke-linejoin:round;}
+.ax-crowcta::after{content:"";position:absolute;left:-6px;right:-6px;
+  top:calc((var(--x-touch-min) - 100%) / -2);bottom:calc((var(--x-touch-min) - 100%) / -2);}
+/* 龙断了就不给按钮，只留一句静态的（与 .ax-cast[data-streak] 同一口径） */
+.ax-crow[data-streak="broken"] .ax-crowcta{display:none;}
+.ax-crow[data-streak="open"] .ax-crowend{display:none;}
+.ax-crowend{font-size:var(--fs-caption);color:var(--faint);}
+/* 08-14 长龙播报：标题 ＋ 只在龙活着时出现的文字链 CTA（见下方那条 HTML 注释）。
+   ⚠ 顶部对齐只给这一种播报（.ax-cast-streak）—— 另两种仍是单行，居中才好看。 */
+.ax-cast-streak{align-items:flex-start;}
+.ax-cast-streak .ax-cic{margin-top:1px;}
+.ax-castbody{flex:1;min-width:0;}
+.ax-casttl{display:block;font-size:var(--fs-caption);line-height:var(--lh-caption);color:var(--ink);font-weight:700;}
+.ax-castcta,.ax-castend{display:inline-flex;align-items:center;gap:2px;margin-top:3px;
+  font-size:var(--fs-caption);line-height:var(--lh-caption);font-weight:600;text-decoration:none;}
+.ax-castcta{color:var(--blue-d);}
+.ax-castcta svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.2;
+  stroke-linecap:round;stroke-linejoin:round;}
+.ax-castend{color:var(--faint);font-weight:400;}
+/* CTA 的点击区补到 44px（文字本身只有 17px 高）—— 不撑开行高，用外扩的 ::after。 */
+.ax-castcta{position:relative;}
+.ax-castcta::after{content:"";position:absolute;left:-6px;right:-6px;
+  top:calc((var(--x-touch-min) - 100%) / -2);bottom:calc((var(--x-touch-min) - 100%) / -2);}
+.ax-cast[data-streak="open"] .ax-castend{display:none;}
+.ax-cast[data-streak="broken"] .ax-castcta{display:none;}
+
+/* 只读频道的说明位（点 ⓘ 才展开，与其余各屏同一套） */
+.ax-note{display:flex;align-items:center;gap:6px;padding:0 12px 2px;font-size:var(--fs-caption);color:var(--faint);}
+</style>
+</head>
+<body class="page-activity x-fade">
+  <div class="stage">
+    <div class="phone" data-game="pk">
+      <div class="screen">
+
+        <div class="ghead chrome" data-component="HallHeader">
+          <div class="gtop">
+            <a class="gback" href="groups.html#groups" aria-label="返回群组"><svg class="icx" viewBox="25.0 51.0 11.0 17.0" fill="none"><path d="M34 66L27 59.5L34 53" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            <span class="gtitle"><b>最新动态</b><small>· 幸运组</small></span>
+            <span class="sp"></span>
+            <a class="bal" href="wallet.html#wallet" aria-label="钱包余额 · 上下分"><svg class="wic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"/><path d="M3 8V6a2 2 0 0 1 2-2h10"/><circle cx="16.5" cy="12.5" r="1.3" fill="currentColor" stroke="none"/></svg><b>240,000.00</b></a>
+          </div>
+        </div>
+
+        <!-- 2026-08-16 Hector：筛选行移出滚动容器（同开奖页；blur 会把彩色内容糊成彩虹带）——
+             抬头不滚 + 内容区顶端淡出，照「我的策略」那一套。回滚：放回 .hall-body 第一位。 -->
+          <!-- 筛选沿用开奖页那一套（.filter-row / .gfilter / .gfchip），不另造第二种筛选长相 -->
+          <div class="filter-row">
+            <div class="gfilter" id="axFilter" data-component="ActivityFilter">
+              <button type="button" class="gfchip on" data-t="all">全部</button>
+              <button type="button" class="gfchip" data-t="expert">专家</button>
+              <button type="button" class="gfchip" data-t="share">策略分享</button>
+              <button type="button" class="gfchip" data-t="cast">播报</button>
+            </div>
+            <span class="info-wrap">
+              <button type="button" class="info-i" aria-label="说明" aria-expanded="false">i</button>
+              <!-- 2026-08-17（Hector：too long）：原文 130 余字、盖掉半屏内容。压到三句 ——
+                   删掉的都是可从界面自明的部分：「这个游戏里的人都看得到同一份内容」（频道本义）、
+                   「卡上只留时间戳，含义在这里说一次就够」（在说自己的排版决定，不是给玩家的信息）。
+                   留下的三条是界面看不出来的规则：只读、金框身份、快照不更新。
+                   回滚：见 Drive 版本历史（本行原文以「动态是只发布、不发言的频道：」开头）。 -->
+              <span class="info-pop to-right" hidden>动态是<b>只读频道</b>：可点赞、可点进策略去跟，不能发言。金框＝官方/专家账号。策略卡上的<b>快照</b>是分享当下的定格，不随盘面更新。</span>
+            </span>
+          </div>
+
+        <div class="hall-body" data-component="Activity">
+
+          <div class="ax-list" id="axList">
+
+            <article class="ax-item ax-share ax-expert" data-component="ActivityShareCard" data-t="expert" data-code="C0404R8">
+              <div class="ax-who">
+                <span class="ax-av">策</span>
+                <span class="ax-name"><b>策略王</b><em class="ax-badge">官方专家</em></span>
+                <span class="sp"></span>
+                <time class="ax-time">14:32</time>
+                <span class="ax-postacts">
+                  <button type="button" class="ax-react on" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 21V10l4.6-7a2 2 0 0 1 3.4 2l-1.4 5H19a2 2 0 0 1 2 2.4l-1.6 7A2 2 0 0 1 17.4 21z"/><path d="M7 10H4v11h3"/></svg><b>128</b></button>
+                  <button type="button" class="ax-more" aria-label="更多" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button>
+                  
+                </span>
+              </div>
+              <p class="ax-say">追 8 回的版本，今天只爆两次、收正的 —— 跟我脚步走。</p>
+              <!-- ⚠ 2026-08-11 修：这张示例卡原来写 C0303R12 ＋ 极速飞艇，而引擎里
+                   C0303R12 是<b>极速赛车</b>的策略 —— 「同一代号 = 同一游戏」是 README 定死的口径，
+                   一屏上同一个代号挂两个游戏最容易被读成 bug。改成引擎里真有的
+                   C0404R8（极速飞艇 · 冠军大小 · 追 5 回 · 6 条线），与那边一字不差。 -->
+              <!-- 策略块由 shared/activity-sparks.js 的数据填（数字与曲线都不手抄）——
+                   人话那一句留在上面的 HTML 里。 -->
+              <div class="ax-planhost" data-code="C0404R8" data-react="128" data-react-on="1"></div>
+            </article>
+
+            <!-- ══ 2026-08-15：播报由「裸行」改成<b>同类合卡</b>（Alex：其它讯息没整理过；
+                 Hector 选 B，并追加「if its different timing still split them up」）。
+                 时间闸＝<b>1 小时</b>：同类且相隔 1 小时内才合，超过就另起一张卡。
+                 本页两种都在演：长龙 14:29＋14:07（22 分 → 合成一张）；
+                 开奖 14:26 与 09:47（相隔 4h39 → <b>拆成两张</b>，就是下面第 4 张）。
+                 排序仍是倒序（按各组最新一条）：14:32 → 14:29 → 14:26 → 14:11 → 13:58 → 11:20 → 09:47。
+                 ⚠ 长龙那两行仍带 data-streak：open 出 CTA、broken 出「已断」静态一行。
+                 ⚠ 新增的第二条长龙／第二条战报／第00090期是<b>演示内容</b>（要两条才看得出合卡）；
+                   回滚整段见 scratchpad 里的 hall-activity.before-groupB.html。 -->
+            <section class="ax-item ax-castgrp" data-component="ActivityCastGroup" data-t="cast">
+              <div class="ax-cgt"><span class="ax-cic ax-k-streak"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span>长龙提醒<em>2 条 · 都还在</em></div>
+              <div class="ax-crow" data-streak="open"><b>极速快乐十分 · 第九名</b> 连开 <b>8</b> 期 <em>大</em><a class="ax-crowcta" href="game-bet.html">去投注 · 第 00091 期<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a><span class="ax-crowend">已断 · 第 8 期止</span><time>14:29</time></div>
+              <div class="ax-crow" data-streak="open"><b>极速赛车 · 冠军</b> 连开 <b>6</b> 期 <em>小</em><a class="ax-crowcta" href="game-bet.html">去投注 · 第 00088 期<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a><span class="ax-crowend">已断 · 第 6 期止</span><time>14:07</time></div>
+            </section>
+
+            <section class="ax-item ax-castgrp" data-component="ActivityCastGroup" data-t="cast">
+              <div class="ax-cgt"><span class="ax-cic ax-k-draw"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.2V12l3.2 2"/></svg></span>开奖播报</div>
+              <div class="ax-crow"><b>极速飞艇 第00090期</b> 已开奖 · 冠军 <b>3</b><time>14:26</time></div>
+            </section>
+
+            <article class="ax-item ax-share" data-component="ActivityShareCard" data-t="share" data-code="B0404R10">
+              <div class="ax-who">
+                <span class="ax-av">泰</span>
+                <span class="ax-name"><b>阿泰</b></span>
+                <span class="sp"></span>
+                <time class="ax-time">14:11</time>
+                <span class="ax-postacts">
+                  <button type="button" class="ax-react" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 21V10l4.6-7a2 2 0 0 1 3.4 2l-1.4 5H19a2 2 0 0 1 2 2.4l-1.6 7A2 2 0 0 1 17.4 21z"/><path d="M7 10H4v11h3"/></svg><b>9</b></button>
+                  <button type="button" class="ax-more" aria-label="更多" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button>
+                  
+                </span>
+              </div>
+              <p class="ax-say">这条我自己跑了三天了，反着打、追 10 回，今天只爆一次。</p>
+              <!-- 策略块由 shared/activity-sparks.js 的数据填（数字与曲线都不手抄）——
+                   人话那一句留在上面的 HTML 里。 -->
+              <div class="ax-planhost" data-code="B0404R10" data-react="9"></div>
+            </article>
+
+            <section class="ax-item ax-castgrp" data-component="ActivityCastGroup" data-t="cast">
+              <div class="ax-cgt"><span class="ax-cic ax-k-win"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>跟单战报<em>2 条</em></div>
+              <div class="ax-crow"><b>阿泰</b> 跟着 <b>B0404R10</b> 赢了 <em>+1,240</em><time>13:58</time></div>
+              <div class="ax-crow"><b>小林</b> 跟着 <b>C0404R8</b> 赢了 <em>+860</em><time>13:22</time></div>
+            </section>
+
+            <article class="ax-item ax-share ax-expert" data-component="ActivityShareCard" data-t="expert" data-code="C0303R12" data-stale-hours="3">
+              <div class="ax-who">
+                <span class="ax-av">官</span>
+                <span class="ax-name"><b>幸运组 · 官方</b><em class="ax-badge">官方专家</em></span>
+                <span class="sp"></span>
+                <time class="ax-time">11:20</time>
+                <span class="ax-postacts">
+                  <button type="button" class="ax-react" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 21V10l4.6-7a2 2 0 0 1 3.4 2l-1.4 5H19a2 2 0 0 1 2 2.4l-1.6 7A2 2 0 0 1 17.4 21z"/><path d="M7 10H4v11h3"/></svg><b>63</b></button>
+                  <button type="button" class="ax-more" aria-label="更多" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button>
+                  
+                </span>
+              </div>
+              <p class="ax-say">今天主推这一条：追 12 回，一整天一次没爆。</p>
+              <!-- 策略块由 shared/activity-sparks.js 的数据填（数字与曲线都不手抄）——
+                   人话那一句留在上面的 HTML 里。 -->
+              <div class="ax-planhost" data-code="C0303R12" data-react="63"></div>
+            </article>
+
+            <section class="ax-item ax-castgrp" data-component="ActivityCastGroup" data-t="cast">
+              <div class="ax-cgt"><span class="ax-cic ax-k-draw"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.2V12l3.2 2"/></svg></span>开奖播报</div>
+              <div class="ax-crow"><b>极速飞艇 第00089期</b> 已开奖 · 冠军 <b>7</b><time>09:47</time></div>
+            </section>
+
+          </div>
+        </div>
+
+        <nav class="tabbar hallbar" data-component="HallNav">
+          <a class="nav" href="hall-plans.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12h.01"/></svg><span>策略</span></a>
+          <a class="nav on" href="hall-activity.html"><svg viewBox="0 0 24 24"><path d="M3.6 10.1v3.8a1.6 1.6 0 0 0 1.6 1.6h2.3L18 20V4L7.5 8.5H5.2a1.6 1.6 0 0 0-1.6 1.6z"/><path d="M7.5 15.5v3.3a1.3 1.3 0 0 0 1.3 1.3h.9a1.3 1.3 0 0 0 1.3-1.3v-2.3"/><path d="M20.8 9.8v4.4"/></svg><span>动态</span></a>
+          <a class="nav" href="hall-lottery.html"><svg viewBox="0 0 24 24"><rect x="3.4" y="3.4" width="7.4" height="7.4" rx="2.2"/><rect x="13.2" y="3.4" width="7.4" height="7.4" rx="2.2"/><rect x="3.4" y="13.2" width="7.4" height="7.4" rx="2.2"/><rect x="13.2" y="13.2" width="7.4" height="7.4" rx="2.2"/></svg><span>彩票</span></a>
+          <a class="nav" href="hall-results.html"><svg viewBox="0 0 24 24"><circle cx="7.5" cy="9" r="3.4"/><circle cx="16.5" cy="9" r="3.4"/><circle cx="12" cy="16.5" r="3.4"/></svg><span>开奖</span></a>
+          <a class="nav" href="hall-bets.html"><svg viewBox="0 0 24 24"><path d="M6.5 3.5h11V21l-2.2-1.6L13 21l-1-0.8L11 21l-2.3-1.6L6.5 21V3.5z"/><path d="M9.5 8.5h5M9.5 12h5"/></svg><span>明细</span></a>
+        </nav>
+
+      </div>
+    </div>
+  </div>
+
+<script data-demo>
+/* 演示用（不进交接）：筛选 chips ＋ 点赞 ＋「不看 TA」。
+   筛选只按 data-t 显隐，不重排 —— 频道是时间序，重排会让人以为漏了内容。 */
+/* ══ 分享卡的策略块（含收益曲线）—— 一支渲染器，示例卡与真分享的卡共用 ═══════════
+   曲线画法与策略页那张卡一样：svg 非等比铺满，✕ 用 HTML 覆盖层（所以不会被拉扁），
+   ✕ 打在<b>掉下来之前</b>那一点（峰）而不是谷底 —— Alex 08-11 定的口径。 */
+/* ══ 08-13V：与 hall-plans.html 的 followHash/followCount/followToday <b>逐字相同</b>。
+   ⚠ 两处必须一起改 —— 一旦口径分叉，同一个代号在策略页与动态页会显示两个人数，
+     那是演示时最容易被当场抓到的不一致。 */
+function axFollowHash(code){
+  var s=2166136261,i;
+  for(i=0;i<code.length;i++){s^=code.charCodeAt(i);s=(s*16777619)>>>0;}
+  return s;
+}
+function axFollowCount(code){return 180+(axFollowHash(code)%1420);}
+function axFollowToday(code){return 3+((axFollowHash(code)>>>7)%42);}
+function axSpark(c,x){
+  if(!c||c.length<2)return '';
+  var W=340,H=56,mn=Math.min.apply(null,c),mx=Math.max.apply(null,c),rg=(mx-mn)||1,
+      X=function(k){return k/(c.length-1)*W;},
+      Y=function(v){return H-3-((v-mn)/rg)*(H-6);},
+      d='',i;
+  for(i=0;i<c.length;i++)d+=(i?'L':'M')+X(i).toFixed(1)+' '+Y(c[i]).toFixed(1)+' ';
+  var up=c[c.length-1]>0,
+      col=up?'var(--win)':'var(--red)',fill=up?'var(--positive-soft)':'var(--danger-soft)';
+  /* 太近的 ✕ 并成一枚并写次数 —— 27 条线全选之后一天爆几十次，不并就是一片红墙。
+     ⚠ 分享卡上的 ✕ 不可点：这是冻结快照，没有引擎可以下钻（要看是哪条线哪一期，点整张卡进策略页）。 */
+  var marks='',groups=[],g,k;
+  (x||[]).slice().sort(function(a,b){return a-b;}).forEach(function(i2){
+    g=groups[groups.length-1];
+    if(g&&(X(i2)-X(g[0]))<13)g.push(i2);else groups.push([i2]);
+  });
+  /* ══ 2026-08-14（Hector：✕ 要打在峰上，不是峰的下面）══════════════════════════
+     与货架卡<b>同一条规矩、同一组常数</b>（hall-plans.html 的 bustPeakIx，PATIENCE 18 / CAP 150）——
+     两屏画的是同一套策略的同一天，✕ 落点不同就是当场被抓到的不一致。
+     原来取 c[k-1]：k 是梯子最后那一注，前一期早在半山腰。改成从 k 往左<b>一路爬坡</b>找崖顶。
+     ⚠ 这条曲线<b>不抽稀</b>（每期一点），所以不需要货架卡那套 KEEP：峰点本来就画在线上。 */
+  var PATIENCE=18,CAP=150;
+  function peakIx(k){
+    var best=k,j=k,miss=0,lim=Math.max(0,k-CAP);
+    while(j>lim&&miss<PATIENCE){
+      j--;
+      if(c[j]>=c[best]){best=j;miss=0;}else miss++;
+    }
+    return best;
+  }
+  groups.forEach(function(g2){
+    k=peakIx(g2[0]>0?g2[0]-1:0);
+    marks+='<i class="ax-bxm" style="left:'+(X(k)/W*100).toFixed(2)+'%;top:'+
+           (Y(c[k])/H*100).toFixed(2)+'%">'+(g2.length>1?('<b>'+g2.length+'</b>'):'')+'</i>';
+  });
+  /* 08-13V：末端点 —— 与货架卡同一个位置口径（用 HTML 圆点，不画进 svg：
+     svg 是 preserveAspectRatio="none" 拉伸的，画在里面的圆会被压成横椭圆 ——
+     货架卡那边踩过这个坑，注释就写在 .bd-spkdot 上）。
+     ⚠ <b>不加脉冲动画</b>：那颗会呼吸是因为货架卡是活的；这里是冻结快照。 */
+  var last=c.length-1;
+  var dot='<i class="ax-spkdot'+(up?'':' ax-dn')+'" style="left:'+(X(last)/W*100).toFixed(2)+
+          '%;top:'+(Y(c[last])/H*100).toFixed(2)+'%"></i>';
+  return '<span class="ax-spk"><svg class="ax-mini" viewBox="0 0 '+W+' '+H+
+    '" preserveAspectRatio="none" aria-hidden="true">'+
+    '<path d="'+d+'L '+W+' '+H+' L 0 '+H+' Z" fill="'+fill+'"/>'+
+    '<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="1.4" vector-effect="non-scaling-stroke"/>'+
+    '</svg>'+marks+dot+'</span>';
+}
+/* 08-13W：不吐 ¥ —— 货架卡上显示的就是 +409.28（全站 ui-consistency 也会去掉 ¥，
+   自己先不加，省得依赖那支脚本的时序）。 */
+function axMoney(v){var a=Math.abs(v);return (v<0?'−':'+')+(a>=1000?Math.round(a).toLocaleString('en-US'):a.toFixed(2));}
+/* 2026-08-11 三稿（Hector：卡太高了，压紧）—— 见本档 <style> 里那段说明。
+   规则句里的方向去掉（第一行的方向标已经说了）；全选时不画那行玩法定位；
+   数字压到曲线左上角；三格统计压成一行；快照那行删掉（卡头右上角就是那个时间）。 */
+function axPlanHTML(p,href){
+  /* ══ 08-13U：卡<b>逐行照策略页那张卡</b>（Hector：动态 cards try to match with this as
+     much as possible, only add on or reduce info details from it if necessary）══════════
+     对照的是 hall-plans.html 的 .bd-card，结构与取值逐条搬过来（值是从那边的 CSS 抄的，不是估的）：
+       ① 抬头：彩种<b>单独一行</b>（10px/650）→ 代号<b>另起一行</b>（16px/800、字距 .6）
+       ② 收益：「今日收益」<b>在数字上面</b>（11px/600），数字 24px/800，曲线在右
+       ③ 风险行：最高／最低 在左 · 今日爆仓／已稳 在右（10px 标签 ＋ 11.5px 数字）
+       ④ 跟投行：上面一条<b>虚线</b>（1px dashed）＋ 三枚重叠头像 ＋ N 人在跟
+       ⑤ 动作行：跟这一套（实心、flex:1）＋ 看回测（描边）—— 与那边完全一样
+     <b>必要的增</b>（分享卡与货架卡的唯一实质差别：这是<b>冻结快照</b>，不是活卡）：
+       右上角一枚「快照」角标 ＋ 定格时刻；超过一小时改写成「已过 N 小时」并转琥珀。
+       ⚠ 不标出来就会被读成活卡 —— 这是 08-12N/P 定下的口径，不能省。
+     <b>必要的减</b>：
+       · 「今日 +N」（今天新增跟投人数）<b>不放</b> —— 原型里没有这条数据线，
+         编一个数就会与策略页那张卡对不上（那边是 followToday() 现算的）。
+       · 期号轴那一整行<b>撤掉</b> —— 快照角标 ＋ 定格时刻已经把「这是哪一刻的快照」说完，
+         期号区间是引擎口径，放在这一屏是第三次说同一件事（也是为了向那张卡靠拢：那边没有这一行）。
+     <b>点赞与 ··· 搬去抬头那一行</b>（见 markup）：它们是对<b>这条动态</b>的动作，
+       而卡里的两颗是对<b>这套策略</b>的动作。分开之后卡的动作行才和那张卡一模一样。
+     ⚠ 最高／最低是<b>用同一条曲线现算</b>的（max/min），不是手写的 —— 与卡上的数字同源。 */
+  var stale=(p.staleHours||0)>=1, c=p.c||[];
+  var hi=c.length?Math.max.apply(null,c):0, lo=c.length?Math.min.apply(null,c):0;
+  var sign=function(v){return (v>=0?'+':'−')+Math.round(Math.abs(v));};
+  return '<div class="ax-plan'+(stale?' ax-stale':'')+'">'+
+      '<a class="ax-planlink" href="'+href+'">'+
+        /* ① 抬头：彩种一行、代号一行；右上角＝快照证据 */
+        '<span class="ax-cardnm">'+
+          '<span class="ax-cardid">'+
+            /* 只写彩种 —— 与货架卡一致。方向（跟投／反投）<b>不写</b>：那张卡也没有，
+               而且代号首字母本来就编着（C＝Chase 跟投 · B＝Break 反投，见 README 的代号规则）。 */
+            '<span class="ax-cardgame">'+p.gameName+'</span>'+
+            '<span class="ax-idline"><b class="ax-code">'+p.code+'</b>'+
+              '<i class="ax-cardgo" aria-hidden="true">›</i></span>'+
+          '</span>'+
+          /* 08-13X（Hector：快照已经是那个意思了，就把 14:32 定格去掉）——
+             对，而且是<b>重复两次</b>：① 「快照」本身就说了「这是冻结的、不是活的」；
+             ② 那个时刻与<b>抬头那一行的发布时间是同一个值</b>（frozeAt = 这条动态的 .ax-time，
+                实测两处都是 14:32）。所以正常情况下只留一枚「快照」。
+             ⚠ <b>过期那一条留着</b>：「已过 3 小时」不是重复，它是<b>算出来的年龄</b>，
+               而且正是需要提醒的那种情况（旧快照容易被当成现在的行情）。
+             ⚠ 如果哪天希望时间回到卡上（例如动态支持编辑、发布时间与定格时刻会分叉），
+               那时候更准的说法是「<b>定格于 14:32</b>」或「14:32 的快照」——
+               不要写成「14:32 定格」那种把状态词摆在时间后面的读法。 */
+          '<span class="ax-snapwrap">'+
+            '<i class="ax-snaptag">快照</i>'+
+            (stale?('<small>已过 '+p.staleHours+' 小时</small>'):'')+
+          '</span>'+
+        '</span>'+
+        /* ② 收益 ＋ 曲线 */
+        '<span class="ax-cardmarket">'+
+          '<span class="ax-todayyield"><em>今日收益</em>'+
+            '<b class="'+(p.pl>=0?'ax-up':'ax-dn')+'">'+axMoney(p.pl)+'</b></span>'+
+          '<span class="ax-daygraph">'+axSpark(p.c,p.x)+'</span>'+
+        '</span>'+
+        /* ③ 风险行：最高／最低 ｜ 今日爆仓／已稳 */
+        '<span class="ax-cardrisk">'+
+          '<span class="ax-cardrange">'+
+            '<span><small>最高</small><b class="ax-up">'+sign(hi)+'</b></span>'+
+            '<span><small>最低</small><b class="ax-dn">'+sign(lo)+'</b></span>'+
+          '</span>'+
+          /* 与货架卡 cardBustStats() 同一个排法：两组「标签＋数字＋单位」，
+               一次都没爆时<b>第二组整个不出</b>（那边的注释写着：写「已稳 —」会被读成没数据）。 */
+            '<span class="ax-cardmeta">'+
+              '<span class="ax-bust"><span>今日爆仓</span><b class="'+(p.busts?'ax-bad':'')+'">'+p.busts+'</b><em>次</em></span>'+
+              (p.last==null?'':'<span class="ax-lastb"><span>已稳</span><b>'+p.last+'</b><em>期</em></span>')+
+            '</span>'+
+        '</span>'+
+        /* ④ 跟投行（上面一条虚线） */
+        '<span class="ax-cardsocial">'+
+          '<span class="ax-avs" aria-hidden="true"><i></i><i></i><i></i></span>'+
+          '<b>'+(p.follows||0).toLocaleString('en-US')+'</b> 人在跟'+
+          (p.followToday?('<em>今日 +'+p.followToday+'</em>'):'')+
+        '</span>'+
+      '</a>'+
+      /* ══ 2026-08-15（Hector：「remove the CTAs here to match with the 全部策略 cards」）══
+         动作行<b>整条撤掉</b>，与货架卡对齐（货架卡 08-14 就撤了）。
+         08-14 我把这两颗留下来过，理由是「让人照着跑正是分享的目的」——
+         Hector 现在明确要一起撤：两屏是同一种卡，<b>一致性优先于那条理由</b>。
+         ⚠ 撤掉之后「能点」靠什么说：策略块本身就是 <a class="ax-planlink">，
+           再加上代号右边那枚 <b>›</b>（下面 ax-idline 里补的）—— 与货架卡一模一样的做法
+           （见 hall-plans.html 里 .bd-cardgo 那段注释：卡上没了按钮，箭头就是唯一的提示，
+           别把它一起删了，否则整张卡看上去只是一块展示板）。
+         ⚠ 「套用策略」这个动作没消失，只是回到<b>点进去之后</b>再做（与货架卡同一条路径）。
+         回滚：把下面这三行放回来即可，.ax-cardact / .ax-cardfollow / .ax-cardback 的样式都还在。
+         '<span class="ax-cardact">'+
+           '<a class="ax-cardfollow" href="'+href+'">套用策略</a>'+
+           '<a class="ax-cardback" href="'+href+'">看回测</a>'+
+         '</span>'+ */
+    '</div>';
+}
+/* 三张示例卡：数字与曲线全部来自 shared/activity-sparks.js（跑出来的），一个字不手抄 */
+(function(){
+  var S=window.IM168_SPARKS||{};
+  [].forEach.call(document.querySelectorAll('.ax-planhost'),function(host){
+    var code=host.getAttribute('data-code'),d=S[code];
+    if(!d){host.innerHTML='<span class="ax-pl-rule">（'+code+' 的数据还没跑 —— node gen-curve-study.js .）</span>';return;}
+    var p={},k;for(k in d)p[k]=d[k];p.code=code;
+    p.at=host.closest('.ax-item').querySelector('.ax-time').textContent.trim();
+    /* ══ 08-13M：D 栏要的四个字段，activity-sparks.js 里<b>没有</b>，在这里补齐 ══════
+       · range   期号轴那一段 —— <b>由曲线长度算</b>（曲线画了多少期，这条线就写多少期），
+                 不手写。改 gen-curve-study.js 的期数，这行字自己跟着变。
+       · frozeAt 定格时刻 —— 就是这条动态的发布时间（.ax-time，上面那行已经读进 p.at）。
+       · staleHours 超过一小时转琥珀 —— 写在 markup 的 data-stale-hours 上（示例数据，
+                 真做时＝now − 发布时间）。没写就是 0，卡不转琥珀。
+       · follows 跟投人数 —— <b>写死的展示数</b>，与策略页卡上那个数对齐（644／218…）：
+                 原型里没有「有多少人从动态点进去跟了」这条数据线，
+                 而两屏显示同一套策略却给两个人数，是演示时最容易被当场抓到的那种不一致。
+                 真做时改成与策略页同一个来源（followCount）。 */
+    p.range='第00001–'+String(Math.max(1,(d.c||[]).length-1)).padStart(5,'0')+' 期';
+    p.frozeAt=p.at;
+    /* ⚠ 08-13Y 修：这一行原来只看 host（.ax-planhost）自己，而 data-stale-hours 是写在
+       <b>外层 article</b> 上的（08-13S 重建那两张卡时落在了 article 上）——
+       于是「已过 N 小时」那条<b>从来没生效过</b>：官方那张 11:20 的卡一直按新鲜卡渲染。
+       两处都读：host 上有就用 host 的，否则回到 article 上找。 */
+    p.staleHours=+(host.getAttribute('data-stale-hours')
+                   ||(host.closest('.ax-item')||{getAttribute:function(){return 0;}}).getAttribute('data-stale-hours')
+                   ||0);
+    /* 08-13V：跟投人数与「今日 +N」改用<b>货架卡那一套哈希</b>（hall-plans 的
+       followHash/followCount/followToday，逐字搬过来）—— 同一个代号在两屏必然是同一个数。
+       原来这里是手写的对照表（644/218…），一改就会与那边错开；而「今日 +N」当时因为
+       「没有数据线」没敢放，其实那边也是这条哈希算的，不是真实数据。 */
+    p.follows=axFollowCount(code);
+    p.followToday=axFollowToday(code);
+    host.outerHTML=axPlanHTML(p,'hall-plans.html#'+(host.getAttribute('data-mine')?'mine':'plan')+'='+encodeURIComponent(code));
+  });
+})();
+
+/* 2026-08-11：策略页那颗<分享>真的把卡送到这里来 —— 演示做法是 localStorage
+   （hall-plans.html 的 openShareSheet 写 im168_shared_plans，这里开页时读出来插最前面）。
+   ⚠ 原型口径：真实实现是一条广播消息，不是浏览器本地存储。清掉演示数据：
+     localStorage.removeItem('im168_shared_plans') —— 或者直接点卡上的「不看 TA」。 */
+(function(){
+  var list=document.getElementById('axList');if(!list)return;
+  var arr=[];try{arr=JSON.parse(localStorage.getItem('im168_shared_plans')||'[]');}catch(ignore){}
+  arr.slice(0,6).reverse().forEach(function(p){
+    var el=document.createElement('article');
+    el.className='ax-item ax-share';
+    el.setAttribute('data-component','ActivityShareCard');
+    el.setAttribute('data-t','share');
+    el.innerHTML='<div class="ax-who"><span class="ax-av">我</span>'+
+        '<span class="ax-name"><b>我</b></span><span class="sp"></span>'+
+        '<time class="ax-time">'+p.at+'</time></div>'+
+        '<p class="ax-say">刚从策略页分享出来的。</p>'+
+      /* 分享时冻起来的那串曲线（snap.g）跟卡一起过来 —— 与示例卡走同一支渲染器 */
+      /* 08-13O：动作行已经在 axPlanHTML 里了，这里<b>不要再拼一份</b>（否则一张卡两行动作）。
+         期号轴／定格／跟投人数这几个字段同样在这里补齐，与示例卡走同一套。 */
+      axPlanHTML({code:p.code,game:p.game,gameName:p.gameName,dir:p.dir,market:p.market,
+                  rule:p.rule,spec:'',pl:p.pl||0,lanes:p.lanes,busts:p.busts,last:p.last,
+                  at:p.at,c:(p.g||{}).c,x:(p.g||{}).x,
+                  range:'第00001–'+String(Math.max(1,((p.g||{}).c||[]).length-1)).padStart(5,'0')+' 期',
+                  frozeAt:p.at,staleHours:0,follows:0,react:0},
+                 'hall-plans.html#plan='+encodeURIComponent(p.code));
+    list.insertBefore(el,list.firstChild);
+  });
+})();
+(function(){
+  var wrap=document.getElementById('axFilter'),list=document.getElementById('axList');
+  if(!wrap||!list)return;
+  var items=[].slice.call(list.children);
+  wrap.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-t]');if(!b)return;
+    var t=b.getAttribute('data-t');
+    [].forEach.call(wrap.querySelectorAll('button'),function(x){x.classList.toggle('on',x===b);});
+    items.forEach(function(it){
+      var k=it.getAttribute('data-t');
+      /* 「策略分享」把专家的也算进去 —— 它本来就是一张分享卡，只是账号不一样 */
+      it.hidden=!(t==='all'||k===t||(t==='share'&&k==='expert'));
+    });
+  });
+  /* 08-13Y：··· 的菜单 —— 展开／收起／点外面关／Esc 关；菜单项走原来那套 mute。
+     ⚠ 原来这支监听的是 .ax-mute<b>按钮</b>，而那颗按钮 08-13S 已经从卡面移走 ——
+       于是 mute 一直是死的（点 ··· 没反应）。现在 .ax-mute 是菜单里那一项。 */
+  function closeMenus(except){
+    [].forEach.call(list.querySelectorAll('.ax-menu[data-open]'),function(m){
+      if(m===except)return;
+      m.removeAttribute('data-open');
+      var btn=m.parentNode.querySelector('.ax-more');
+      if(btn)btn.setAttribute('aria-expanded','false');
+    });
+  }
+  list.addEventListener('click',function(e){
+    var r=e.target.closest('.ax-react');
+    if(r){
+      var n=r.querySelector('b'),v=parseInt(n.textContent,10)||0,on=r.classList.toggle('on');
+      n.textContent=on?v+1:v-1;r.setAttribute('aria-pressed',on?'true':'false');return;
+    }
+    var more=e.target.closest('.ax-more');
+    if(more){
+      var menu=more.parentNode.querySelector('.ax-menu');
+      var open=menu.hasAttribute('data-open');
+      closeMenus(menu);
+      if(open){menu.removeAttribute('data-open');more.setAttribute('aria-expanded','false');}
+      else{menu.setAttribute('data-open','');more.setAttribute('aria-expanded','true');}
+      e.stopPropagation();return;
+    }
+    var m=e.target.closest('.ax-mute');
+    if(m){
+      closeMenus();
+      var card=m.closest('.ax-item');
+      if(card)card.hidden=true;
+      return;
+    }
+    closeMenus();
+  });
+  document.addEventListener('click',function(e){
+    if(!e.target.closest('.ax-postacts'))closeMenus();
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape')closeMenus();
+  });
+})();
+</script>
+</body>
+</html>

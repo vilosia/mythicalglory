@@ -135,7 +135,7 @@
   /* 当前演示数据基准为 2026/07/07；“本月”只包含 7 月 1 日至当天。 */
   var UI_MONTH_DAY_LIMIT=6;
   var gameMeta={
-    pk:{current:'00089期',last:'00088期',status:'投注中',seal:'0分48秒',balls:[
+    pk:{current:'00089期',last:'00088期',status:'投注中',seal:'00:48',balls:[
       ['3','c1'],['7','c2'],['1','c3'],['9','c4'],['5','c5'],['2','c6'],['10','c7'],['4','c8'],['6','c9'],['8','c10']
     ],history:[
       {period:'00087期',balls:[['6','c6'],['2','c2'],['8','c8'],['1','c1'],['4','c4'],['5','c5'],['10','c10'],['3','c3'],['9','c9'],['7','c7']]},
@@ -147,7 +147,7 @@
       {label:'冠亚和 单',compact:'冠亚和单(3期)',group:'冠亚和',pick:'单'},
       {label:'第5名 小',compact:'第5名小(3期)',group:'第五名',pick:'小'}
     ]},
-    pk10:{current:'00126期',last:'00125期',status:'投注中',seal:'1分22秒',balls:[
+    pk10:{current:'00126期',last:'00125期',status:'投注中',seal:'01:22',balls:[
       ['8','c8'],['2','c2'],['5','c5'],['10','c10'],['1','c1'],['6','c6'],['3','c3'],['9','c9'],['4','c4'],['7','c7']
     ],history:[
       {period:'00124期',balls:[['4','c4'],['9','c9'],['1','c1'],['7','c7'],['3','c3'],['10','c10'],['6','c6'],['2','c2'],['8','c8'],['5','c5']]},
@@ -157,7 +157,7 @@
       {label:'冠亚和 双',compact:'冠亚和双(3期)',group:'冠亚和',pick:'双'},
       {label:'第5名 大',compact:'第5名大(3期)',group:'第五名',pick:'大'}
     ]},
-    ssc:{current:'00089期',last:'00088期',status:'投注中',seal:'3分18秒',balls:[
+    ssc:{current:'00089期',last:'00088期',status:'投注中',seal:'03:18',balls:[
       ['6','c1'],['2','c2'],['8','c3'],['1','c4'],['4','c5']
     ],history:[
       {period:'00087期',balls:[['3','c1'],['9','c2'],['0','c3'],['7','c4'],['5','c5']]},
@@ -195,7 +195,13 @@
     return pad2(Math.floor(t/3600))+':'+pad2(Math.floor(t/60)%60)+':'+pad2(t%60);
   }
   function histNums(balls){return (balls||[]).map(function(b){return parseInt(b[0],10);});}
-  function histTags(list){return list.map(function(x){return '<i>'+x+'</i>';}).join('');}
+  function histTags(list){
+    /* 2026-08-16 Hector（style mismatch）：两面标与开奖页同一种语言 —— 红蓝实心
+       （.tw-v 的口径：大/单/龙=红 · 小/双/虎=蓝），冠亚和数值保持中性。 */
+    return list.map(function(x){
+      var k=(x==='大'||x==='单'||x==='龙')?' class="rt-r"':((x==='小'||x==='双'||x==='虎')?' class="rt-b"':'');
+      return '<i'+k+'>'+x+'</i>';
+    }).join('');}
   /* 大小的分界随球数走：十球玩法 ≥6 为大，五位数字 ≥5 为大 */
   function histBS(a){var mid=(a.length>=10)?6:5;return a.map(function(n){return n>=mid?'大':'小';});}
   function histOE(a){return a.map(function(n){return (n%2)?'单':'双';});}
@@ -672,7 +678,7 @@
     root.querySelectorAll('.planhist-drawer.open').forEach(function(d){if(d!==panel.querySelector('.planhist-drawer')){d.classList.remove('open');}});
     var drawer=panel.querySelector('.planhist-drawer'); if(drawer){drawer.classList.toggle('open');}
   }
-  var rkSaved={mode:'stake',rate:0.0008};
+  var rkSaved={mode:'stake',rate:0.08};
   function rkState(){
     var segOn=root.querySelector('#rkSeg .on');
     var ri=root.querySelector('#rkRate');
@@ -690,7 +696,7 @@
   function rkPresetMRU(rate){
     var chips=[].slice.call(root.querySelectorAll('.rk-presets .rkp[data-v]'));
     if(!chips.length)return;
-    var rs=rate.toFixed(4);
+    var rs=rate.toFixed(2);
     var vals=chips.map(function(c){return c.getAttribute('data-v');}).filter(function(v){return parseFloat(v)!==rate;});
     vals.unshift(rs); vals=vals.slice(0,chips.length);
     chips.forEach(function(c,i){c.setAttribute('data-v',vals[i]);c.textContent=vals[i];});
@@ -712,16 +718,16 @@
       while(ro.scrollWidth>ro.clientWidth&&fsz>14){fsz--;ro.style.fontSize=fsz+'px';}
     }
     var rl=root.querySelector('#rkRateLine');
-    if(rl){rl.textContent=c.rate.toFixed(4)+'%';}
+    if(rl){rl.textContent=c.rate.toFixed(2)+'%';}
     var cm=root.querySelector('#rkCurrentMode');
     if(cm){cm.textContent=c.mode==='win'?'按成员盈利抽成':'按成员投注额度抽成';}
     var cr=root.querySelector('#rkCurrentRate');
-    if(cr){cr.textContent=c.rate.toFixed(4)+'%';}
+    if(cr){cr.textContent=c.rate.toFixed(2)+'%';}
   }
   function rkRestore(){
     var sg=root.querySelector('#rkSeg');
     if(sg){sg.querySelectorAll('div').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-arg')===rkSaved.mode);});}
-    var ri=root.querySelector('#rkRate'); if(ri){ri.value=rkSaved.rate.toFixed(4).replace(/0+$/,'').replace(/\.$/,'')||rkSaved.rate;}
+    var ri=root.querySelector('#rkRate'); if(ri){ri.value=rkSaved.rate.toFixed(2).replace(/0+$/,'').replace(/\.$/,'')||rkSaved.rate;}
     if(ri){ri.value=rkSaved.rate;}
     rkSyncChips();rkRender();rkCtaSync();
     var row=root.querySelector('#rkCustomRow'), oth=root.querySelector('#rkpOther');
@@ -774,7 +780,7 @@
         var rv=e.target.value.replace(/[^\d.]/g,'');
         var rp=rv.split('.');
         if(rp.length>2){rv=rp[0]+'.'+rp.slice(1).join('');rp=rv.split('.');}
-        if(rp[1]&&rp[1].length>4){rv=rp[0]+'.'+rp[1].slice(0,4);}
+        if(rp[1]&&rp[1].length>2){rv=rp[0]+'.'+rp[1].slice(0,2);}
         if(rv!==e.target.value){e.target.value=rv;}
         rkSyncChips();rkCtaSync();
       }
@@ -1487,9 +1493,9 @@
       body.innerHTML='确认通过 <b>'+name+'</b> 的'+details+'？<br>到账后立即可用。';
       btns.innerHTML='<button class="ghost" data-act="pmclose">取消</button><button class="cta" data-act="apconfirm">确认通过</button>';
     }else if(kind==='reject'){
-      title.textContent='确认拒绝？';
-      body.innerHTML='拒绝 <b>'+name+'</b> 的'+details+'。<textarea class="pm-reason" rows="2" placeholder="可选：填写原因（成员可见）"></textarea><small style="display:block;margin-top:7px;color:var(--muted)">成员会看到原因；更多详情请联系 Agent。</small>';
-      btns.innerHTML='<button class="ghost" data-act="pmclose">取消</button><button class="cta danger" data-act="aprejectconfirm">确认拒绝</button>';
+      title.textContent='确认驳回？';
+      body.innerHTML='驳回 <b>'+name+'</b> 的'+details+'。<textarea class="pm-reason" rows="2" placeholder="可选：填写原因（成员可见）"></textarea><small style="display:block;margin-top:7px;color:var(--muted)">成员会看到原因；更多详情请联系 Agent。</small>';
+      btns.innerHTML='<button class="ghost" data-act="pmclose">取消</button><button class="cta danger" data-act="aprejectconfirm">确认驳回</button>';
     }else if(kind==='uwhelp'){
       title.textContent='什么是上分 / 下分？';
       body.innerHTML='<b>上分</b>：把你与群主结算好的金额，转成场内可下注的额度（群主确认后到账）。<br><br><b>下分</b>：把额度换回，与群主结算取回。<br><br>两者同一时间各只能有一笔申请，通过后才能提交下一笔。';
@@ -1721,8 +1727,8 @@
     var val=stepper.querySelector('.val'); if(!val) return;
     var raw0=val.textContent.trim();
     if(raw0.indexOf('%')>=0 && raw0.indexOf('.')>=0){
-      var f=Math.max(0,(parseFloat(raw0)||0)+dir*0.0001);
-      val.textContent=f.toFixed(4)+'%';
+      var f=Math.max(0,(parseFloat(raw0)||0)+dir*0.01);
+      val.textContent=f.toFixed(2)+'%';
       return;
     }
     var raw=val.textContent.trim(),num=cleanNumber(raw);
@@ -2136,12 +2142,12 @@
         if(approvalTarget){
           var isOk=a==='apconfirm', actions=approvalTarget.querySelector('.apc-btns'), guard=approvalTarget.querySelector('.apc-guard,.apr-guard');
           var reason=root.querySelector('#planModal .pm-reason');
-          if(!isOk&&approvalTarget.getAttribute('data-reqr')==='1'&&!(reason&&reason.value.trim())){gToast('拒绝下分需填写原因（成员可见）');return;}
-          if(actions){actions.outerHTML='<div class="apc-result'+(isOk?'':' no')+'">'+(isOk?'✓ 已通过':'已拒绝'+(reason&&reason.value.trim()?' · '+reason.value.trim():''))+'</div>';approvalTarget.classList.add('done');}
+          if(!isOk&&approvalTarget.getAttribute('data-reqr')==='1'&&!(reason&&reason.value.trim())){gToast('驳回下分需填写原因（成员可见）');return;}
+          if(actions){actions.outerHTML='<div class="apc-result'+(isOk?'':' no')+'">'+(isOk?'✓ 已通过':'已驳回'+(reason&&reason.value.trim()?' · '+reason.value.trim():''))+'</div>';approvalTarget.classList.add('done');}
           var circles=approvalTarget.querySelectorAll('.apr-btn');
           if(circles.length){
             [].forEach.call(circles,function(c){c.remove();});
-            var st=document.createElement('span');st.className='apr-state';st.textContent=isOk?'已通过':'已拒绝';
+            var st=document.createElement('span');st.className='apr-state';st.textContent=isOk?'已通过':'已驳回';
             approvalTarget.appendChild(st);
             approvalTarget.classList.add('done');
           }
@@ -2151,7 +2157,7 @@
             var pn=root.querySelector('#apPoolNum');
             if(dp&&pn){var pv2=(parseInt(pn.getAttribute('data-v'),10)||0)+dp;pn.setAttribute('data-v',pv2);pn.textContent=pv2.toLocaleString()+'.00';}
           }
-          gToast(isOk?'已通过，额度实时生效':'已拒绝'+(reason&&reason.value.trim()?' · 原因已显示给成员':'') );
+          gToast(isOk?'已通过，额度实时生效':'已驳回'+(reason&&reason.value.trim()?' · 原因已显示给成员':'') );
         }
         approvalTarget=null;closePlanModal();
       }
@@ -2195,7 +2201,7 @@
       else if(a==='aprok'||a==='aprno'){
         var apc=act.closest('.apr-card'); if(!apc)return;
         var apOk=a==='aprok', apNm=apc.getAttribute('data-nm')||'', apTyp=apc.getAttribute('data-typ')||'申请';
-        gToast((apOk?'已通过':'已拒绝')+apNm+'的'+apTyp);
+        gToast((apOk?'已通过':'已驳回')+apNm+'的'+apTyp);
         if(apNm==='王志明'){
           var udir=apTyp.indexOf('上分')===0?'up':'down';
           uwPend[udir]=false; uwSync();
@@ -2371,7 +2377,10 @@
       else if(a==='rkconfirm'){
         rkSaved=rkState();
         rkPresetMRU(rkSaved.rate);
-        var rsh=root.querySelector('#rkRateShow'); if(rsh){rsh.textContent=rkSaved.rate.toFixed(4)+'%';}
+        var rsh=root.querySelector('#rkRateShow'); if(rsh){rsh.textContent=rkSaved.rate.toFixed(2)+'%';}
+        /* 2026-08-16 · 蓝区细修 ①：抽成设置页顶区那张玻璃统计卡的「当前比例」格，
+           与首页 #rkRateShow 同一个数，所以挂在同一个同步点上（回滚：删掉这一行）。 */
+        var rst=root.querySelector('#rkStatRate'); if(rst){rst.textContent=rkSaved.rate.toFixed(2)+'%';}
         var rowS=root.querySelector('#rkCustomRow'), othS=root.querySelector('#rkpOther');
         if(rowS&&othS&&!othS.classList.contains('on')){rowS.style.display='none';}
         rkCtaSync();
@@ -2701,7 +2710,7 @@
           apCard.setAttribute('data-typ',apDir==='up'?'上分申请':'下分申请');
           apCard.setAttribute('data-amt',String(apAmt));
           apCard.setAttribute('data-days','0');
-          apCard.innerHTML='<div class="apr-r1"><span class="av" style="background:#DCEBFF;color:var(--blue)">王</span><span class="apr-who"><b>王志明</b><span class="apr-wait">2026/07/07 14:32 • 已申请: 1次</span></span><span class="apr-side"><em class="amt">'+apAmt.toLocaleString()+'.00</em><span class="apr-credit">当前额度: 0</span></span></div><div class="apc-btns"><span class="abtn stop" data-act="aprno">拒绝</span><span class="abtn pri2" data-act="aprok">通过</span></div>';
+          apCard.innerHTML='<div class="apr-r1"><span class="av" style="background:#DCEBFF;color:var(--blue)">王</span><span class="apr-who"><b>王志明</b><span class="apr-wait">2026/07/07 14:32 · 刚刚</span></span><span class="apr-side"><em class="amt">'+apAmt.toLocaleString()+'.00</em><span class="apr-credit">当前额度: 0</span></span></div><div class="apc-btns"><span class="abtn stop" data-act="aprno">驳回</span><span class="abtn pri2" data-act="aprok">通过</span></div>';
           apnl.insertBefore(apCard,apnl.firstChild);
           var apCt=root.querySelector('.fg-btabs .btab[data-arg="'+(apDir==='up'?'apup':'apdown')+'"] .cnt');
           if(apCt){apCt.textContent=apnl.querySelectorAll('.apr-card').length; apCt.style.display='';}
@@ -2740,7 +2749,7 @@
           var dst=act.getAttribute('data-st');
           var stEl=act.querySelector('.stag,.rtag,.rst');
           var stCls=dst?dst:(stEl?(stEl.classList.contains('pd')?'pd':(stEl.classList.contains('no')?'no':'ok')):'ok');
-          var stTxt=dst?({pd:'待审核',ok:'已完成',no:'已拒绝'}[dst]||'已完成'):(stEl?stEl.textContent:'已完成');
+          var stTxt=dst?({pd:'待审核',ok:'已完成',no:'已驳回'}[dst]||'已完成'):(stEl?stEl.textContent:'已完成');
           var tdg=tb?tb.querySelector('.dtag'):null;
           var typTxt=tdg?tdg.textContent.trim():'', objTxt=typTxt?ttl.replace(typTxt,'').trim():ttl;
           if(!objTxt){objTxt='额度';}
@@ -3019,14 +3028,26 @@
     if(!seal||!prog) return;
     var C=2*Math.PI*8; prog.style.strokeDasharray=C;
     function parse(t){var d=String(t).match(/\d+/g)||[];return d.length>=2?(parseInt(d[0],10)*60+parseInt(d[1],10)):(parseInt(d[0],10)||0);}
-    function fmt(s){var m=Math.floor(s/60),x=s%60;return m+'分'+x+'秒';}
+    /* ══ 2026-08-17（Hector：「make all the timer consistent」）════════════════════
+       全站原有<b>三种</b>倒计时读法：这里的「M分S秒」、策略页 beatText 的「M分S秒」、
+       彩票厅的「mm:ss」；配色还各有一套。统一成一条规格 —— <b>等宽 mm:ss</b>：
+       ⓐ 分秒中文写法<b>会跳宽</b>（0分9秒 → 0分10秒 整行右侧被推着抖），mm:ss 是等宽定长；
+       ⓑ 「还剩多久」由数字答、「还剩多少比例」由环答，两层信息不重复。
+       回滚：把 fmt 换回 `m+'分'+x+'秒'`（另见 hall-plans.js beatText、五页静态 markup）。 */
+    function fmt(s){return window.TIMER_TEXT?window.TIMER_TEXT(s):((s/60|0)+':'+(s%60));}
     var total=parse(seal.textContent)||60, rem=total;
+    /* 配色也统一成<b>两态</b>（常态 / ≤15 秒 urgent），不再逐秒 hue 插值 ——
+       连续变色每一秒都在换颜色，读者反而分不出「什么时候该紧张」；
+       两态把阈值说清楚。蓝底页的覆盖仍走 .rseal.urgent（reference-theme 5251-5253）。
+       回滚：恢复 `var hue=120*ratio` 那两行、并删掉 classList.toggle。 */
     function tick(){
-      var ratio=Math.max(0,rem)/total;
+      var ratio=Math.max(0,rem)/total,
+          urgent=window.TIMER_URGENT?window.TIMER_URGENT(rem,total):(rem<=15);
       prog.style.strokeDashoffset=C*(1-ratio);
       seal.textContent=fmt(rem);
-      var hue=120*ratio, col='hsl('+hue+',75%,42%)';
-      prog.style.stroke=col; seal.style.color=col;
+      prog.style.stroke='';seal.style.color='';   /* 清掉上一版内联 hue，交回 CSS */
+      seal.classList.toggle('urgent',urgent);
+      if(pie)pie.classList.toggle('urgent',urgent);
       rem=rem<=0?total:rem-1;
     }
     tick(); setInterval(tick,1000);
@@ -6661,3 +6682,5 @@
   });
   syncDir();syncPos();syncMode();
 })();
+
+/* 顶端渐隐滚动开关已搬去 shared/ui-consistency.js（app.js 只有 6 页加载，hall 四页不载）。 */

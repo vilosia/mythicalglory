@@ -1,0 +1,257 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>三个游戏 · 不用列表怎么放 · IM168</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../shared/styles.css">
+<!--
+  ══ 2026-08-15 · mine-games-strip.html · v1 ══════════════════════════════════
+  Hector：「Is there other ways to display the top 3 info other than in list form」
+  指的是速览里那三行游戏（时时彩 0:08 ／ 飞艇 0:12 ／ 赛车 0:19）。
+
+  ① <b>为什么现在是列表，以及它为什么不该是</b>
+     三行一共吃掉 <b>96px</b>，而每一行真正的信息只有四个短词（游戏 · 剩多久 · 几条 · 多少钱）。
+     竖着排还带来一个副作用：<b>三行等重</b> —— 可它们并不等重，
+     「8 秒后要掏 ¥10」和「19 秒后要掏 ¥10」在此刻的分量差得远。
+     列表天生不表达<b>先后</b>，而先后正是这一块唯一要说的事。
+
+  ② <b>三个替代（都不是列表）</b>
+     A · <b>药丸条</b>　　一行横排，最近的那颗实心。96px → 34px。最省、最稳、最好实现。
+     B · <b>时间轴</b>　　一条 0–20 秒的轴，三个游戏落在各自的位置上。
+                        它是唯一<b>把「先后」画出来</b>的：一眼看到下一个、再下一个隔多久。
+     C · <b>钱条</b>　　　一根按金额分段的横条（飞艇 ¥310 占 94%）。
+                        答的是「这一轮的钱主要压在哪个游戏」，不是「什么时候」。
+
+  ③ <b>共同规矩</b>
+     · 甜甜圈一律用 styles.css 的 .sealpie（与投注页／执行动态同一颗，不自造）
+     · 时间／金额一律 --x-font-code；颜色走同一条 hue 插值（绿 120° → 红 0°）
+     · 每一个游戏都<b>可点</b>（＝滚到那个游戏的第一张卡），目录职责不能丢
+     · 一个游戏时都要能<b>退化</b>：A 剩一颗、B 剩一个点、C 剩满条 —— 三个都试了
+
+  ④ <b>我的取舍：A 打底，B 值得试一轮</b>
+     A 是稳的：省 62px、实现只有一层、字都放得下。
+     B 更贴这一块的职责（「接下来会发生什么、按什么顺序」），但 375 下三个标签容易挤，
+     所以 B 这里把标签只给<b>最近的那一个</b>，其余只留点与时间。
+     C 好看但答错题：这一块是「下一期」，不是「钱分布」——
+       钱的事在下面那行「在场 245 · 最坏还要 3,595」已经说了。<b>不建议</b>。
+
+  ⑤ 数字取 08-15 原型实测：时时彩 0:08 · 2 条 · ¥10 ／ 飞艇 0:12 · 3 条 · ¥310 ／
+     赛车 0:19 · 2 条 · ¥10。三个游戏的节拍分别是 11 / 15 / 22 秒（互质，见 GAMEBEAT）。
+-->
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eef2f6;font-family:var(--font-sans);color:var(--foreground);-webkit-font-smoothing:antialiased}
+.pg{max-width:1240px;margin:0 auto;padding:26px 20px 70px}
+h1{margin:0 0 4px;font-size:21px;font-weight:900}
+.sub{margin:0 0 22px;font-size:12.5px;line-height:1.65;color:var(--muted-foreground);max-width:760px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.colhd{display:flex;align-items:baseline;gap:8px;margin-bottom:9px}
+.colhd b{font-size:14.5px;font-weight:900}
+.colhd em{font-style:normal;font-size:11.5px;color:var(--muted-foreground)}
+.tag{font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;background:#e5e9ef;color:#5b6a80}
+.tag.pick{background:var(--x-success-soft);color:var(--x-success-ink)}
+.tag.no{background:var(--x-destructive-soft);color:var(--x-destructive-ink)}
+.ph{width:375px;max-width:100%;margin:0 auto;border-radius:16px;overflow:hidden;
+  background:linear-gradient(180deg,#f9fcff 0%,#f2f6fa 60%,#eaf1f7 100%);box-shadow:0 8px 26px rgba(31,58,84,.10)}
+.blk{padding:9px 12px 10px;background:var(--card);border-bottom:1px solid #e2e9f0}
+.lbl{margin:11px 0 5px;font-size:10.5px;font-weight:800;letter-spacing:.4px;color:#7a889b}
+.note{margin:10px 2px 0;font-size:11.5px;line-height:1.7;color:#4d5b70}
+.note b{color:var(--foreground)}
+.note .k{display:inline-block;margin-right:5px;font-size:10px;font-weight:800;color:#7a889b}
+.num{font-family:var(--x-font-code);font-variant-numeric:tabular-nums}
+.up{color:var(--x-success-ink)}
+.hh{display:flex;align-items:center;gap:9px;padding:2px 0 7px}
+.hh .say{flex:1;min-width:0}
+.hh .say i{display:flex;align-items:center;gap:5px;font-style:normal;font-size:11px;font-weight:600;color:var(--muted-foreground);white-space:nowrap}
+.hh .say i b{font-weight:800;font-variant-numeric:tabular-nums;color:#0f8a3d}
+.hh .say>b{display:block;margin-top:2px;font-size:13.5px;font-weight:800;color:var(--foreground)}
+.hh .say>b em{font-style:normal;font-size:16px;font-weight:900;font-variant-numeric:tabular-nums}
+.hh .sum{flex:none;text-align:right}
+.hh .sum i{display:block;font-style:normal;font-size:10px;color:var(--muted-foreground)}
+.hh .sum b{display:block;margin-top:1px;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+.money{display:flex;align-items:baseline;gap:10px;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);
+  font-size:10.5px;color:var(--muted-foreground)}
+.money b{font-size:11.5px;font-weight:800;color:#4d5b70;font-variant-numeric:tabular-nums}
+.money .sp{margin-left:auto;text-align:right}
+.sealpie{width:15px;height:15px;transform:rotate(-90deg);flex-shrink:0}
+.sealpie .track{fill:none;stroke:#dfe6ee;stroke-width:3.2}
+.sealpie .prog{fill:none;stroke-width:3.2;stroke-linecap:round}
+
+/* ══ 現狀 · 列表 ═══════════════════════════════════════════════════════════ */
+.now-r{display:flex;align-items:center;gap:7px;padding:5px 6px;margin:0 -6px;border-radius:8px}
+.now-r.on{background:var(--secondary)}
+.now-r .n{flex:none;font-size:11.5px;font-weight:700;color:var(--muted-foreground)}
+.now-r .t{flex:none;font-size:11.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.now-r .i{flex:1;min-width:0;text-align:right;font-size:11px;color:var(--muted-foreground);white-space:nowrap}
+.now-r .i b{font-weight:800;color:var(--foreground);font-variant-numeric:tabular-nums}
+
+/* ══ A · 药丸条 ═══════════════════════════════════════════════════════════ */
+.va-strip{display:flex;gap:6px;margin-top:7px;overflow-x:auto;scrollbar-width:none}
+.va-strip::-webkit-scrollbar{display:none}
+.va-p{flex:none;display:flex;align-items:center;gap:5px;padding:5px 9px;border:1px solid #dde5ed;
+  border-radius:999px;background:var(--card);font-family:inherit;cursor:pointer}
+.va-p.on{border-color:var(--x-success-line,#bfe6cf);background:#f2fbf5}
+.va-p .n{font-size:11px;font-weight:750;color:#4d5b70;white-space:nowrap}
+.va-p .t{font-size:11px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.va-p .a{font-size:11px;font-weight:800;color:var(--foreground);font-variant-numeric:tabular-nums;white-space:nowrap}
+.va-p .a.zero{font-weight:600;color:#96a3b4}
+
+/* ══ B · 时间轴 ═══════════════════════════════════════════════════════════ */
+.vb-axis{position:relative;height:46px;margin:10px 2px 0}
+.vb-line{position:absolute;left:0;right:0;top:15px;height:2px;border-radius:2px;background:#dfe6ee}
+.vb-fill{position:absolute;left:0;top:15px;height:2px;border-radius:2px;background:#cfe0ee}
+.vb-g{position:absolute;top:0;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;
+  border:0;background:none;font-family:inherit;cursor:pointer;padding:0}
+.vb-g .dot{width:11px;height:11px;margin-top:10px;border-radius:50%;background:#fff;border:2.5px solid #b9c8d8}
+.vb-g.on .dot{width:15px;height:15px;margin-top:8px;border-color:#12a150;box-shadow:0 0 0 4px rgba(18,161,80,.13)}
+.vb-g .cap{margin-top:4px;font-size:10px;font-weight:750;color:#7c8b9e;white-space:nowrap;font-variant-numeric:tabular-nums}
+.vb-g.on .cap{font-size:10.5px;font-weight:850;color:#0f8a3d}
+.vb-scale{display:flex;justify-content:space-between;margin:1px 2px 0;font-size:9.5px;color:#9aa7b8}
+.vb-say{margin-top:6px;font-size:11px;color:var(--muted-foreground)}
+.vb-say b{font-weight:800;color:var(--foreground);font-variant-numeric:tabular-nums}
+
+/* ══ C · 钱条 ═════════════════════════════════════════════════════════════ */
+.vc-bar{display:flex;height:26px;margin-top:9px;border-radius:8px;overflow:hidden;background:#eef2f6}
+.vc-s{display:flex;align-items:center;justify-content:center;border:0;font-family:inherit;cursor:pointer;
+  font-size:10.5px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden}
+.vc-s.g1{background:#1677ee}.vc-s.g2{background:#57a3f3}.vc-s.g3{background:#9cc7f7}
+.vc-leg{display:flex;flex-wrap:wrap;gap:9px;margin-top:7px;font-size:10.5px;color:var(--muted-foreground)}
+.vc-leg span{display:flex;align-items:center;gap:4px}
+.vc-leg i{width:7px;height:7px;border-radius:2px}
+.vc-leg b{font-weight:800;color:#4d5b70;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="pg">
+  <h1>三个游戏 · 不用列表怎么放</h1>
+  <p class="sub">三行竖排吃掉 <b>96px</b>，而每行真正的信息只有四个短词；更要紧的是<b>列表不表达先后</b>，
+     而「谁先开、隔多久」正是这一块唯一要说的事。三个替代都保留可点（＝滚到那个游戏的第一张卡）。</p>
+
+  <div class="grid">
+
+    <!-- 現狀 -->
+    <div>
+      <div class="colhd"><b>現狀 · 列表</b><span class="tag">96px</span><em>三行等重</em></div>
+      <div class="ph"><div class="blk">
+        <div class="hh">
+          <span class="say">
+            <i><svg class="sealpie" viewBox="0 0 20 20"><circle class="track" cx="10" cy="10" r="8"/><circle class="prog" cx="10" cy="10" r="8" stroke="#12a150" stroke-dasharray="50.3" stroke-dashoffset="14"/></svg>
+              极速时时彩 · 下一期开奖 <b>0分8秒</b></i>
+            <b><em>2</em> 条进场 · 要掏 <em>10</em></b></span>
+          <span class="sum"><i>总盈亏</i><b class="up">+12.20</b></span>
+        </div>
+        <div class="now-r on">
+          <svg class="sealpie" viewBox="0 0 20 20"><circle class="track" cx="10" cy="10" r="8"/><circle class="prog" cx="10" cy="10" r="8" stroke="#4aa63a" stroke-dasharray="50.3" stroke-dashoffset="10"/></svg>
+          <span class="n">极速飞艇</span><span class="t" style="color:#4aa63a">0分12秒</span>
+          <span class="i">3 条进场 · <b>310</b></span></div>
+        <div class="now-r">
+          <svg class="sealpie" viewBox="0 0 20 20"><circle class="track" cx="10" cy="10" r="8"/><circle class="prog" cx="10" cy="10" r="8" stroke="#7ab52e" stroke-dasharray="50.3" stroke-dashoffset="7"/></svg>
+          <span class="n">极速赛车</span><span class="t" style="color:#7ab52e">0分19秒</span>
+          <span class="i">2 条进场 · <b>10</b></span></div>
+        <div class="money"><span>在场 <b>245</b></span><span>最坏还要 <b>3,595</b></span>
+          <span class="sp">运行中 3 · 已急停 1 · 未启用 1</span></div>
+      </div></div>
+      <p class="note"><span class="k">问题</span>三行<b>等重</b>，可它们并不等重 ——「8 秒后」与「19 秒后」
+        在此刻的分量差得远。而且竖排读不出<b>先后</b>，只能一行一行比时间。</p>
+    </div>
+
+    <!-- A -->
+    <div>
+      <div class="colhd"><b>A · 药丸条</b><span class="tag pick">建议</span><em>96px → 34px</em></div>
+      <div class="ph"><div class="blk">
+        <div class="hh">
+          <span class="say">
+            <i><svg class="sealpie" viewBox="0 0 20 20"><circle class="track" cx="10" cy="10" r="8"/><circle class="prog" cx="10" cy="10" r="8" stroke="#12a150" stroke-dasharray="50.3" stroke-dashoffset="14"/></svg>
+              极速时时彩 · 下一期开奖 <b>0分8秒</b></i>
+            <b><em>2</em> 条进场 · 要掏 <em>10</em></b></span>
+          <span class="sum"><i>总盈亏</i><b class="up">+12.20</b></span>
+        </div>
+        <div class="va-strip">
+          <button type="button" class="va-p on"><span class="n">飞艇</span><span class="t" style="color:#4aa63a">0:12</span><span class="a">310</span></button>
+          <button type="button" class="va-p"><span class="n">赛车</span><span class="t" style="color:#7ab52e">0:19</span><span class="a">10</span></button>
+        </div>
+        <div class="money"><span>在场 <b>245</b></span><span>最坏还要 <b>3,595</b></span>
+          <span class="sp">运行中 3 · 已急停 1 · 未启用 1</span></div>
+      </div></div>
+      <div class="lbl">四个游戏也放得下（横向可滑）</div>
+      <div class="ph"><div class="blk">
+        <div class="va-strip">
+          <button type="button" class="va-p on"><span class="n">飞艇</span><span class="t" style="color:#4aa63a">0:12</span><span class="a">310</span></button>
+          <button type="button" class="va-p"><span class="n">赛车</span><span class="t" style="color:#7ab52e">0:19</span><span class="a">10</span></button>
+          <button type="button" class="va-p"><span class="n">快三</span><span class="t" style="color:#93b81f">0:26</span><span class="a zero">未触发</span></button>
+          <button type="button" class="va-p"><span class="n">六合</span><span class="t" style="color:#a8b81a">0:31</span><span class="a">45</span></button>
+        </div>
+      </div></div>
+      <p class="note"><span class="k">为什么建议它</span>省 <b>62px</b>，实现只有一层，
+        游戏名缩成两字（飞艇／赛车）之后每颗只有 ~86px，<b>四个也不挤</b>，再多就横向滑。
+        <br><span class="k">先后怎么读</span>靠<b>从左到右的顺序</b>＋时间本身 —— 不像列表要逐行比。
+        <br><span class="k">退化</span>只有一个游戏时这一条<b>整块不画</b>（与现在同一条规则）。
+        <br><span class="k">代价</span>丢掉了「几条进场」那半句（只留金额）—— 换来的是一行装得下。
+        条数在下面卡片里一张不少。</p>
+    </div>
+
+    <!-- B -->
+    <div>
+      <div class="colhd"><b>B · 时间轴</b><span class="tag">值得试</span><em>唯一画出「先后」的</em></div>
+      <div class="ph"><div class="blk">
+        <div class="hh">
+          <span class="say">
+            <i><svg class="sealpie" viewBox="0 0 20 20"><circle class="track" cx="10" cy="10" r="8"/><circle class="prog" cx="10" cy="10" r="8" stroke="#12a150" stroke-dasharray="50.3" stroke-dashoffset="14"/></svg>
+              极速时时彩 · 下一期开奖 <b>0分8秒</b></i>
+            <b><em>2</em> 条进场 · 要掏 <em>10</em></b></span>
+          <span class="sum"><i>总盈亏</i><b class="up">+12.20</b></span>
+        </div>
+        <div class="vb-axis">
+          <span class="vb-line"></span><span class="vb-fill" style="width:40%"></span>
+          <button type="button" class="vb-g on" style="left:40%"><span class="dot"></span><span class="cap">时时彩 8秒</span></button>
+          <button type="button" class="vb-g" style="left:63%"><span class="dot"></span><span class="cap">飞艇 12秒</span></button>
+          <button type="button" class="vb-g" style="left:94%"><span class="dot"></span><span class="cap">赛车 19秒</span></button>
+        </div>
+        <div class="vb-scale"><span>现在</span><span>20 秒内</span></div>
+        <div class="vb-say">这 20 秒里会开 <b>3</b> 期 · 一共要掏 <b>330</b></div>
+        <div class="money"><span>在场 <b>245</b></span><span>最坏还要 <b>3,595</b></span>
+          <span class="sp">运行中 3 · 已急停 1</span></div>
+      </div></div>
+      <p class="note"><span class="k">它强在哪</span>三个替代里<b>只有它把「先后」画出来</b>：
+        下一个是谁、再下一个隔多久，是<b>看</b>出来的不是<b>比</b>出来的。这一块的职责本来就是
+        「接下来会发生什么」，时间轴与它同构。
+        <br><span class="k">它弱在哪</span>375 下三个标签容易碰（已经缩到「时时彩 8秒」两段）；
+        四个游戏就得只给最近的那个留标签、其余只剩点。
+        <br><span class="k">还有一个隐患</span>轴是<b>逐秒在动的</b>——三颗点一直往左爬，
+        余光里会一直有东西在动。要么把刷新降到每 2 秒，要么只在展开态画。</p>
+    </div>
+
+    <!-- C -->
+    <div>
+      <div class="colhd"><b>C · 钱条</b><span class="tag no">不建议</span><em>答错题</em></div>
+      <div class="ph"><div class="blk">
+        <div class="hh">
+          <span class="say">
+            <i><svg class="sealpie" viewBox="0 0 20 20"><circle class="track" cx="10" cy="10" r="8"/><circle class="prog" cx="10" cy="10" r="8" stroke="#12a150" stroke-dasharray="50.3" stroke-dashoffset="14"/></svg>
+              极速时时彩 · 下一期开奖 <b>0分8秒</b></i>
+            <b><em>2</em> 条进场 · 要掏 <em>10</em></b></span>
+          <span class="sum"><i>总盈亏</i><b class="up">+12.20</b></span>
+        </div>
+        <div class="vc-bar">
+          <button type="button" class="vc-s g1" style="width:94%">飞艇 310</button>
+          <button type="button" class="vc-s g2" style="width:3%"></button>
+          <button type="button" class="vc-s g3" style="width:3%"></button>
+        </div>
+        <div class="vc-leg">
+          <span><i style="background:#1677ee"></i>飞艇 <b>310</b></span>
+          <span><i style="background:#57a3f3"></i>时时彩 <b>10</b></span>
+          <span><i style="background:#9cc7f7"></i>赛车 <b>10</b></span>
+        </div>
+        <div class="money"><span>在场 <b>245</b></span><span>最坏还要 <b>3,595</b></span>
+          <span class="sp">运行中 3 · 已急停 1</span></div>
+      </div></div>
+      <p class="note"><span class="k">为什么不建议</span>它答的是「钱主要压在哪个游戏」——
+        可这一块问的是<b>「下一期」</b>，钱的分布下面那行（在场 245 · 最坏还要 3,595）已经说了。
+        <br><span class="k">而且数据形状不配合</span>实测 310 : 10 : 10，一段占 <b>94%</b>，
+        另外两段窄到<b>放不下字</b>，只能靠图例救 —— 图例一出，它就又变回列表了。
+        <br><span class="k">留着的价值</span>如果哪天要做「按游戏看钱」那一屏，这根条可以直接搬过去。</p>
+    </div>
+
+  </div>
+</div>
+</body></html>

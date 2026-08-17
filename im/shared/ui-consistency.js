@@ -17,8 +17,10 @@
     var drawer=document.getElementById('gameHeadMenu');
     if(!trigger||!drawer||drawer.getAttribute('data-drawer-ready')==='true')return;
 
-    var subtitle=trigger.querySelector('small');
-    if(subtitle)subtitle.remove();
+    /* 2026-08-13（Hector）：群名 <small> 保留 —— 顶栏全站统一成「标题 · 群组」。
+       这里原本把它 remove() 掉（配合 reference-theme 的 display:none），
+       于是除了彩票那一屏，其余各页只剩一个光秃秃的游戏名。
+       回滚：把下面两行换回 var subtitle=trigger.querySelector('small');if(subtitle)subtitle.remove(); */
     var icon=trigger.querySelector('.tcaret');
     if(icon){
       icon.classList.add('game-menu-icon');
@@ -92,82 +94,245 @@
   if(document.body)start();else document.addEventListener('DOMContentLoaded',start,{once:true});
 })();
 
-/* Prototype access gate. Authentication is scoped to the current browser tab
-   so page-to-page navigation stays uninterrupted, while a new session asks
-   for the client credentials again. */
+/* ══ 2026-08-13：演示登录闸<b>已撤</b>（Hector）═══════════════════════════════
+   原来这里是一段客户端访问闸（sessionStorage 旗标 im168_client_auth_v1），
+   打开任何一页先要账号密码。这一轮整段删掉：交付档直接打开就是原型。
+   ⚠ 各页 <script src="shared/ui-consistency.js?v=…"> 的版本号同步换成 …noauth1，
+     否则看过旧版的浏览器会拿缓存里的旧脚本，闸还在。
+   要恢复：scratchpad 里留了 ui-consistency.with-auth.js.bak（本 session 内有效），
+   或从 Latest 2／Ref 的同名档把那一段 IIFE 拷回来。 */
+
+/* ══ 2026-08-13 · 08-13C · 切内容时让内容「从下往上浮一下」════════════════════
+   Hector：「instead of instant switch, have some subtle transition animation of cards
+   pushing up from bottom (Very subtle) … Apply to whole platform as well depending on
+   their content. to make all navigation more natural」
+
+   ── 为什么放在这支共用脚本里，而不是各页自己写 ────────────────────────────
+   全平台的切换其实只有三种写法（扫过 17 个真实页面）：
+     ① .view 拿到 .on            —— 钱包 4 屏、群组 2 屏、投注 4 屏、策略的内页
+     ② .bd-l1pane 拿到 .bd-on    —— 策略页 L1 两个页签
+     ③ 一个容器的 hidden 被摘掉   —— 注单页 未结/已结
+   在这里用一个 MutationObserver 认这三种，各页的切页签代码<b>一行都不用改</b>；
+   将来加第四种，只改这一处。样式在 shared/reference-theme.css（.mo-rise / @keyframes moRise）。
+
+   ── 刻意<b>不</b>动的地方（这就是「depending on their content」那一句）─────────
+   · <b>彩票页那排页签不做</b>：它是 jumper —— 点一下只把对应分区滚到顶，
+     一张卡都不藏、内容根本没换。给「没换的东西」做入场动画，读起来像闪了一下。
+   · <b>首屏轮播不做</b>：它自己 4.8s 一换，再加位移会变成两套节奏打架。
+   · <b>引擎每期重绘不做</b>：只认 class/hidden 的变化，不认 childList ——
+     否则策略页每 15 秒开一期、卡片重绘一次，整屏每 15 秒浮一下，很快就烦。
+   · 首屏进场不做：初始那一屏本来就带着 .on，不产生 mutation，自然不会触发。
+
+   ⚠ 动的是「浮层的直接子元素」：从切换的容器往下走，只要它<b>只有一个</b>元素子节点就继续往下
+     （典型是 .bd-l1pane → .bd-scroll），停在第一个真正有多个孩子的容器 —— 那一层才是卡片列表。
+   ⚠ 摘 class 的 520ms 是「240 动画 ＋ 130 最大延迟」再留余量；不摘的话下次切回来不会重播。 */
 (function(){
   'use strict';
-  var KEY='im168_client_auth_v1';
-  try{if(sessionStorage.getItem(KEY)==='verified')return;}catch(ignore){}
+  var PANES=[['.view','on'],['.bd-l1pane','bd-on']];
+  /* 优先让<b>卡片列表本身</b>逐个浮起来（Hector 要的是「cards pushing up」）。
+     ⚠ 这是返工过的一处：第一版只做「只有一个子节点就往下走」的探法，结果停在
+       .bd-l1pane（它有 .bd-scroll ＋ 右下角浮标两个孩子），于是<b>整屏当成一块</b>浮 ——
+       动是动了，但没有一张卡是分开的，读起来像整页闪了一下（实测 animationstart 只有一条，
+       target 是 .bd-scroll）。所以先按名字找列表容器，找不到才退回探法。 */
+  var LISTS='#bdCards,#bdMine,.bet-list,.rr-list,.gx-cards,[data-mo-list]';
+  /* 08-13J：动画放慢到 380ms ＋ 最大延迟 225ms，摘 class 的等待跟着从 520 → 700ms。
+     忘了改这里的话，最后几个元素会在动画途中被摘掉 class —— 表现是「后面几张突然定住」。 */
+  var HOLD=700;
 
-  var style=document.createElement('style');
-  style.textContent='\
-    html.proto-auth-locked,html.proto-auth-locked body{overflow:hidden!important;}\
-    .proto-auth{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:20px;box-sizing:border-box;background:radial-gradient(circle at 50% 18%,#fff 0,#f4faff 31%,#e8f3fc 72%,#e2eef8 100%);font-family:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#202b3d;}\
-    .proto-auth-card{width:min(354px,calc(100vw - 32px));box-sizing:border-box;padding:28px 24px 24px;border:1px solid rgba(69,142,202,.2);border-radius:24px;background:rgba(255,255,255,.96);box-shadow:0 22px 60px rgba(37,83,122,.16);}\
-    .proto-auth-brand{display:flex;align-items:center;gap:11px;margin-bottom:25px;}\
-    .proto-auth-mark{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(145deg,#148ce3,#39b7f4);box-shadow:0 8px 18px rgba(20,140,227,.25);color:#fff;}\
-    .proto-auth-mark svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}\
-    .proto-auth-brand span{display:block;min-width:0;}\
-    .proto-auth-brand b{display:block;font-size:18px;line-height:1.2;font-weight:800;color:#202b3d;}\
-    .proto-auth-brand small{display:block;margin-top:3px;font-size:11px;line-height:1.3;font-weight:600;color:#7c8ba2;}\
-    .proto-auth h1{margin:0;font-size:25px;line-height:1.25;font-weight:800;letter-spacing:-.02em;}\
-    .proto-auth-intro{margin:7px 0 22px;font-size:13px;line-height:1.55;color:#718198;}\
-    .proto-auth-field{display:block;margin-top:14px;}\
-    .proto-auth-field>span{display:block;margin:0 0 7px 2px;font-size:12px;font-weight:750;color:#344158;}\
-    .proto-auth-input{position:relative;}\
-    .proto-auth-input input{width:100%;height:48px;box-sizing:border-box;padding:0 14px;border:1px solid #d4e0eb;border-radius:12px;outline:0;background:#f8fafc;color:#202b3d;font:650 16px/1 inherit;transition:border-color .15s,box-shadow .15s,background .15s;}\
-    .proto-auth-input input::placeholder{color:#a5b1c1;font-weight:500;}\
-    .proto-auth-input input:focus{border-color:#229be8;background:#fff;box-shadow:0 0 0 3px rgba(34,155,232,.12);}\
-    .proto-auth-input input[aria-invalid="true"]{border-color:#ef4852;box-shadow:0 0 0 3px rgba(239,72,82,.1);}\
-    .proto-auth-eye{position:absolute;right:5px;top:5px;width:38px;height:38px;display:grid;place-items:center;border:0;border-radius:9px;background:transparent;color:#718198;cursor:pointer;}\
-    .proto-auth-eye svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}\
-    .proto-auth-pass input{padding-right:47px;}\
-    .proto-auth-error{min-height:19px;margin:8px 2px 0;font-size:11px;line-height:1.45;font-weight:650;color:#e33f49;}\
-    .proto-auth-submit{width:100%;height:48px;margin-top:10px;border:0;border-radius:12px;background:linear-gradient(100deg,#128de5,#34b0f4);box-shadow:0 8px 20px rgba(20,145,229,.22);color:#fff;font:800 15px/1 inherit;cursor:pointer;}\
-    .proto-auth-submit:active{transform:translateY(1px);}\
-    .proto-auth-note{display:flex;align-items:center;justify-content:center;gap:5px;margin:16px 0 0;font-size:10px;line-height:1.4;color:#8b98aa;}\
-    .proto-auth-note svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.8;}\
-    @media(max-width:430px){.proto-auth{padding:16px}.proto-auth-card{padding:26px 22px 22px;border-radius:22px}}\
-  ';
-  document.head.appendChild(style);
-  document.documentElement.classList.add('proto-auth-locked');
-
-  function mount(){
-    if(document.querySelector('.proto-auth'))return;
-    var gate=document.createElement('div');
-    gate.className='proto-auth';
-    gate.innerHTML='<main class="proto-auth-card" role="dialog" aria-modal="true" aria-labelledby="protoAuthTitle">'+
-      '<div class="proto-auth-brand"><i class="proto-auth-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 10V7a5 5 0 0 1 10 0v3"/><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M12 14v3"/></svg></i><span><b>幸运组</b><small>安全访问验证</small></span></div>'+
-      '<h1 id="protoAuthTitle">欢迎回来</h1><p class="proto-auth-intro">请输入账号信息以继续访问。</p>'+
-      '<form novalidate><label class="proto-auth-field"><span>用户名</span><div class="proto-auth-input"><input name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="请输入用户名" aria-label="用户名"></div></label>'+
-      '<label class="proto-auth-field"><span>密码</span><div class="proto-auth-input proto-auth-pass"><input name="password" type="password" autocomplete="current-password" placeholder="请输入密码" aria-label="密码"><button class="proto-auth-eye" type="button" aria-label="显示密码"><svg viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="3"/></svg></button></div></label>'+
-      '<p class="proto-auth-error" role="alert" aria-live="polite"></p><button class="proto-auth-submit" type="submit">登录</button></form>'+
-      '<p class="proto-auth-note"><svg viewBox="0 0 24 24"><path d="M7 10V7a5 5 0 0 1 10 0v3"/><rect x="4" y="10" width="16" height="11" rx="3"/></svg>验证后本次浏览会话内保持登录</p></main>';
-    document.body.appendChild(gate);
-
-    var form=gate.querySelector('form'),user=form.elements.username,pass=form.elements.password;
-    var error=gate.querySelector('.proto-auth-error'),eye=gate.querySelector('.proto-auth-eye');
-    function clearError(){
-      error.textContent='';user.removeAttribute('aria-invalid');pass.removeAttribute('aria-invalid');
-    }
-    user.addEventListener('input',clearError);pass.addEventListener('input',clearError);
-    eye.addEventListener('click',function(){
-      var show=pass.type==='password';pass.type=show?'text':'password';
-      eye.setAttribute('aria-label',show?'隐藏密码':'显示密码');
-      eye.querySelector('svg').innerHTML=show?'<path d="M3 3l18 18"/><path d="M10.6 6.2A10.8 10.8 0 0 1 12 6c6 0 9.5 6 9.5 6a15.2 15.2 0 0 1-2.1 2.8M6.1 6.1C3.7 7.8 2.5 12 2.5 12s3.5 6 9.5 6c1 0 2-.2 2.8-.5M9.9 9.9a3 3 0 0 0 4.2 4.2"/>':'<path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="3"/>';
-      pass.focus();
-    });
-    form.addEventListener('submit',function(e){
-      e.preventDefault();clearError();
-      if(user.value.trim()==='client'&&pass.value==='msgw'){
-        try{sessionStorage.setItem(KEY,'verified');}catch(ignore){}
-        document.documentElement.classList.remove('proto-auth-locked');gate.remove();return;
-      }
-      error.textContent='用户名或密码不正确，请重新输入。';
-      user.setAttribute('aria-invalid','true');pass.setAttribute('aria-invalid','true');pass.value='';pass.focus();
-    });
-    requestAnimationFrame(function(){user.focus();});
+  function riseTarget(pane){
+    var list=pane.querySelector(LISTS);
+    if(list&&list.children.length>1)return list;
+    var el=pane,hop=0;
+    while(el&&el.children.length===1&&hop++<4)el=el.children[0];
+    return el&&el.children.length?el:null;
   }
-  if(document.body)mount();else document.addEventListener('DOMContentLoaded',mount,{once:true});
+  function rise(pane){
+    var t=riseTarget(pane);if(!t)return;
+    t.classList.remove('mo-rise');
+    void t.offsetWidth;                 /* 强制回流，否则同一帧内加回去不会重播 */
+    t.classList.add('mo-rise');
+    setTimeout(function(){t.classList.remove('mo-rise');},HOLD);
+  }
+
+  function onMutation(records){
+    records.forEach(function(r){
+      var el=r.target;
+      if(r.attributeName==='class'){
+        for(var i=0;i<PANES.length;i++){
+          if(el.matches(PANES[i][0])&&el.classList.contains(PANES[i][1])&&
+             (r.oldValue||'').indexOf(PANES[i][1])<0){rise(el);return;}
+        }
+      }else if(r.attributeName==='hidden'&&!el.hasAttribute('hidden')){rise(el);}
+    });
+  }
+
+  function start(){
+    if(!window.MutationObserver)return;
+    var mo=new MutationObserver(onMutation);
+    [].forEach.call(document.querySelectorAll('.view,.bd-l1pane'),function(el){
+      mo.observe(el,{attributes:true,attributeFilter:['class'],attributeOldValue:true});
+    });
+    [].forEach.call(document.querySelectorAll('[data-mo-panel]'),function(el){
+      mo.observe(el,{attributes:true,attributeFilter:['hidden']});
+    });
+  }
+
+  if(document.body)start();else document.addEventListener('DOMContentLoaded',start,{once:true});
 })();
+
+/* ══ 2026-08-16 · 顶端渐隐的滚动开关 ═══════════════════════════════════════
+   蒙版渐隐（reference-theme 尾部那两段）只在容器真的滚动后出现——
+   静止时首行不该被啃（Hector：dont have the blur fade before the scroll happen）。
+   capture 监听：scroll 不冒泡，容器各自触发这里统一接。
+   ⚠ 预览面板设 scrollTop 不发 scroll 事件（已知限制）——验收用 dispatchEvent，真机自然触发。 */
+(function(){
+  window.__scrollFadeHook=1;
+  var SEL='.hall-body,.gx-list,.bd-scroll,.scroll2,.bd-oscroll,.view-chat .scroll';
+  document.addEventListener('scroll',function(e){
+    var t=e.target;
+    if(!t||!(t instanceof Element)||!t.matches||!t.matches(SEL))return;
+    t.classList.toggle('is-scrolled',t.scrollTop>4);
+  },true);
+})();
+
+/* 取证开关（临时）：URL 带 ?debug=frame 时给 .screen 描红边+左上角报宽度，
+   用于远程对质「屏外蓝」问题（Hector 端与本机渲染层不一致）。定位完即可删。 */
+(function(){
+  if(location.search.indexOf('debug=frame')<0)return;
+  var s=document.querySelector('.screen');if(!s)return;
+  s.style.outline='2px solid red';
+  var b=document.createElement('div');
+  var pt=document.querySelector('.bd-ptabs'),pc=pt?getComputedStyle(pt):null;
+  b.textContent='screen '+Math.round(s.getBoundingClientRect().width)+'×'+Math.round(s.getBoundingClientRect().height)
+    +' / win '+innerWidth+'×'+innerHeight
+    +(pc?(' / ptabs w:'+pc.width+' ml:'+pc.marginLeft+' mr:'+pc.marginRight+' themeRules:'+document.styleSheets.length):' / ptabs:none(先切到我的策略再刷)');
+  b.style.cssText='position:fixed;left:4px;top:4px;z-index:9999;background:#C00;color:#fff;font:700 11px/1.6 monospace;padding:2px 6px;border-radius:4px';
+  document.body.appendChild(b);
+})();
+
+/* ══ 2026-08-16 · 蓝区自适应换色钩子（Hector：contrast on different background）═══════
+   页顶蓝渐隐固定在 .screen 上不随内容滚 —— 于是同一个元素「滚到上半屏就站在蓝上」。
+   这里按元素当前 y 与 --x-fade-end（各页自订的落地%）比较，给站在蓝区的挂 .on-blue，
+   两套皮写在 hall.css。只认标了 data-adaptive 的选择器族，避免全页扫描。
+   ⚠ 预览面板设 scrollTop 不发 scroll 事件（已知限制）：验收要 dispatchEvent，真机自然触发。 */
+(function(){
+  window.__adaptHook=1;
+  var SEL='.gx-gh,.gx-tabs';           /* 分区标题 · 分类 chips */
+  var screenEl,fadePx=0,raf=0;
+  function calcFade(){
+    screenEl=document.querySelector('.screen');if(!screenEl)return;
+    var v=getComputedStyle(document.body).getPropertyValue('--x-fade-end').trim();
+    var h=screenEl.getBoundingClientRect().height||1;
+    fadePx=/%$/.test(v)?h*parseFloat(v)/100:(parseFloat(v)||0);
+  }
+  function sweep(){
+    if(!screenEl)calcFade();if(!screenEl||!fadePx)return;
+    var top=screenEl.getBoundingClientRect().top;
+    document.querySelectorAll(SEL).forEach(function(el){
+      var r=el.getBoundingClientRect();
+      /* 元素中线还在蓝区内 → 站蓝上（留 8px 余量，避免边界抖动） */
+      var on=(r.top+r.height/2-top)<(fadePx-8);
+      el.classList.toggle('on-blue',on);
+      window.__adaptLast={fadePx:Math.round(fadePx),n:document.querySelectorAll(SEL).length,at:Date.now()};
+    });
+  }
+  /* ⚠ 不用 requestAnimationFrame 合帧：预览面板不推进 rAF（本项目已知限制族），
+     排队的 sweep 永远不执行。改成 16ms 节流的直接调用，真机同样平滑。 */
+  var lastRun=0;
+  function schedule(){var t=Date.now();if(t-lastRun<16)return;lastRun=t;sweep();}
+  document.addEventListener('scroll',schedule,true);
+  /* 兜底轮询：预览面板设 scrollTop 不发 scroll 事件；真机也可能有惯性滚动末尾漏帧。
+     200ms 一次、只在页面可见时跑，代价可忽略（sweep 只量两三个元素）。 */
+  /* ⚠ 不用 !document.hidden 守卫：预览面板整体不在前台时 document.hidden 恒为 true，
+     会把轮询整个挡掉（排障踩过）。sweep 只量两三个元素，200ms 一次代价可忽略。 */
+  setInterval(schedule,200);
+  window.addEventListener('resize',function(){calcFade();schedule();});
+  document.addEventListener('click',function(){setTimeout(schedule,60);},true); /* 切页签/筛选后重扫 */
+  if(document.readyState!=='loading')setTimeout(function(){calcFade();sweep();},0);
+  else document.addEventListener('DOMContentLoaded',function(){calcFade();sweep();});
+})();
+
+/* ══ 2026-08-17 · 「离开游戏厅」确认（Hector：apply to all pages that go back to chat）══
+   原来只有策略页有（那支绑在 hall-plans 页内，依赖它的 openSheet/MINE）。这里做一支
+   <b>自足版</b>给其余游戏厅页用：不依赖任何页内函数与数据，只认「返回键指向 groups.html」。
+   ⚠ 策略页自己那支保留（它能报「N 个策略正在运行」，信息更足）——本支用 data-leaveguard
+     在 body 上打标，策略页不打标即自动跳过，避免两支同时拦一颗按钮。
+   ⚠ capture 阶段拦：<a href> 的默认跳转要在冒泡前截住。
+   ⚠ 确认过一次就放行（LEFT=true），否则「留在这里→再点返回」会连问两遍。
+   回滚：删本段。 */
+(function(){
+  /* 2026-08-17：策略页那支已退役（两种样子的问题），这里统一接管；
+     它把 runningCount 挂成 window.LEAVE_RUNNING，本支据此补出「N 个策略正在运行」。 */
+  var LEFT=false;
+  function backLinks(){
+    return [].filter.call(document.querySelectorAll('a[href*="groups.html"]'),function(a){
+      return a.classList.contains('gback')||a.classList.contains('bk');});
+  }
+  function ensureDlg(){
+    var d=document.getElementById('leaveHallDlg');if(d)return d;
+    d=document.createElement('div');d.id='leaveHallDlg';d.className='lh-mask';
+    d.innerHTML='<div class="lh-card" role="dialog" aria-modal="true" aria-label="离开游戏厅">'+
+      '<span class="lh-ico" aria-hidden="true">!</span>'+
+      '<b class="lh-t">离开游戏厅？</b>'+
+      '<p class="lh-p">策略在后台继续运行，离开不会中断它们。<br>返回游戏厅即可继续查看。</p>'+
+      /* 2026-08-17 Hector：主次对调 —— 离开＝主动作（红实心、右），留在＝次级（描边、左）。
+         回滚：左 lh-go 描边 / 右 lh-stay 主蓝。 */
+      '<div class="lh-acts"><button type="button" class="lh-stay">留在游戏厅</button>'+
+      '<button type="button" class="lh-go">离开</button></div></div>';
+    document.body.appendChild(d);
+    d.addEventListener('click',function(e){
+      if(e.target===d||e.target.closest('.lh-stay')){d.classList.remove('on');return;}
+      if(e.target.closest('.lh-go')){
+        LEFT=true;d.classList.remove('on');
+        var href=d.getAttribute('data-href')||'groups.html#groups';
+        location.href=href;
+      }
+    });
+    return d;
+  }
+  function runningN(){
+    try{var f=window.LEAVE_RUNNING;return typeof f==='function'?(f()||0):(+f||0);}catch(err){return 0;}
+  }
+  document.addEventListener('click',function(e){
+    var a=e.target.closest&&e.target.closest('a[href*="groups.html"]');
+    if(!a||LEFT)return;
+    if(!(a.classList.contains('gback')||a.classList.contains('bk')))return;
+    if(document.body.classList.contains('bd-inner'))return;   /* 内页：照旧一步返回 */
+    e.preventDefault();e.stopPropagation();
+    var d=ensureDlg(),n=runningN();
+    d.querySelector('.lh-p').innerHTML=(n?('<b>'+n+'</b> 个策略正在运行，离开不会中断它们。')
+      :'策略在后台继续运行，离开不会中断它们。')+'<br>返回游戏厅即可继续查看。';
+    d.setAttribute('data-href',a.getAttribute('href'));d.classList.add('on');
+  },true);
+})();
+
+/* 投注页 ⋯ 菜单里的「显示方式」选中态（2026-08-17）——点了打勾，逻辑仍走既有 data-act=skin。 */
+(function(){
+  document.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('.bhm-skin');if(!b)return;
+    document.querySelectorAll('.bhm-skin').forEach(function(x){x.classList.toggle('is-on',x===b);});
+  },true);
+})();
+
+/* ══ 2026-08-17 · 全站倒计时统一规格（Hector：「make all the timer consistent」）══════
+   改之前全站有三种读法、四套配色：
+     ⓐ 投注/聊天/管理/钱包 顶部节拍条 .rseal —— 「0分48秒」＋甜甜圈＋逐秒 hue 绿→红
+     ⓑ 策略页 tab条/卡脚/下一期 .bd-ptcd —— 「0分9秒」＋同一颗甜甜圈＋同一条 hue
+     ⓒ 彩票厅 游戏卡 .gx-timer —— 「00:25」＋时钟轮廓图标＋固定蓝
+     ⓓ 彩票厅 正在连开 .gx-opnext —— 「00:01」＋进度环＋hue
+   统一成一条：<b>进度环 ＋ 等宽 mm:ss ＋ 两态配色</b>。
+   为什么是 mm:ss 而不是「M分S秒」：中文写法<b>宽度会跳</b>（0分9秒 → 0分10秒 把整行右侧推着抖），
+   mm:ss 定长等宽，成排放（彩票厅一屏十几张卡）才对得齐。
+   为什么放弃 hue 插值：每一秒都在换颜色 ＝ 没有任何一秒是「信号」；两态把阈值说清楚。
+
+   阈值用<b>周期相对</b>而非固定秒数 —— 本原型的演示节拍只有 11–22 秒，固定 15 秒会让
+   策略页整屏常驻红；而彩票厅有 3–4 分钟的款，固定 15 秒又太晚。
+   公式：剩余 ≤ 周期的 20%，但最多提前 15 秒。 */
+window.TIMER_URGENT=function(rem,cyc){
+  return rem<=Math.min(15,(cyc||60)*0.2);
+};
+/* 等宽 mm:ss —— 三处（app.js fmt / hall-plans beatText / hall-lottery paint*）都调它。 */
+window.TIMER_TEXT=function(s){
+  s=Math.max(0,s|0);var m=Math.floor(s/60),x=s%60;
+  return (m<10?'0':'')+m+':'+(x<10?'0':'')+x;
+};

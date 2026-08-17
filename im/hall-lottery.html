@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>彩票游戏 · 幸运组 · IM168 原型</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css"><!-- 唯一令牌来源，必须排在其它样式表之前 -->
+<link rel="stylesheet" href="shared/styles.css?v=20260807k">
+<link rel="stylesheet" href="shared/hall.css?v=20260816stick6">
+<link rel="stylesheet" href="shared/reference-theme.css?v=20260817f1">
+<script src="shared/ui-consistency.js?v=20260817f1" defer></script>
+<script src="shared/role.js?v=20260813role4" defer></script>
+<!--
+  ══ 2026-08-11 · Latest 3 · R1 骨架改版（Alex 会议）═══════════════════════════
+  这一档原来叫 index.html（游戏大厅），是整个原型的落地页。这一轮 Alex 把它降级了：
+
+    「我主推我想要玩家一进来第一眼是看到这一个（策略），不要是这一个（手动投注）」
+    「手动 normal 投注营业额可能 10% 而已」「直接拿掉那个大厅，直接放策略做入口」
+
+  所以：
+   ① <b>文件改名</b> index.html → hall-lottery.html。新的 index.html 只是一张转发页，
+      双击进去直接落 hall-plans.html（策略）—— 双击 index.html 的老习惯不用改。
+   ② <b>页名从「游戏大厅」改成「彩票」</b>（Alex：「有彩票，直接叫彩票啦，
+      那个字，只有彩票，人家一看也看到了彩票」）。
+   ③ <b>底部导航五项：策略 / 动态 / 彩票 / 开奖 / 明细</b>，「大厅」整项撤掉。
+      六个页面的 nav 是同一段结构，用脚本一次换掉的（scratchpad/nav_swap.py）。
+   ⚠ shared/reference-theme.css 里那四条 a.nav[href="index.html"] 的游戏厅 webp 图标规则
+     <b>现在不再命中任何元素</b>—— 它们在 08-08 的「一套 24px 描线图标」那一段里
+     早就被 display:none / content:none 关掉了，等于本来就是死规则。这一轮没去动它，
+     免得为了删两行去碰 1200 行开外的覆盖块；要清就两段一起清。
+   ⚠ 这一版<没做>本页的视觉（Alex 说卡太白、要系列色与整套彩票 logo）——那是 R4，
+     要等运营给正式彩种清单与图。现在的缩略图与阵容仍是示意稿。
+
+  ── 以下为 08-08 那一版的说明，结构照旧 ─────────────────────────────────────
+  游戏厅 · 游戏（2026-08-08 改版 · Alex 反馈）
+  ─────────────────────────────────────────────────────────────────────────
+  Alex：<b>把 大厅 拿掉，游戏 当玩家第一眼见到的那一页</b> —— 玩家还是更熟悉常规玩法；
+        现在这一页太素，照参考图重做「第一眼」的观感。
+
+  照参考图搭的骨架（自上而下）：
+   ① 顶栏：‹ 幸运组 · 游戏 ＋ 钱包 —— <b>与另外四屏完全一样的白顶栏</b>（修法 C）。
+      ‹ 回群组（IM168 聊天那一侧）——落地页必须留这条回头路。
+   ② 策略投注推广位（整块蓝 Hero）—— 本轮主推的玩法，排最高
+   ③ 长龙横幅：⚡ 某玩法 连开 N 期 [大] ＋ 立即下注 —— 「盘面在动」的信号。
+      <b>转白</b>：一屏只留一块蓝，蓝给了上面的推广位（Hector）。
+   ④ 分类页签（全部 ＋ 五类，带款数）—— 原来上面还有一行「游戏精选」标题，已撤
+   ④ <b>左侧分类竖轨</b> ＋ 右侧按分类分组的大图卡（原来是顶部横 chip ＋ 一片小方块）
+   ⑤ 左下 AI 策略浮标
+
+  与参考图<刻意不同>的三处（都是本产品的既有决定，不是漏做）：
+   · 底部导航去掉 大厅、<b>游戏排第一</b>（这一页就是落地页），并保留 <b>策略投注</b> ——
+     那是本轮在验收的主推玩法；参考图的 更多 本原型没有对应页，不放空壳。
+   · 参考图左下角的 <b>AI 策略</b> 浮标<b>不做</b>：本平台没有这个产品，
+     对应的是底部导航第二格的 <b>策略投注</b>，不另造一个说法不一样的入口。
+   · 分类用参考图的六轨口径合并成五轨（PK10 / 时时 / 快3 / 快开 / 六合）——
+     PC28 本原型没有这一类，不摆一个点不进去的分类。
+
+  ✓ 卡面已接入运营提供的蓝白游戏缩略图（存放在 shared/game-icons/），
+    卡片名称仍保留为真实文字，缩略图只负责提供识别性视觉。
+  ⚠ 阵容与游戏号仍是<按 SGWin 常见彩种排的示意稿>，上线前要用运营正式清单核对
+    （名称／游戏号／开奖频率／哪些支持策略投注）。已接进原型的只有「极速赛车 SG飞艇」，
+    其余点进去都会落到同一个投注屏。
+
+  ── 同版追加 2026-08-08（Hector：名字要装得下 ＋ 卡上加倒计时）───────────────
+   ① 游戏名<不再被省略号切掉>。原来 17px ＋ nowrap ＋ ellipsis，卡的右列只有 86px，
+      「极速赛车（自选）」显示成「极速赛车…」—— 它和上面那张「极速赛车」在全部态里
+      上下相邻，玩家看到的是两个一模一样的名字。
+      改法：卡从 flex 行改成<两列网格>（图 56×56 跨两行 ｜ 右列上名字、下倒计时），
+      名字 14px、最多两行。14 是量出来的：最长的一行名「极速快乐十分」刚好进 86px。
+      ⚠ 顺带修了 reference-theme.css 里三条<竖版卡>时期留下的口径
+        （.gx-art height:70px 会把方图拉成 56×70、.gx-nm margin-top:9px 在网格里多顶一行）。
+   ② 每张卡名字下面加<距下期开奖倒计时>，逐秒走，最后 15 秒转红。
+      理由：选游戏时真正在比的是「哪一场马上开」，这条原来要点进投注页才看得到。
+      「即将上线」的卡不给倒计时（它没有盘）。
+   ⚠ 倒计时的周期是<按彩种常见频率排的示意值>（极速类 75 秒、澳洲/幸运飞艇 5 分、
+     PC28 3.5 分、六合 90 秒），与阵容一样，上线前要拿运营正式清单核对。
+   · 没做：把倒计时也接到长龙横幅和投注页顶部——那两处已有自己的期号/封盘显示，
+     这一轮只动游戏卡，不去碰别的屏。
+-->
+<script src="shared/hint.js?v=20260807f" defer></script>
+</head>
+<!-- 2026-08-13（Hector）：补上 page-lottery。这一页原本 <body> 完全没有 class，
+     于是 08-13P 那次「页面底全站统一」（按 .page-results／.page-bets／.page-plans／
+     .page-activity 点名）整个漏掉了它，彩票一直落回 styles 里的旧版三层底。
+     其余四屏都有自己的 page-* 类，这里补齐，命名跟着它们走。 -->
+<body class="page-lottery x-fade">
+  <div class="stage">
+    <div class="phone" data-game="pk">
+      <div class="screen">
+
+        <div class="gx-top" data-component="GamesWelcome">
+          <!-- 2026-08-08（Hector）：欢迎语 ＋ 玩家名换回全站那条顶栏 —— 「‹ 幸运组 · 游戏」。
+               理由是<回得去>：这一页现在是落地页，如果只有欢迎语，玩家就没有任何一条路
+               回到 IM168 的聊天（群组）那一侧。‹ 就是那条路（→ groups.html#groups），
+               与其它四屏的顶栏完全一样，玩家不用学第二套。 -->
+          <div class="gtop gx-gtop">
+            <a class="gback" href="groups.html#groups" aria-label="返回群组"><svg class="icx" viewBox="25.0 51.0 11.0 17.0" fill="none"><path d="M34 66L27 59.5L34 53" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            <span class="gtitle"><b>彩票游戏</b><small>· 幸运组</small></span>
+            <span class="sp"></span>
+            <a class="bal gx-bal" href="wallet.html#wallet" aria-label="钱包余额 · 上下分"><svg class="wic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"/><path d="M3 8V6a2 2 0 0 1 2-2h10"/><circle cx="16.5" cy="12.5" r="1.3" fill="currentColor" stroke="none"/></svg><b>240,000.00</b></a>
+          </div>
+        </div>
+
+          <!-- ══ 08-12I：欢迎轮播从这一屏撤掉（Hector：make it look less like the home page）══
+               它写的是「下午好，欢迎来到幸运组」—— 迎客词，只有落地页该说。08-11 之后玩家落的
+               是<b>策略</b>；彩票在欢迎一个上一屏已经被欢迎过的人，而且两屏用同一条 banner 开场，
+               于是彩票读成了第二个首页。轮播<b>留在 hall-plans.html</b>（那里它是落地页的 hero）。
+               回滚：把 v1 的 .gx-promo.gx-welcome 整段与页尾那支 gxWelcome 脚本一起加回来。 -->
+
+        <!-- 「游戏精选」这个标题 2026-08-08（Hector）撤掉：下面紧接着就是分类页签
+             （全部 14 / PK10 4 …），页签本身已经说清这一段是游戏；
+             标题只是又占一行、把卡片往下推。 -->
+
+        <!-- 横向分类 jumper ＋ 两列卡：所有游戏分区始终展示。
+             点击分类只滚动定位，不隐藏其它游戏；滚动列表时页签同步当前分区。 -->
+        <!-- ══ 08-12I：这一行 ＝ 分类页签 ＋ 视图切换（08-12K：页签已改回 jumper）══════
+             Hector：too many rows / park the toggle beside filters。
+             原来内容之上有四条通栏（banner / 连开 / 页签 / 提示），现在只剩连开条与这一行。
+             ⚠ 渐隐只能盖在页签那一段：整行加 mask 会把切换钮一起淡掉。
+             ⚠ 切换钮复用投注页那枚 .bd-vtog，class 不自造。 -->
+        <div class="gx-filterrow">
+          <div class="gx-tabs" id="gxTabs" data-component="GamesTabs">
+          <button type="button" class="on" data-cat="race">PK10</button><button type="button" data-cat="ssc">时时彩</button><button type="button" data-cat="pc28">PC28</button><button type="button" data-cat="kl8">快开</button><button type="button" data-cat="lhc">六合</button>
+          </div>
+          <span class="bd-vtog" id="gxView" data-component="GamesViewToggle">
+            <button type="button" data-view="list" aria-label="列表视图"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="5.5" width="14" height="3.2" rx="1.6"/><rect x="3" y="11.3" width="14" height="3.2" rx="1.6"/></svg></button>
+            <button type="button" class="bd-on" data-view="grid" aria-label="双列视图"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="3" width="6" height="6" rx="1.8"/><rect x="11" y="3" width="6" height="6" rx="1.8"/><rect x="3" y="11" width="6" height="6" rx="1.8"/><rect x="11" y="11" width="6" height="6" rx="1.8"/></svg></button>
+          </span>
+        </div>
+        <div class="gx-list" id="gxList">
+          <!-- ══ 2026-08-15 · 马上开奖时刻表（Hector：lacking point of interest）══════════
+               这一屏原来 14 张卡<b>尺寸全部 169×78</b>，一个尺寸、零层级 —— 眼睛没有落点，
+               只能从左上角一张张扫。而这一屏唯一在变的信息（倒计时）被做成 11px 灰字，
+               还<b>只在各分区内</b>排序：全场最快的 00:27 在第二区，第一区最快的是 00:49，
+               「哪一场马上开」这个答案页面里有，却没有被端出来。
+               时刻表就是把它端出来：<b>跨全部分区</b>取最快开的三款，大图 ＋ 进度环。
+               ⚠ 放在 .gx-list <b>里面</b>而不是上面：它跟着滚走，不常驻吃掉一屏 1/6 的高。
+               ⚠ 用横滑不用大 banner：banner 只推得动<b>一款</b>，而「马上开」天然是<b>一串</b>，
+                 而且每分钟都在换人；横滑既表达先后，也不占死一屏。
+               ⚠ 这三款与下面分区里的卡是<b>同一批游戏</b>，会出现两次 —— 可接受
+                 （推荐位本来就是「从下面挑出来的」），但别再加第三处重复。
+               ⚠ 时钟<b>不另造</b>：直接读下面那套 card._left / card._cyc（见 paintTimers）。
+                 两个时钟各走各的必然对不上。 -->
+          <section class="gx-next" id="gxNext" data-component="NextDraws" hidden>
+            <!-- 08-15 文案（Hector）：马上开奖 → 即将开奖 —— 与全站「下一期开奖」的书面语一致，
+                 「马上」偏口语（同一条准则：界面词，见 ui-copy 那份偏好）。 -->
+            <div class="gx-nexth"><b>正在连开</b><small>连开最长的三条 · 一步进下注</small></div>
+            <!-- 08-15 三改（Hector：still 3 in a row, thumbnail utilize the whole button）——
+                 仍是<b>一排三张</b>（三等分正好放下，零横滚），但图<b>铺满整张卡</b>：
+                 图当卡的底、底部一层白渐变把名字与倒计时托住 —— 不再是「白框里一张小图」。 -->
+            <div class="gx-nextrow" id="gxNextStrip"></div>
+          </section>
+          <!-- 长龙条已并入上方「正在连开」机会卡（2026-08-16）：一段一种卡语言。
+               回滚：把 .gx-streak 轮播整块与 gxHotspot 脚本加回来。 -->
+
+          <!-- ══ 08-12K：页签从<b>筛选</b>改回<b>分类 jumper</b>（Hector）═══════════════
+               08-12I 那一版把 14 张卡拉平成一个网格、页签当筛选用，代价是<b>一次只看得到
+               一类</b>：玩家要比「六合有没有更快开的」得先点一下把 PK10 全部藏掉。
+               现在改回<b>五个分区始终都在</b>（.gx-grp ＋ .gx-gh 标题），页签只负责
+               <b>滚动定位</b>，不隐藏任何卡；滚列表时页签反过来跟着高亮当前分区。
+               ⚠ <b>「全部」页签撤掉</b>——不筛选就没有「全部」这个态，五个分类本来就是全部。
+               ⚠ 卡片本身<b>一个字没改</b>（data-component="GameCard" 原样）。
+               ⚠ 倒计时排序<b>保留</b>，但改成<b>在各自分区内</b>排（最快开的排分区最前）。
+               ⚠ 双列/列表切换现在要作用在<b>每个分区</b>的 .gx-cards 上，不再是单个 #gxCards。 -->
+          <section class="gx-grp" id="gxg-race" data-cat="race">
+          <div class="gx-gh"><b>PK10</b><small>4 款</small></div>
+          <div class="gx-cards">
+            <a class="gx-card" href="game-bet.html#bet" data-cat="race" data-component="GameCard"><span class="gx-art"><span class="gly"><svg viewBox="0 0 64 40" fill="none"><path d="M6 27c0-2 1.5-3.5 3.5-4l6-1.6 5-6.4c1-1.3 2.5-2 4.2-2h13c1.7 0 3.3.8 4.3 2.2l4 5.6 6.6 2c2 .6 3.4 2.4 3.4 4.5V29a2 2 0 0 1-2 2h-3" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M20 31h16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M8 31H6a2 2 0 0 1-2-2v-2" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="15" cy="31" r="5" stroke="currentColor" stroke-width="2.4"/><circle cx="45" cy="31" r="5" stroke="currentColor" stroke-width="2.4"/><path d="M22 15.5 20 21h13l-1.5-5.5z" fill="currentColor" opacity=".22"/></svg></span></span><b class="gx-nm">极速赛车</b><span class="gx-tag">策略投注</span></a>
+            <a class="gx-card" href="game-bet.html#bet" data-cat="race" data-component="GameCard"><span class="gx-art"><span class="gly"><svg viewBox="0 0 64 40" fill="none"><path d="M8 27h44l-5 7a3 3 0 0 1-2.5 1.3H16A3 3 0 0 1 13.4 34z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M22 27V13a1.5 1.5 0 0 1 2.4-1.2L40 22" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 14.5 37 22.5 24 22.5z" fill="currentColor" opacity=".22"/><path d="M4 34c3 0 3 2 6 2s3-2 6-2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity=".55"/></svg></span></span><b class="gx-nm">极速飞艇</b><span class="gx-tag">策略投注</span></a>
+            <a class="gx-card" href="game-bet.html#bet" data-cat="race" data-component="GameCard"><span class="gx-art"><span class="gly"><svg viewBox="0 0 64 40" fill="none"><path d="M6 27c0-2 1.5-3.5 3.5-4l6-1.6 5-6.4c1-1.3 2.5-2 4.2-2h13c1.7 0 3.3.8 4.3 2.2l4 5.6 6.6 2c2 .6 3.4 2.4 3.4 4.5V29a2 2 0 0 1-2 2h-3" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M20 31h16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M8 31H6a2 2 0 0 1-2-2v-2" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="15" cy="31" r="5" stroke="currentColor" stroke-width="2.4"/><circle cx="45" cy="31" r="5" stroke="currentColor" stroke-width="2.4"/><path d="M22 15.5 20 21h13l-1.5-5.5z" fill="currentColor" opacity=".22"/></svg></span></span><b class="gx-nm">极速赛车（自选）</b><span class="gx-tag">策略投注</span></a>
+            <a class="gx-card" href="game-bet.html#bet" data-cat="race" data-component="GameCard"><span class="gx-art"><span class="gly"><svg viewBox="0 0 64 40" fill="none"><path d="M6 27c0-2 1.5-3.5 3.5-4l6-1.6 5-6.4c1-1.3 2.5-2 4.2-2h13c1.7 0 3.3.8 4.3 2.2l4 5.6 6.6 2c2 .6 3.4 2.4 3.4 4.5V29a2 2 0 0 1-2 2h-3" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M20 31h16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M8 31H6a2 2 0 0 1-2-2v-2" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="15" cy="31" r="5" stroke="currentColor" stroke-width="2.4"/><circle cx="45" cy="31" r="5" stroke="currentColor" stroke-width="2.4"/><path d="M22 15.5 20 21h13l-1.5-5.5z" fill="currentColor" opacity=".22"/></svg></span></span><b class="gx-nm">澳洲幸运10</b><span class="gx-tag">策略投注</span></a>
+          </div>
+          </section>
+          <section class="gx-grp" id="gxg-ssc" data-cat="ssc">
+          <div class="gx-gh"><b>时时彩</b><small>4 款</small></div>
+          <div class="gx-cards">
+            <a class="gx-card" href="game-bet.html#bet" data-cat="ssc" data-component="GameCard"><span class="gx-art"><span class="gly"><svg viewBox="0 0 64 40" fill="none"><circle cx="32" cy="22" r="13" stroke="currentColor" stroke-width="2.4"/><path d="M32 15v7l5 3" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M27 6h10M32 6v3" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M45 11l3-3" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="32" cy="22" r="13" fill="currentColor" opacity=".08"/></svg></span></span><b class="gx-nm">极速时时彩</b><span class="gx-tag">策略投注</span></a>
+            <a class="gx-card" href="game-bet.html#bet" data-cat="ssc" data-component="GameCard"><span class="gx-art"><span class="gly"><svg viewBox="0 0 64 40" fill="none"><path d="M8 27h44l-5 7a3 3 0 0 1-2.5 1.3H16A3 3 0 0 1 13.4 34z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M22 27V13a1.5 1.5 0 0 1 2.4-1.2L40 22" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 14.5 37 22.5 24 22.5z" fill="currentColor" opacity=".22"/><path d="M4 34c3 0 3 2 6 2s3-2 6-2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity=".55"/></svg></span></span><b class="gx-nm">幸运飞艇</b><span class="gx-tag">策略投注</span></a>
+            <a class="gx-card" href="game-bet.html#bet" data-cat="ssc" data-component="GameCard"><span class="gx-art"><span class="gly"><svg viewBox="0 0 64 40" fill="none"><circle cx="32" cy="22" r="13" stroke="currentColor" stroke-width="2.4"/><path d="M32 15v7l5 3" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M27 6h10M32 6v3" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M45 11l3-3" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="32" cy="22" r="13" fill="currentColor" opacity=".08"/></svg></span></span><b class="gx-nm">澳洲幸运5</b><span class="gx-tag">策略投注</span></a>
+            <a class="gx-card" href="game-bet.html#bet" data-cat="ssc" data-component="GameCard"><span class="gx-art"><span class="gly"><svg viewBox="0 0 64 40" fill="none"><circle cx="32" cy="22" r="13" stroke="currentColor" stroke-width="2.4"/><path d="M32 15v7l5 3" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M27 6h10M32 6v3" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M45 11l3-3" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="32" cy="22" r="13" fill="currentColor" opacity=".08"/></svg></span></span><b class="gx-nm">极速时时彩（自选）</b></a>
+          </div>
+          </section>
+          <section class="gx-grp" id="gxg-pc28" data-cat="pc28">
+          <div class="gx-gh"><b>PC28</b><small>2 款</small></div>
+          <div class="gx-cards">
+            <a class="gx-card" href="game-bet.html#bet" data-cat="pc28" data-component="GameCard"><span class="gx-art"><span class="gly"><svg viewBox="0 0 64 40" fill="none"><circle cx="32" cy="22" r="13" stroke="currentColor" stroke-width="2.4"/><circle cx="32" cy="22" r="6" stroke="currentColor" stroke-width="2.2"/><path d="M27.5 22h9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="27" cy="16" r="3.2" fill="currentColor" opacity=".2"/></svg></span></span><b class="gx-nm">PC28</b></a>
+            <a class="gx-card" href="game-bet.html#bet" data-cat="pc28" data-component="GameCard"><span class="gx-art"><span class="gly"><svg viewBox="0 0 64 40" fill="none"><circle cx="32" cy="22" r="13" stroke="currentColor" stroke-width="2.4"/><circle cx="32" cy="22" r="6" stroke="currentColor" stroke-width="2.2"/><path d="M27.5 22h9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="27" cy="16" r="3.2" fill="currentColor" opacity=".2"/></svg></span></span><b class="gx-nm">加拿大PC28</b></a>
+          </div>
+          </section>
+          <section class="gx-grp" id="gxg-kl8" data-cat="kl8">
+          <div class="gx-gh"><b>快开</b><small>2 款</small></div>
+          <div class="gx-cards">
+            <a class="gx-card" href="game-bet.html#bet" data-cat="kl8" data-component="GameCard"><span class="gx-art"><span class="gly"><svg viewBox="0 0 64 40" fill="none"><circle cx="32" cy="22" r="13" stroke="currentColor" stroke-width="2.4"/><path d="M32 15v7l5 3" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M27 6h10M32 6v3" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M45 11l3-3" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="32" cy="22" r="13" fill="currentColor" opacity=".08"/></svg></span></span><b class="gx-nm">极速快乐十分</b><span class="gx-tag">策略投注</span></a>
+            <a class="gx-card" href="game-bet.html#bet" data-cat="kl8" data-component="GameCard"><span class="gx-art"><span class="gly"><svg viewBox="0 0 64 40" fill="none"><rect x="19" y="9" width="26" height="26" rx="6" stroke="currentColor" stroke-width="2.4"/><circle cx="27" cy="17" r="2.3" fill="currentColor"/><circle cx="37" cy="17" r="2.3" fill="currentColor"/><circle cx="32" cy="22" r="2.3" fill="currentColor" opacity=".45"/><circle cx="27" cy="27" r="2.3" fill="currentColor"/><circle cx="37" cy="27" r="2.3" fill="currentColor"/></svg></span></span><b class="gx-nm">极速快3</b></a>
+          </div>
+          </section>
+          <section class="gx-grp" id="gxg-lhc" data-cat="lhc">
+          <div class="gx-gh"><b>六合</b><small>2 款</small></div>
+          <div class="gx-cards">
+            <a class="gx-card" href="game-bet.html#bet" data-cat="lhc" data-component="GameCard"><span class="gx-art"><span class="gly"><svg viewBox="0 0 64 40" fill="none"><rect x="21" y="7" width="22" height="28" rx="4" stroke="currentColor" stroke-width="2.4"/><path d="M26 14h12M26 20h12M26 26h7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><rect x="21" y="7" width="22" height="28" rx="4" fill="currentColor" opacity=".07"/></svg></span></span><b class="gx-nm">极速六合彩</b></a>
+            <a class="gx-card soon" href="javascript:void(0)" data-cat="lhc" data-component="GameCard"><span class="gx-art"><span class="gly"><svg viewBox="0 0 64 40" fill="none"><rect x="21" y="7" width="22" height="28" rx="4" stroke="currentColor" stroke-width="2.4"/><path d="M26 14h12M26 20h12M26 26h7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><rect x="21" y="7" width="22" height="28" rx="4" fill="currentColor" opacity=".07"/></svg></span></span><b class="gx-nm">香港六合彩</b><span class="gx-tag gx-soon">即将上线</span></a>
+          </div>
+          </section>
+        </div>
+
+        <nav class="tabbar hallbar" data-component="HallNav">
+          <a class="nav" href="hall-plans.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12h.01"/></svg><span>策略</span></a>
+          <a class="nav" href="hall-activity.html"><svg viewBox="0 0 24 24"><path d="M3.6 10.1v3.8a1.6 1.6 0 0 0 1.6 1.6h2.3L18 20V4L7.5 8.5H5.2a1.6 1.6 0 0 0-1.6 1.6z"/><path d="M7.5 15.5v3.3a1.3 1.3 0 0 0 1.3 1.3h.9a1.3 1.3 0 0 0 1.3-1.3v-2.3"/><path d="M20.8 9.8v4.4"/></svg><span>动态</span></a>
+          <a class="nav on" href="hall-lottery.html"><svg viewBox="0 0 24 24"><rect x="3.4" y="3.4" width="7.4" height="7.4" rx="2.2"/><rect x="13.2" y="3.4" width="7.4" height="7.4" rx="2.2"/><rect x="3.4" y="13.2" width="7.4" height="7.4" rx="2.2"/><rect x="13.2" y="13.2" width="7.4" height="7.4" rx="2.2"/></svg><span>彩票</span></a>
+          <a class="nav" href="hall-results.html"><svg viewBox="0 0 24 24"><circle cx="7.5" cy="9" r="3.4"/><circle cx="16.5" cy="9" r="3.4"/><circle cx="12" cy="16.5" r="3.4"/></svg><span>开奖</span></a>
+          <a class="nav" href="hall-bets.html"><svg viewBox="0 0 24 24"><path d="M6.5 3.5h11V21l-2.2-1.6L13 21l-1-0.8L11 21l-2.3-1.6L6.5 21V3.5z"/><path d="M9.5 8.5h5M9.5 12h5"/></svg><span>明细</span></a>
+        </nav>
+
+      </div>
+    </div>
+  </div>
+
+<script data-demo>
+/* 欢迎与热点轮播都留在原有区域内，不增加首页层级。 */
+(function(){
+  var box=document.getElementById('gxWelcome');if(!box)return;
+  var slides=[].slice.call(box.querySelectorAll('.gx-wslide')),
+      dots=[].slice.call(box.querySelectorAll('.gx-wdots button')),at=0,timer;
+  var greeting=document.getElementById('gxGreeting'),hour=(new Date()).getHours();
+  if(greeting)greeting.textContent=hour<12?'早安':hour<18?'下午好':'晚上好';
+  function show(i){
+    at=(i+slides.length)%slides.length;
+    slides.forEach(function(s,n){s.classList.toggle('on',n===at);});
+    dots.forEach(function(d,n){d.classList.toggle('on',n===at);d.setAttribute('aria-current',n===at?'true':'false');});
+  }
+  function restart(){clearInterval(timer);timer=setInterval(function(){show(at+1);},4800);}
+  dots.forEach(function(d,n){d.addEventListener('click',function(){show(n);restart();});});
+  restart();
+})();
+(function(){
+  var box=document.getElementById('gxHotspot');if(!box)return;
+  var items=[].slice.call(box.querySelectorAll('.gx-hotitem')),at=0,timer;
+  function show(i){at=(i+items.length)%items.length;items.forEach(function(x,n){x.classList.toggle('on',n===at);});}
+  function restart(){clearInterval(timer);timer=setInterval(function(){show(at+1);},3600);}
+  box.querySelector('.gx-hotprev').addEventListener('click',function(){show(at-1);restart();});
+  box.querySelector('.gx-hotnext').addEventListener('click',function(){show(at+1);restart();});
+  restart();
+})();
+
+/* 分类页签是 jumper，不是过滤器：所有分区始终保留，点击只跳到对应 section。
+   款数直接数 DOM，别手写 —— 加一款游戏不用再改两处。 */
+(function(){
+  var tabs=document.getElementById('gxTabs'),list=document.getElementById('gxList');
+  if(!tabs||!list)return;
+  var thumbByName={
+    '极速赛车':'pk10-race-object.png',
+    '极速飞艇':'pk10-airship-object.png',
+    '极速赛车（自选）':'pk10-race-alt-object.png',
+    '澳洲幸运10':'pk10-lucky10-object.png',
+    '极速时时彩':'ssc-clock-object.png',
+    '幸运飞艇':'ssc-airship-object.png',
+    '澳洲幸运5':'ssc-lucky5-object.png',
+    '极速时时彩（自选）':'ssc-clock-alt-object.png',
+    'PC28':'pc28-fast-object.png',
+    '加拿大PC28':'pc28-canada-object.png',
+    '极速快乐十分':'kl8-happy10-object.png',
+    '极速快3':'kl8-k3-object.png',
+    '极速六合彩':'lhc-macau-object.png',
+    '香港六合彩':'lhc-hk-object.png'
+  };
+  var opTagByName={
+    '极速赛车':['热门','hot'],
+    '澳洲幸运10':['NEW','new'],
+    'PC28':['经典','classic'],
+    '极速快乐十分':['推荐','rec']
+  };
+  [].forEach.call(list.querySelectorAll('.gx-card'),function(card){
+    var name=card.querySelector('.gx-nm'),art=card.querySelector('.gx-art'),nameText=name&&name.textContent.trim(),src=nameText&&thumbByName[nameText];
+    var strategyTag=card.querySelector('.gx-tag:not(.gx-soon)');
+    if(strategyTag)strategyTag.remove();
+    var op=opTagByName[nameText];
+    if(op){var badge=document.createElement('span');badge.className='gx-optag gx-optag--'+op[1];badge.textContent=op[0];card.appendChild(badge);}
+    if(!src||!art)return;
+    var img=document.createElement('img');
+    img.src='shared/game-icons/'+src;
+    img.alt='';
+    img.setAttribute('aria-hidden','true');
+    art.replaceChildren(img);
+    /* 08-12J：把同一张缩略图的地址挂成 CSS 变量，<b>列表视图</b>拿它当放大的低透明度底图
+       （Hector 想试试这样是不是更有意思）。只在列表视图用，双列不受影响 —— 见 hall.css。
+       ⚠ 用变量而不是在 JS 里写样式：图是 JS 决定的、版式是 CSS 决定的，
+         这样「要不要用作底图、多大多淡」全部留在样式表里，改一处就能全站调。 */
+    /* ⚠ 必须用 img.src（<b>已经解析成绝对地址</b>），不能写相对路径：
+         自定义属性里的相对 url() 是相对<b>使用它的样式表</b>解析的，而使用它的是
+         shared/hall.css —— 于是 'shared/game-icons/x.png' 被解成
+         shared/shared/game-icons/x.png，静默 404，底图永远不出现（本轮实测踩过）。 */
+    card.style.setProperty('--gx-thumb','url("'+img.src+'")');
+  });
+  /* 2026-08-08（Hector 追加）：卡上加<开奖倒计时>。
+     选游戏时真正在比的是「哪一场马上开」——原来这条要点进投注页才看得到。
+     ⚠ 周期是<按彩种常见频率排的示意值>，与阵容一样，上线前要用运营正式清单核对。
+     ⚠ 起点用固定偏移（不是随机）：截图/演示每次打开的相位一致，好对图。
+     ⚠「即将上线」的卡不给倒计时 —— 它没有盘。 */
+  var cycleByName={
+    '极速赛车':75,'极速飞艇':75,'极速赛车（自选）':75,'澳洲幸运10':300,
+    '极速时时彩':75,'幸运飞艇':300,'澳洲幸运5':300,'极速时时彩（自选）':75,
+    'PC28':210,'加拿大PC28':210,
+    '极速快乐十分':75,'极速快3':75,
+    '极速六合彩':90
+  };
+  /* 2026-08-08（Hector）：「距下期」三个字换成一枚<b>时钟图标</b> ——
+     卡上其余都是名字与数字，三个中文小字反而像第二个标题；图标只负责说「这是时间」。
+     ⚠ 语义交给 title / aria-label（「距下期开奖」），图标本身 aria-hidden。 */
+  var clock='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.2V12l3.2 2"/></svg>';
+  /* 08-17 全站统一 → 08-17b 收回（Hector：「too many things moving」）：
+     一屏十几张卡各转各的进度环＝十几个动画同时跑，眼睛没有落点。
+     统一件改回<b>静态时钟</b>（就是上面那支 clock），只有数字在走。
+     「还剩多少比例」这一层由数字自己承担 —— 卡上本来就没有周期长度可比。
+     回滚：把 el.innerHTML 的 clock 换回 ring（下一行那支 markup 保留未删）。 */
+  var ring='<svg class="sealpie tclock" viewBox="0 0 24 24" aria-hidden="true">'+
+    '<circle cx="12" cy="12" r="9"/><path d="M12 7.2V12l3.2 2"/></svg>';
+  /* ══ 08-12I：倒计时 ＋ 按最快开奖排序 ＋ 分类筛选 ＋ 视图切换 ═══════════════════
+     这一屏是<b>发车时刻表</b>：14 款游戏里唯一会变的数就是倒计时，所以顺序按它排。
+     ⚠ 排序用 <b>style.order</b>，不搬 DOM —— 卡片是带内联 SVG 的大块节点，
+       搬来搬去既慢又容易把事件/图片状态搞丢。
+     ⚠ <b>绝不跟着秒数重排</b>：那会让卡在手指底下跳，按下去时已经换成别的游戏。
+       只在<b>本来就要重画列表的时刻</b>重排 —— 切筛选、切视图、刚进这一屏。
+     ⚠ 「即将上线」永远排在最后（它没有盘）。 */
+  var cards=[].slice.call(list.querySelectorAll('.gx-card')),timers=[];
+  cards.forEach(function(card,i){
+    var nm=card.querySelector('.gx-nm'),cyc=nm&&cycleByName[nm.textContent.trim()];
+    card._soon=card.classList.contains('soon')||!cyc;
+    if(card._soon){card._left=1e9;return;}
+    var el=document.createElement('span');
+    el.className='gx-timer';
+    el.title='距下期开奖';el.setAttribute('aria-label','距下期开奖');
+    /* 08-17 全站倒计时统一：时钟轮廓图标 → 与封盘倒计时同一颗<b>进度环</b>（r=8，
+       与 .sealpie / .gx-opnext 同规格）。图标只说「这是时间」，环还多说了「剩多少比例」。
+       回滚：把 ring 换回上面的 clock 变量（那支 svg 保留未删）。 */
+    el.innerHTML=ring+'<b>--:--</b>';
+    card.appendChild(el);
+    card._left=cyc-(i*11)%cyc;
+    card._cyc=cyc;   /* 08-15：时刻表的进度环要按「剩多少 / 一整期多长」画，得记住周期 */
+    timers.push({el:el,b:el.querySelector('b'),cyc:cyc,card:card,
+      pie:el.querySelector('.sealpie'),ring:el.querySelector('.prog')});
+  });
+  var TCIRC=2*Math.PI*8;   /* 与 .sealpie 同半径 */
+  function paintTimers(){
+    timers.forEach(function(t){
+      if(--t.card._left<=0)t.card._left=t.cyc;
+      var left=t.card._left,ratio=Math.max(0,Math.min(1,left/t.cyc)),
+          urgent=window.TIMER_URGENT?window.TIMER_URGENT(left,t.cyc):(left<=15);
+      t.b.textContent=window.TIMER_TEXT?window.TIMER_TEXT(left)
+        :((left/60|0)+':'+(left%60));
+      /* 08-17b：环退役，这里不再逐秒画弧（保留 ratio 变量，回滚时直接用回来）。 */
+      t.el.classList.toggle('hot',urgent);
+      if(t.pie)t.pie.classList.toggle('urgent',urgent);
+    });
+  }
+  /* ══ 2026-08-15 · 马上开奖时刻表（见 markup 那段的理由）════════════════════════
+     ⚠ <b>成员没变就不重建</b>：倒计时是单调递减的，所以名次<b>只在某一款开奖归零时</b>
+       才会变。每秒重建 DOM 既浪费，又会让卡在手指底下跳（下面分区那套排序早就写过
+       这条戒律：「绝不跟着秒数重排」）—— 这里同一个道理，只是判据换成「名单变没变」。 */
+  var nextHost=document.getElementById('gxNext'),
+      nextStrip=document.getElementById('gxNextStrip'),
+      NEXTN=3,nextKey='',nextItems=[];
+  /* 长龙示意数据（原长龙条那四条的同源内容；接真实数据时换成盘口推送） */
+  var STREAKS=[{pl:'第九名',sd:'大',n:8,blue:false},{pl:'龙虎',sd:'龙',n:6,blue:false},
+               {pl:'冠军',sd:'单',n:5,blue:true},{pl:'第一球',sd:'双',n:7,blue:true}];
+  function buildNext(){
+    if(!nextHost||!nextStrip)return;
+    var pick=cards.filter(function(c){return !c._soon;})
+                  .sort(function(a,b){return a._left-b._left;}).slice(0,NEXTN);
+    var key=pick.map(function(c){return c.querySelector('.gx-nm').textContent;}).join('|');
+    if(key===nextKey)return;
+    nextKey=key;
+    /* 2026-08-16 Hector：这一段改成「正在连开」机会卡（A 案）——原「即将开奖」三张缩略图卡
+       与它撞语言，直接被取代；开奖倒计时并进卡里当副行（时钟仍走 paintNext 那套 _left/_cyc）。
+       珠串把「连开 N 期」画出来：红＝大/单/龙，蓝＝小/双/虎（与开奖页两面标同色系）。
+       回滚：上一版 .gx-nx3 缩略图卡模板（图走 --nx-img）。 */
+    nextStrip.innerHTML=pick.map(function(c,i){
+      var nm=c.querySelector('.gx-nm').textContent.trim();
+      var st=STREAKS[i%STREAKS.length];
+      var beads='';for(var k=0;k<st.n;k++)  /* 2026-08-16 Hector：点数与连开期数一一对应，不再截断 */beads+='<i'+(st.blue?' class="b"':'')+'>'+st.sd+'</i>';
+      return '<a class="gx-op" href="'+(c.getAttribute('href')||'#')+'">'+
+        '<span class="gx-opg">'+nm+'</span>'+
+        '<b class="gx-oppl">'+st.pl+' · '+st.sd+'</b>'+
+        '<span class="gx-opbeads">'+beads+'</span>'+
+        '<span class="gx-opfoot">连开 <b>'+st.n+'</b> 期'+
+          /* 08-17b（Hector：too many things moving）：进度环 → 静态时钟，与游戏卡同一支。 */
+          '<span class="gx-opnext"><svg class="tclock" viewBox="0 0 24 24" aria-hidden="true">'+
+            '<circle cx="12" cy="12" r="9"/><path d="M12 7.2V12l3.2 2"/>'+
+          '</svg><b>--:--</b></span></span></a>';
+    }).join('');
+    nextItems=[].slice.call(nextStrip.querySelectorAll('.gx-op'));
+    nextItems.forEach(function(el,i){el._src=pick[i];});
+    nextHost.hidden=false;
+  }
+  /* 08-17 全站倒计时统一：环与数字改<b>两态</b>（常态 / .urgent），不再逐秒 hue 插值 ——
+     理由与阈值公式见 shared/ui-consistency.js 那段。
+     回滚：恢复 `col='hsl('+(120*ratio)+',72%,40%)'` 与 b.style.color / pr.style.stroke 赋值。 */
+  var NEXTC=2*Math.PI*8;
+  function paintNext(){
+    nextItems.forEach(function(el){
+      var c=el._src,left=Math.max(0,c._left),cyc=c._cyc||left||1,
+          ratio=Math.max(0,Math.min(1,left/cyc)),
+          urgent=window.TIMER_URGENT?window.TIMER_URGENT(left,cyc):(left<=15);
+      var b=el.querySelector('.gx-opnext>b');
+      b.textContent=window.TIMER_TEXT?window.TIMER_TEXT(left):((left/60|0)+':'+(left%60));
+      b.style.color='';
+      el.querySelector('.gx-opnext').classList.toggle('urgent',urgent);
+      /* 08-17b：环退役，这里不再逐秒画弧。ratio 留着，回滚时直接用回来。 */
+      void ratio;
+    });
+  }
+  function tick(){paintTimers();buildNext();paintNext();}
+  tick();setInterval(tick,1000);
+
+  /* ══ 08-12K：排序只在<b>分区内部</b>做 ═══════════════════════════════════════
+     分区回来了，所以「最快开的排最前」是每一区各排各的 —— 跨区排会把分区打散，
+     那就等于回到 08-12I 的拉平版。仍然用 style.order，不搬 DOM。 */
+  var grps=[].slice.call(list.querySelectorAll('.gx-grp')),
+      grids=[].slice.call(list.querySelectorAll('.gx-cards')),
+      btns=[].slice.call(tabs.querySelectorAll('button[data-cat]'));
+  function applyOrder(){
+    grids.forEach(function(g){
+      [].slice.call(g.querySelectorAll('.gx-card'))
+        .sort(function(x,y){return x._left-y._left;})
+        .forEach(function(c,i){c.style.order=i;});
+    });
+  }
+
+  /* 页签＝<b>jumper</b>：点一下只把对应分区滚到列表顶部，一张卡都不藏。
+     款数照旧数 DOM，不手写 —— 加一款游戏不用再改两处。 */
+  btns.forEach(function(b){
+    var c=b.getAttribute('data-cat');
+    var n=cards.filter(function(x){return x.getAttribute('data-cat')===c;}).length;
+    b.innerHTML=b.textContent+'<em>'+n+'</em>';
+  });
+  function markTab(cat){
+    btns.forEach(function(x){
+      var on=x.getAttribute('data-cat')===cat;
+      x.classList.toggle('on',on);x.setAttribute('aria-current',on?'true':'false');
+      /* 页签行本身是横向滚动的：当前那枚要自己滑进视野，否则滚到「六合」时
+         高亮的那一枚还在右边的渐隐里，看不见。 */
+      if(on&&x.scrollIntoView)x.scrollIntoView({block:'nearest',inline:'nearest'});
+    });
+  }
+  /* ⚠ <b>不要用 scrollTo({behavior:'smooth'})</b>：这一档在无头/被遮挡的窗口里
+     <b>整个不动</b>（本轮实测：scrollTop 一直是 0，也不报错），演示与截图会看起来像
+     页签点了没反应。自己用 rAF 补 260ms 缓动，行为在哪都一样。 */
+  var glide;
+  function glideTo(to){
+    cancelAnimationFrame(glide);
+    var from=list.scrollTop,d=to-from,t0=null;
+    if(Math.abs(d)<1)return;
+    /* ⚠ 页面不可见时 rAF <b>不发帧</b>（后台标签页、截图工具的隐藏窗口）——
+       缓动会卡在起点。这种时候直接落位，宁可没有动画也不要「点了不动」。 */
+    if(document.hidden){list.scrollTop=to;spy();return;}
+    spyLock=1;                /* 滚动过程中别让 spy 把沿途的分区一个个点亮 */
+    (function step(ts){
+      if(t0===null)t0=ts;
+      var k=Math.min(1,(ts-t0)/260),e=1-Math.pow(1-k,3);   /* ease-out cubic */
+      list.scrollTop=from+d*e;
+      if(k<1)glide=requestAnimationFrame(step);else{spyLock=0;spy();}
+    })(performance.now());
+  }
+  tabs.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-cat]');if(!b)return;
+    var g=list.querySelector('.gx-grp[data-cat="'+b.getAttribute('data-cat')+'"]');if(!g)return;
+    /* ⚠ 点了要<b>钉住</b>这一枚：最后两三区加起来不到一屏，滚到底时它们全在画面里，
+       spy 只会认最下面那一区 —— 于是「点 PC28 → 高亮六合」，看起来像点错了。
+       钉到玩家自己动手滚下一次为止。 */
+    spyPin=b.getAttribute('data-cat');
+    markTab(spyPin);
+    /* ⚠ 用 scrollTop 自己算，不用 g.scrollIntoView()：后者会连<b>外层 .stage</b>
+       一起滚，手机壳会在页面里跳一下。这里只想动 .gx-list 这一个滚动容器。 */
+    glideTo(list.scrollTop+(g.getBoundingClientRect().top-list.getBoundingClientRect().top));
+  });
+
+  /* 反向：滚列表时页签跟着当前分区走（scroll spy）。
+     判定线取列表顶部下方 8px —— 越过这条线的最后一个分区就是「当前」。 */
+  var spyLock=0,spyPin=null;
+  function spy(){
+    if(spyLock||spyPin)return;
+    var top=list.getBoundingClientRect().top+8,cur=grps[0];
+    grps.forEach(function(g){if(g.getBoundingClientRect().top<=top)cur=g;});
+    /* 滚到底时最后一个分区可能永远越不过判定线（它比一屏短），补一条。 */
+    if(list.scrollTop+list.clientHeight>=list.scrollHeight-4)cur=grps[grps.length-1];
+    if(cur)markTab(cur.getAttribute('data-cat'));
+  }
+  list.addEventListener('scroll',spy,{passive:true});
+  /* 玩家自己动手（滚轮／手指／拖）就解钉，spy 重新接管。 */
+  ['wheel','touchstart','pointerdown','keydown'].forEach(function(ev){
+    list.addEventListener(ev,function(){spyPin=null;},{passive:true});
+  });
+
+  /* 视图切换：双列（默认）⇄ 列表。只切一个 class，卡片 DOM 不动。
+     ⚠ 08-12K：要切<b>每个分区</b>的网格，不再是单个 #gxCards。 */
+  var vtog=document.getElementById('gxView');
+  if(vtog)vtog.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-view]');if(!b)return;
+    var isList=b.getAttribute('data-view')==='list';
+    grids.forEach(function(g){g.classList.toggle('gx-view-list',isList);});
+    [].forEach.call(vtog.querySelectorAll('button'),function(x){x.classList.toggle('bd-on',x===b);});
+    applyOrder();            /* 切视图＝本来就要重画，顺序顺手刷到最新 */
+  });
+
+  applyOrder();spy();
+})();
+</script>
+</body>
+</html>

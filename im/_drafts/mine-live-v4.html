@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>我的策略「直播感」重做 · 三案对比 v4</title>
+<!--
+  ══ 变更记录 ═══════════════════════════════════════════════════════════
+  v4 · 2026-08-16
+  背景：Hector —— LIVE 事件行太轻（too minor），要 drastic，可以动下面的卡。
+  设计判断：这个页的戏剧循环是「封盘 → 开奖 → 结算」每 15~22 秒一轮，
+  「直播感」的正解是让这个循环【看得见】，而不是加装饰动效。三案按激进程度递增：
+    A 直播窗   —— 顶区变成开奖直播台（期号大字+倒计时环+球号翻出+odometer），卡不动
+    B 赛况卡   —— 卡片重做成「对局中」形态：本期在场的注做成状态椭牌，
+                  结算瞬间整卡闪色报胜负（推荐 —— 钩子长在钱上）
+    C 时间轴流 —— 整页变实时事件流，策略缩成顶部 chips（最激进，丢管理入口，不推荐但值得看）
+  三案共用：顶部纹理蓝渐隐、精工白卡、票根异常行 —— 已上线的底子全不推翻。
+-->
+<style>
+  :root{
+    --blue:#2F6BE8;--blue-d:#1D4FD8;--deep:#0A3FD6;--ink:#172033;--muted:#66738A;--faint:#9AA6B8;
+    --line:#E6ECF2;--fill:#F1F5F9;--page:#F5F7F9;--win:#0E9F5B;--red:#E0454F;
+    --font:"Noto Sans SC","PingFang SC",sans-serif;--data:"DIN Alternate","Arial Narrow",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#D8DEE6;font-family:var(--font);color:var(--ink);padding:26px 0 60px;}
+  h1{font-size:16px;text-align:center;margin-bottom:4px;}
+  .sub{font-size:12px;color:var(--muted);text-align:center;margin:0 auto 22px;max-width:740px;}
+  .row{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;align-items:flex-start;}
+  .opt{width:375px;}
+  .opt h2{font-size:13px;margin:0 2px 2px;}
+  .opt .why{font-size:11.5px;line-height:1.55;color:var(--muted);margin:0 2px 10px;}
+  .opt .why b{color:var(--ink);}
+  .rec{display:inline-block;font-size:10px;font-weight:800;color:#fff;background:var(--blue);border-radius:6px;padding:2px 7px;vertical-align:2px;margin-left:5px;}
+  .num{font-family:var(--data);font-variant-numeric:tabular-nums;}
+  .up{color:var(--win);}.dn{color:var(--red);}
+  .phone{border:1px solid #B9C6D3;border-radius:18px;overflow:hidden;
+    background:linear-gradient(180deg,#0A3FD6 0%,#1B55E2 22%,#7FA6F0 40%,var(--page) 54%);
+    padding:14px 12px 16px;min-height:560px;position:relative;}
+  .hero-lab{font-size:11px;color:rgba(255,255,255,.72);}
+  .hero-num{font-family:var(--data);font-size:30px;font-weight:800;color:#A9F5C9;line-height:1.1;letter-spacing:-.5px;}
+  /* 精工白卡底 */
+  .card{background:linear-gradient(168deg,rgba(255,255,255,.98),rgba(247,250,255,.94));
+    border:1px solid rgba(255,255,255,.72);border-radius:14px;
+    box-shadow:inset 0 1.5px 0 rgba(255,255,255,.95),0 2px 10px -2px rgba(30,60,120,.08),0 12px 28px -20px rgba(30,60,120,.28);}
+  .note{opacity:.55;text-align:center;font-size:11px;color:var(--muted);padding:10px 0 2px;}
+  .tk{display:flex;align-items:center;gap:8px;border-radius:11px;padding:8px 12px;font-size:12px;margin-top:7px;background:#FDF0F0;}
+  .tk .dot{width:7px;height:7px;border-radius:50%;background:var(--red);}
+  .tk em{font-style:normal;margin-left:auto;font-weight:800;color:var(--blue-d);}
+
+  /* ── A 直播窗 ─────────────────────────── */
+  .a-stage{display:flex;align-items:center;gap:14px;margin:10px 2px 4px;}
+  .a-ring{position:relative;width:64px;height:64px;flex:none;}
+  .a-ring svg{transform:rotate(-90deg);}
+  .a-ring b{position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-family:var(--data);font-size:15px;}
+  .a-mid{flex:1;}
+  .a-per{font-size:11px;color:rgba(255,255,255,.72);}
+  .a-per b{color:#fff;font-family:var(--data);font-size:15px;}
+  .a-balls{display:flex;gap:4px;margin-top:6px;}
+  .a-balls i{width:20px;height:20px;border-radius:7px;background:rgba(255,255,255,.92);color:var(--blue-d);
+    font:800 11px/20px var(--data);text-align:center;font-style:normal;}
+  .a-balls i.hid{background:rgba(255,255,255,.25);color:transparent;}
+  .a-card{padding:12px 14px;margin-top:12px;}
+  .a-card .g{font-size:11px;color:var(--muted);}
+  .a-card .code{font-size:16px;font-weight:800;}
+  .a-card .plr{display:flex;justify-content:space-between;margin-top:6px;font-size:12px;color:var(--muted);}
+
+  /* ── B 赛况卡 ─────────────────────────── */
+  .b-hero{display:flex;align-items:flex-end;justify-content:space-between;margin:6px 2px 10px;}
+  .b-card{margin-top:12px;overflow:hidden;}
+  .b-h{display:flex;align-items:center;gap:8px;padding:11px 14px 0;}
+  .b-h .g{font-size:11px;color:var(--muted);}
+  .b-h .code{font-size:16px;font-weight:800;}
+  .b-cd{margin-left:auto;display:inline-flex;align-items:center;gap:5px;background:#0E2F86;color:#fff;
+    border-radius:999px;padding:4px 11px;font-size:11px;font-weight:700;}
+  .b-cd .num{color:#8FE7FF;}
+  .b-cd .pie{width:11px;height:11px;border-radius:50%;background:conic-gradient(#8FE7FF 0 68%,rgba(255,255,255,.25) 68% 100%);}
+  .b-live{display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px 2px;}
+  .b-bet{display:inline-flex;align-items:center;gap:6px;background:#EFF5FF;border:1px solid #D8E6FF;
+    border-radius:999px;padding:5px 10px;font-size:11px;font-weight:700;}
+  .b-bet .side{width:16px;height:16px;border-radius:50%;background:var(--blue);color:#fff;font-size:9.5px;
+    display:grid;place-items:center;font-style:normal;}
+  .b-bet.hot{background:#FFF4E3;border-color:#FFE1B0;}
+  .b-bet.hot .side{background:#E8A13A;}
+  .b-bet .amt{color:var(--muted);font-family:var(--data);}
+  .b-idle{font-size:11px;color:var(--faint);padding:2px 3px;}
+  .b-f{display:flex;align-items:center;padding:9px 14px 12px;font-size:11px;color:var(--muted);gap:12px;}
+  .b-f .pl{margin-left:auto;font-size:13px;font-weight:800;font-family:var(--data);}
+  .b-flash{position:relative;background:linear-gradient(168deg,#F0FBF4,#E6F7EC);border-color:#BFE9CE;padding-top:24px;}
+  .b-flash::after{content:"本期 +209.20 · 命中 1/4";position:absolute;right:0;top:0;
+    background:var(--win);color:#fff;font:800 11px/1 var(--data);padding:6px 12px;border-radius:0 13px 0 12px;}
+  .b-flash .b-cd{background:#0B7A44;}
+  .b-flash .b-cd .num,.b-flash .b-cd .pie{color:#C9FFDD;}
+
+  /* ── C 时间轴流 ─────────────────────────── */
+  .c-chips{display:flex;gap:6px;margin:8px 0 4px;overflow:hidden;}
+  .c-chip{flex:none;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);color:#fff;
+    border-radius:999px;padding:6px 11px;font-size:11px;font-weight:700;}
+  .c-chip b{font-family:var(--data);}
+  .c-ev{padding:11px 13px;margin-top:9px;display:flex;align-items:center;gap:9px;font-size:12px;}
+  .c-ev .per{font-weight:800;}
+  .c-ev small{color:var(--muted);}
+  .c-ev .amt{margin-left:auto;font-family:var(--data);font-weight:800;font-size:14px;}
+  .c-new{position:relative;border-color:#BFD8FF;}
+  .c-new::before{content:"NEW";position:absolute;left:-1px;top:-8px;background:var(--blue);color:#fff;
+    font:800 9px/1 var(--data);padding:3px 6px;border-radius:6px;}
+</style>
+</head>
+<body>
+  <h1>我的策略「直播感」重做 · 三案</h1>
+  <div class="sub">戏剧循环＝封盘→开奖→结算，每 15~22 秒一轮。直播感的正解是让这个循环<b>看得见</b>——三案按激进程度递增，共用已上线的纹理蓝+精工白底子</div>
+  <div class="row">
+
+    <!-- A -->
+    <div class="opt">
+      <h2>A · 直播窗</h2>
+      <p class="why">顶区变成<b>开奖直播台</b>：倒计时环 + 期号 + 球号逐颗翻出（封盘时是灰珠，
+        开奖一颗颗亮），总盈亏用 odometer 滚动。卡片<b>不动</b>。
+        实现最轻，但「活」只发生在页顶——往下滑就死了。</p>
+      <div class="phone">
+        <div class="hero-lab">总盈亏 · 3 套运行中</div>
+        <div class="hero-num num">+767.00</div>
+        <div class="a-stage">
+          <span class="a-ring"><svg width="64" height="64"><circle cx="32" cy="32" r="27" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="5"/><circle cx="32" cy="32" r="27" fill="none" stroke="#8FE7FF" stroke-width="5" stroke-dasharray="169.6" stroke-dashoffset="54" stroke-linecap="round"/></svg><b>0:07</b></span>
+          <span class="a-mid">
+            <span class="a-per">极速飞艇 · 第 <b>00103</b> 期 开奖中</span>
+            <span class="a-balls"><i>3</i><i>7</i><i>1</i><i>9</i><i class="hid">·</i><i class="hid">·</i><i class="hid">·</i><i class="hid">·</i><i class="hid">·</i><i class="hid">·</i></span>
+          </span>
+        </div>
+        <div class="tk"><span class="dot"></span><span>极速时时彩 <b>B0405R4</b> 已爆仓 · 若继续 <b class="up num">+35.20</b></span><em>继续 ›</em></div>
+        <div class="card a-card"><div class="g">极速飞艇 · 本期 0分7秒</div><div class="code">C0404R5 ›</div><div class="plr"><span>● 运行中 · 执行线路 6</span><b class="up num">+726.00</b></div></div>
+        <div class="note">卡片维持现状（静态账目卡）</div>
+      </div>
+    </div>
+
+    <!-- B -->
+    <div class="opt">
+      <h2>B · 赛况卡<span class="rec">推荐</span></h2>
+      <p class="why">卡片从「账目卡」变<b>「对局卡」</b>：深蓝倒计时药丸挂在卡头（每秒在走），
+        本期在场的注做成<b>状态椭牌</b>（押哪边・多少钱・第几回，金色=追高回合），
+        <b>结算瞬间整卡闪色报胜负</b>（绿闪+浮出本期战报，2 秒退回）。
+        钩子长在钱上、每张卡都在直播自己的对局——滑到哪里哪里都是活的。</p>
+      <div class="phone">
+        <div class="b-hero">
+          <span><span class="hero-lab">总盈亏 · 3 套运行中</span><div class="hero-num num">+767.00</div></span>
+        </div>
+        <div class="tk"><span class="dot"></span><span>极速时时彩 <b>B0405R4</b> 已爆仓 · 若继续 <b class="up num">+35.20</b></span><em>继续 ›</em></div>
+
+        <!-- 对局中的卡 -->
+        <div class="card b-card">
+          <div class="b-h"><span><span class="g">极速飞艇</span><div class="code">C0404R5 ›</div></span>
+            <span class="b-cd"><span class="pie"></span>本期封盘 <span class="num">0:07</span></span></div>
+          <div class="b-live">
+            <span class="b-bet"><i class="side">双</i>亚军·单双 <span class="amt num">90</span><span style="color:#B58A2A;font-family:var(--data)">R3</span></span>
+            <span class="b-bet"><i class="side">龙</i>龙虎·冠十 <span class="amt num">30</span></span>
+            <span class="b-bet hot"><i class="side">单</i>第五·单双 <span class="amt num">30</span><span style="color:#B58A2A;font-family:var(--data)">R2</span></span>
+          </div>
+          <div class="b-f"><span>本期在场 <b class="num">150</b></span><span>待触发 3</span><span class="pl up num">+726.00</span></div>
+        </div>
+
+        <!-- 刚结算闪色态 -->
+        <div class="card b-card b-flash">
+          <div class="b-h"><span><span class="g">极速赛车</span><div class="code">C0506R5 ›</div></span>
+            <span class="b-cd"><span class="pie"></span>已开奖 <span class="num">00102</span></span></div>
+          <div class="b-live"><span class="b-idle">第七·单双 命中 ✓ · 其余回落等待触发</span></div>
+          <div class="b-f"><span>下一期 0:19 重新进场</span><span class="pl up num">+41.40</span></div>
+        </div>
+        <div class="note">闪色 2 秒后退回白卡 —— 胜负当场看见，不用点进去</div>
+      </div>
+    </div>
+
+    <!-- C -->
+    <div class="opt">
+      <h2>C · 时间轴流</h2>
+      <p class="why">整页变<b>实时事件流</b>：每期一条事件卡（最新在顶、NEW 挂角），
+        策略缩成顶部横滑 chips。信息最「直播」，但<b>管理入口被打散</b>
+        （调整设置/急停要点进 chips 才有），与「策略是资产要管理」的心智相悖——
+        列出来是因为它是这个方向的尽头，不推荐落地。</p>
+      <div class="phone">
+        <div class="hero-lab">总盈亏 · 3 套运行中</div>
+        <div class="hero-num num">+767.00</div>
+        <div class="c-chips">
+          <span class="c-chip">C0404R5 <b class="num">+726.00</b></span>
+          <span class="c-chip">C0506R5 <b class="num">+41.40</b></span>
+          <span class="c-chip">B0405R4 爆</span>
+        </div>
+        <div class="card c-ev c-new"><span class="per">第00103期</span><small>C0404R5 · 3 注在场 · 封盘 0:07</small><span class="amt num">150</span></div>
+        <div class="card c-ev"><span class="per">第00102期</span><small>C0506R5 · 第七·单双 命中</small><span class="amt up num">+41.40</span></div>
+        <div class="card c-ev"><span class="per">第00102期</span><small>C0404R5 · 未达到条件</small><span class="amt num" style="color:var(--faint)">—</span></div>
+        <div class="card c-ev"><span class="per">第00101期</span><small>C0404R5 · 亚军·单双 追至 R3</small><span class="amt num">90</span></div>
+        <div class="note">策略管理（设置/急停）退进 chips 的二级 —— 这是它的致命伤</div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

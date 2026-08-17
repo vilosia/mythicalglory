@@ -17,13 +17,12 @@
   /* view 名 → 所在页面。改页面划分请同时改 Source/build-pages.js 的 PAGES
      （构建脚本会核对这两处，不一致就报错并且不生成任何文件）。 */
   var MAP={
-    'news':'news.html',
-    'home':'home.html',
+    /* 'news'/'home'/'me' 已撤（2026-08-16）：IM 外壳填充页与游戏厅流程无关，
+       六页清理（home/me/news/game-bust/hall/pages）见 Daily Log；回滚走 Drive 版本历史。 */
     'groups':'groups.html',      /* 群组页（大厅返回键用） */
     'search':'groups.html',
-    'me':'me.html',
     'bet':'game-bet.html',
-    'channel':'game-bet.html',
+    /* 'channel' 已撤（08-15）：频道屏删除，见 game-bet.html 里的墓碑 */
     'bets':'game-bet.html',
     'lobby':'game-bet.html',
     'autos':'hall-plans.html',      /* 自动投 → 策略投注（游戏厅一层，2026-08-06 结构改版） */
@@ -32,7 +31,7 @@
     'chat':'game-chat.html',
     'chatsearch':'game-chat.html',
     'chatdetail':'game-chat.html',
-    'bust':'game-bust.html',
+    /* 'bust' 已撤（2026-08-16）：查爆仓页早已无入口（孤儿），随六页清理一并删除。 */
     'wallet':'wallet.html',
     'withdraw':'wallet.html',
     'request':'wallet.html',
@@ -47,9 +46,18 @@
     'tplpick':'hall-plans.html',
     'bench':'hall-plans.html',
     /* 2026-08-08（Alex：大厅拿掉，游戏当玩家第一眼见到的那一页）——
-       从群组点进游戏厅，落到<游戏>页（现在的 index.html）。
-       旧大厅（策略优先的那一屏）没删，搬回 hall.html，仍可单独打开对照。 */
-    'hall':'index.html'
+       从群组点进游戏厅，落到<游戏>页。
+       旧大厅曾留档在 hall.html 对照（2026-08-16 六页清理时已删，回滚走 Drive 版本历史）。
+       2026-08-11（Alex：策略当落地页）—— 'hall' 是「从聊天进游戏厅」那一下，
+       现在<b>落到策略</b>：「去 Iris chat 那边就不用大厅了，直接拿掉那个大厅，
+       直接放这一个（策略）做那个入口」。
+       彩票另给一条 'lottery' —— 游戏屏（投注/聊天室/查爆仓）的返回键用它，
+       因为那几屏是<从彩票点进去的>，回头路要回彩票，不是回策略。 */
+    'hall':'hall-plans.html',
+    'lottery':'hall-lottery.html',
+    /* 2026-08-11 新增：动态（广播频道）。刻意<不>叫 'feed' ——
+       hall-plans.html 里 .view-feed 已经是「执行动态」那一屏，撞名会被 here() 认错页。 */
+    'activity':'hall-activity.html'
   };
 
   function here(v){return !!document.querySelector('.view-'+v);}
@@ -59,13 +67,10 @@
     /* app.js 的 showView() 的第一句。返回 true＝已经开始跳页，调用方立刻 return。 */
     route:function(v){
       if(!v)return false;
-      /* ── 临时 · 演示范围收窄（2026-08-06）──────────────────────
-         客户先验收 聊天 → 游戏厅（大厅 / 投注 / 策略投注）这一条动线。
-         下面这些 view 的入口暂时全部原地吞掉（不跳页、不报错）。
-         恢复：把这个 HIDDEN 块整段删掉即可，MAP 一个字没动。 */
-      var HIDDEN={news:1,home:1,me:1,wallet:1,withdraw:1,request:1,reqhistory:1,
-                  owner:1,approvals:1,members:1,member:1,memberedit:1,rake:1};
-      if(HIDDEN[v]&&!here(v)){console.info('[pagenav] 「'+v+'」暂不在本轮演示范围（Lobby/投注/策略投注 验收后恢复）');return true;}
+      /* 2026-08-11：08-06 那个 HIDDEN 块（临时收窄演示范围，把 资讯/好友/我的/钱包/
+         管理中心 的跳转原地吞掉）<整段删掉了>—— Alex 08-11：「上下分在哪里？群组的呢？
+         这个还没有拎回去…我们现在整个策略全部放掉了，所以我们下 100% 把这些全部加回来」。
+         MAP 从头到尾没被动过，所以删掉就是直接恢复，不需要补任何一条路由。 */
       if(here(v))return false;              /* 就在本页，交回 app.js 原来的逻辑 */
       var page=MAP[v];
       if(!page){

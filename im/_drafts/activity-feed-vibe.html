@@ -1,0 +1,657 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>动态 · 四个不无聊的放法 · IM168</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens.css">
+<!--
+  ══ 2026-08-12 · activity-feed-vibe.html · v1 ═════════════════════════════════
+  Hector：「Feed page also looks dull now. make them more interesting.
+  and engaging to players」
+
+  ① 诊断 —— 把 hall-activity.html 量了一遍，「闷」是五件具体的事，不是配色
+     ⓐ <b>一屏只装得下两条</b>。量出来：一张分享卡 <b>317px</b>（头像行 ＋ 说话 ＋
+        策略块 176 ＋ 动作行），780px 的首屏放得下 <b>2</b> 条。
+        频道最要紧的「热闹」感，被<b>行高</b>吃掉了。
+        （本档四栏的这两个数都是在浏览器里 getBoundingClientRect 量的，不是估的：
+         现状 317px／2 条 · A 233px／4 条 · B 203px／榜单＋2 条 · C 355px／2 条。）
+     ⓑ <b>最有「正在发生」味道的东西被做得最小</b>。播报（连开 8 期大 / 赢了 +¥1,240 /
+        已开奖）是全页唯一的实时脉搏，现在是三行灰字，夹在两张大卡中间，眼睛直接跳过。
+     ⓒ <b>点不动</b>。分享卡上唯一的正向动作是点赞；<b>不能从动态直接去跟这一套</b>。
+        而与点赞并排、字号相同的是「不看 TA」—— 一个<b>负向</b>动作占了正向动作的一半分量。
+     ⓓ <b>进来第一眼没有任何回报</b>。顶上是四个筛选 chip，然后直接是别人 14:32 说的一句话。
+        没有「今天这里怎么样」，玩家没有理由多留三秒。
+     ⓔ <b>没有色彩层级</b>：白卡 → 灰底 → 白卡，全靠一个绿数字。谁是官方、谁是玩家、
+        哪条是系统播报，<b>要读字才知道</b>。
+
+  ② 三个变体＝三种「拿什么把人留住」
+       A · 战报流 —— 用<b>层级</b>。结构不动，把每条的「结果」提到标题位，播报升级成
+            带颜色的时间轴节点，分享卡补一颗「跟这一套」。卡高 317→233px，首屏 2→4 条。改动最小。
+       B · 榜单在上 —— 用<b>回报</b>。顶部先给一条今日风云榜（横滑三张，带迷你曲线与
+            跟投按钮），流退到第二位当「为什么」。进来三秒内就有东西可拿。
+       C · 分享卡＝策略卡（08-12N 改）—— 用<b>一致</b>。原本是深色「时刻」卡，
+            Hector：「prefer 卡片剧场's info but dont suddenly use a dark BG …
+            should still follow the 策略's display info and card look.
+            Only difference is it will show who shared this」。
+            所以整张卡换成<b>策略页那张卡</b>，只在最上面多一条「谁分享的」。
+            ⚠ 这一栏<b>不是密度方案</b>：卡高 355px（含 08-12P 补的期号轴），
+              比现状的 317px 还高 38px，首屏仍是 2 条。它换来的是「一眼认得出这是策略卡」＋卡上能直接跟。
+              要两头都要，就把 A 的抬头压缩术（结果上提、说的话退成副文）叠到这张卡上，
+              那是下一轮的事，本档没有擅自做。
+     ⚠ 三个都<b>没有动筛选行与底部导航</b>，也没有改数据：同样六条内容（3 分享 ＋ 3 播报），
+       只改怎么摆 —— 变量只留一个，才比得出来。
+
+  ③ 顺手记下的、与「闷」无关但看得见的两个既有问题（本档<b>没有</b>擅自修）
+     · 「不看 TA」与点赞同级 —— 建议收进右上角的 ··· 里，正向动作才配留在卡面上。
+     · 时间是绝对时刻（14:32）。频道要的是「刚刚 / 3 分钟前」，相对时间才有热度。
+       A 与 C 里各写了一份相对时间做示意，B 保持绝对时间，方便对照哪个更像在跑。
+
+  ④ 令牌与素材
+     颜色全走 tokens.css，<b>一处 rgba 字面值都没有</b>（白玻璃、压深、文字光晕都做成令牌）。
+     深色卡背自己那 11 个值暂时声明在本档 :root（纯令牌块、--x- 前缀），
+     <b>选定方向后再搬进 tokens.css</b>。
+     曲线是 mulberry32 seeded RNG 现算的，不是手绘路径；点赞数、跟投人数是<b>写死的展示数</b>
+     —— 原型里没有「有多少人从动态点进去跟了」这条数据线，B 的榜单真做要后端补。
+-->
+<style>
+/* ═══ 本档自用令牌（纯令牌块）—— 选定方向后搬进 tokens.css ═══════════════ */
+:root{
+  /* 08-12N：这里原来有 11 个深色底令牌（--x-feed-ink / --x-glass-* / --x-text-halo …），
+     C 改成白卡之后<b>一个都不需要了</b>，整块删除 ——
+     本档现在<b>零新增令牌</b>，颜色全部来自 tokens.css。
+     要回滚成深色版，深色令牌与 .vC 的深色规则都在 README.txt 08-12N 段里记着。 */
+  --x-feed-none: 0;
+}
+
+/* ═══ 对比台（不是产品的一部分）═══════════════════════════════════════════ */
+*{box-sizing:border-box}
+body{margin:0;padding:32px 24px 64px;font-family:var(--font-sans);background:var(--background);color:var(--foreground)}
+.pg{max-width:1680px;margin:0 auto 24px}
+.pg h1{margin:0 0 8px;font-size:20px}
+.pg p{margin:0;max-width:920px;font-size:var(--font-size-base);line-height:1.7;color:var(--muted-foreground)}
+.rack{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.col{width:375px}
+.col h2{margin:0 0 4px;font-size:var(--x-font-size-title)}
+.col .why{margin:0 0 12px;min-height:104px;font-size:var(--font-size-sm);line-height:1.65;color:var(--muted-foreground)}
+.col .why b{color:var(--foreground)}
+
+/* ═══ 手机壳 ══════════════════════════════════════════════════════════════ */
+.ph{position:relative;width:375px;height:780px;overflow:hidden;border:1px solid var(--input);border-radius:28px;background:var(--card);box-shadow:var(--shadow)}
+.scr{position:relative;height:100%;overflow-y:auto;overflow-x:hidden;background:var(--background)}
+.scr::-webkit-scrollbar{width:0}
+.top{display:flex;align-items:center;gap:8px;height:var(--x-header-h);padding:0 var(--x-content-pad);background:var(--card)}
+.top .back{display:flex;width:28px;height:28px;align-items:center;justify-content:center}
+.top .ttl{font-size:var(--font-size-lg);font-weight:700}
+.top .sp{flex:1}
+.top .bal{display:flex;align-items:center;height:30px;padding:0 12px;border:1px solid var(--x-primary-line);border-radius:var(--radius-pill);background:var(--card);color:var(--secondary-foreground);font-size:var(--font-size-sm);font-weight:700}
+.fil{display:flex;gap:8px;padding:8px var(--x-content-pad) 12px;background:var(--card);border-bottom:1px solid var(--border)}
+.fil button{height:32px;padding:0 14px;border:1px solid var(--input);border-radius:var(--radius-pill);background:var(--card);font-family:inherit;font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.fil button.on{border-color:var(--x-primary-line);background:var(--secondary);color:var(--secondary-foreground);font-weight:700}
+.list{padding:12px 0 24px}
+
+/* ═══ 现状（对照组）═════════════════════════════════════════════════════ */
+.vNow .item{margin:0 var(--x-content-pad) 12px;padding:12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card)}
+.vNow .who{display:flex;align-items:center;gap:8px;font-size:var(--font-size-sm)}
+.vNow .av{display:flex;width:24px;height:24px;align-items:center;justify-content:center;border-radius:var(--radius-pill);background:var(--x-warning-soft);color:var(--accent);font-size:var(--font-size-xs);font-weight:700}
+.vNow .av.p{background:var(--secondary);color:var(--secondary-foreground)}
+.vNow .who b{font-size:var(--font-size-base)}
+.vNow .who .badge{padding:1px 6px;border:1px solid var(--accent);border-radius:var(--radius-pill);color:var(--accent);font-size:var(--font-size-xs);font-style:normal}
+.vNow .who .sp{flex:1}
+.vNow .who time{color:var(--muted-foreground)}
+.vNow .say{margin:8px 0 10px;font-size:var(--font-size-base);line-height:1.6}
+.vNow .plan{padding:10px;border:1px solid var(--accent);border-radius:var(--radius)}
+.vNow .plan.plain{border-color:var(--border)}
+.vNow .plan .ph1{display:flex;align-items:center;gap:8px;font-size:var(--font-size-sm)}
+.vNow .plan .chip{padding:1px 6px;border-radius:4px;background:var(--secondary);color:var(--secondary-foreground)}
+.vNow .plan .code{font-family:var(--x-font-code);font-weight:700}
+/* ⚠ 参数那一行与金额必须同排：换行会让金额掉到第二行，把卡片撑高、也不像原页 */
+.vNow .plan .ph2{display:flex;align-items:center;margin-top:6px;font-size:var(--font-size-xs);color:var(--muted-foreground);white-space:nowrap}
+.vNow .plan .ph2 .sp{flex:1}
+.vNow .plan .ph2 b{font-size:var(--x-font-size-number);color:var(--success)}
+.vNow .plan .ph2 b.dn{color:var(--destructive)}
+.vNow .plan .spark{display:block;width:100%;height:56px;margin-top:6px}
+.vNow .plan .ph3{margin-top:6px;font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vNow .acts{display:flex;align-items:center;margin-top:10px}
+.vNow .acts .like{height:32px;padding:0 14px;border:1px solid var(--x-primary-line);border-radius:var(--radius-pill);background:var(--secondary);color:var(--secondary-foreground);font-family:inherit;font-size:var(--font-size-sm);font-weight:700}
+.vNow .acts .sp{flex:1}
+.vNow .acts .mute{border:0;background:none;color:var(--muted-foreground);font-family:inherit;font-size:var(--font-size-sm)}
+.vNow .cast{display:flex;align-items:center;gap:8px;margin:0 var(--x-content-pad) 12px;padding:10px 12px;font-size:var(--font-size-sm);white-space:nowrap}
+.vNow .cast .sp{flex:1}
+.vNow .cast time{color:var(--muted-foreground)}
+
+/* ═══ A · 战报流 ═════════════════════════════════════════════════════════
+   结构不动，改层级：结果上提到标题位、播报升级成时间轴节点、补一颗跟这一套。 */
+.vA .list{position:relative;padding-left:0}
+.vA .item{position:relative;margin:0 var(--x-content-pad) 8px;padding:12px 12px 12px 14px;border:1px solid var(--border);border-left:3px solid var(--secondary-foreground);border-radius:var(--radius);background:var(--card)}
+.vA .item.official{border-left-color:var(--accent)}
+.vA .hd{display:flex;align-items:center;gap:6px;font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vA .hd b{color:var(--foreground)}
+.vA .hd .badge{padding:1px 6px;border-radius:var(--radius-pill);background:var(--accent);color:var(--accent-foreground);font-size:var(--font-size-xs);font-style:normal;font-weight:700}
+.vA .hd .sp{flex:1}
+.vA .head{display:flex;align-items:baseline;gap:8px;margin:8px 0 2px}
+.vA .head b{font-size:26px;font-weight:700;color:var(--success)}
+.vA .head b.dn{color:var(--destructive)}
+.vA .head span{font-family:var(--x-font-code);font-size:var(--font-size-base);font-weight:700}
+.vA .head small{font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vA .say{margin:6px 0 8px;font-size:var(--font-size-base);line-height:1.55}
+.vA .strip{display:flex;align-items:center;gap:10px}
+.vA .strip .spark{flex:1;height:40px}
+.vA .strip .facts{flex:none;font-size:var(--font-size-sm);color:var(--muted-foreground);text-align:right;line-height:1.5}
+.vA .acts{display:flex;align-items:center;gap:8px;margin-top:10px}
+.vA .acts .go{flex:1;height:36px;border:0;border-radius:var(--radius);background:var(--primary);color:var(--primary-foreground);font-family:inherit;font-size:var(--font-size-sm);font-weight:700}
+.vA .acts .like{height:36px;padding:0 12px;border:1px solid var(--input);border-radius:var(--radius);background:var(--card);color:var(--muted-foreground);font-family:inherit;font-size:var(--font-size-sm)}
+.vA .acts .like.on{border-color:var(--x-primary-line);background:var(--secondary);color:var(--secondary-foreground);font-weight:700}
+.vA .acts .more{width:36px;height:36px;border:1px solid var(--input);border-radius:var(--radius);background:var(--card);color:var(--muted-foreground);font-family:inherit}
+.vA .cast{display:flex;align-items:center;gap:10px;margin:0 var(--x-content-pad) 8px;padding:8px 12px;border-radius:var(--radius);background:var(--card);font-size:var(--font-size-sm);white-space:nowrap}
+.vA .cast .ic{display:flex;flex:none;width:24px;height:24px;align-items:center;justify-content:center;border-radius:var(--radius-pill);background:var(--x-warning-soft);color:var(--warning)}
+.vA .cast .ic.win{background:var(--x-success-soft);color:var(--success)}
+.vA .cast .ic.draw{background:var(--muted);color:var(--muted-foreground)}
+.vA .cast .sp{flex:1}
+.vA .cast time{color:var(--x-faint)}
+.vA .cast em{font-style:normal;font-weight:700;color:var(--success)}
+.vA .sum{display:flex;gap:8px;margin:0 var(--x-content-pad) 12px}
+.vA .sum span{flex:1;padding:8px 10px;border-radius:var(--radius);background:var(--card);font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vA .sum b{display:block;font-size:var(--x-font-size-number);color:var(--foreground)}
+.vA .sum b.up{color:var(--success)}
+
+/* ═══ B · 榜单在上 ═══════════════════════════════════════════════════════ */
+.vB .boardwrap{padding:12px 0 4px;background:var(--card);border-bottom:1px solid var(--border)}
+.vB .bhd{display:flex;align-items:baseline;gap:8px;padding:0 var(--x-content-pad) 8px}
+.vB .bhd b{font-size:var(--x-font-size-body-lg);font-weight:700}
+.vB .bhd small{font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vB .bhd .sp{flex:1}
+.vB .bhd a{font-size:var(--font-size-sm);color:var(--primary);text-decoration:none}
+.vB .rail{display:flex;gap:8px;padding:0 var(--x-content-pad) 12px;overflow-x:auto}
+.vB .rail::-webkit-scrollbar{height:0}
+.vB .bcard{flex:none;width:172px;padding:10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card)}
+.vB .bcard.lead{border-color:var(--accent);background:var(--x-warning-soft)}
+.vB .bcard .rk{display:inline-flex;align-items:center;height:18px;padding:0 8px;border-radius:var(--radius-pill);background:var(--muted);color:var(--muted-foreground);font-size:var(--font-size-xs);font-weight:700}
+.vB .bcard.lead .rk{background:var(--accent);color:var(--accent-foreground)}
+.vB .bcard .code{margin:6px 0 0;font-family:var(--x-font-code);font-size:var(--font-size-base);font-weight:700}
+.vB .bcard .pl{margin:2px 0 0;font-size:var(--x-font-size-number);font-weight:700;color:var(--success)}
+.vB .bcard .spark{display:block;width:100%;height:34px;margin:4px 0 6px}
+.vB .bcard .fol{font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vB .bcard .go{width:100%;height:32px;margin-top:8px;border:0;border-radius:var(--radius);background:var(--primary);color:var(--primary-foreground);font-family:inherit;font-size:var(--font-size-sm);font-weight:700}
+.vB .item{margin:0 var(--x-content-pad) 10px;padding:12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card)}
+.vB .who{display:flex;align-items:center;gap:8px;font-size:var(--font-size-sm)}
+.vB .av{display:flex;width:28px;height:28px;align-items:center;justify-content:center;border-radius:var(--radius-pill);background:var(--secondary);color:var(--secondary-foreground);font-size:var(--font-size-sm);font-weight:700}
+.vB .av.gold{background:var(--x-warning-soft);color:var(--accent)}
+.vB .who b{font-size:var(--font-size-base)}
+.vB .who .sp{flex:1}
+.vB .who time{color:var(--muted-foreground)}
+.vB .say{margin:8px 0;font-size:var(--font-size-base);line-height:1.55}
+.vB .mini{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius);background:var(--x-surface-sunken)}
+.vB .mini .code{font-family:var(--x-font-code);font-size:var(--font-size-base);font-weight:700}
+.vB .mini .spark{flex:1;height:32px}
+.vB .mini b{font-size:var(--x-font-size-number);color:var(--success)}
+.vB .mini b.dn{color:var(--destructive)}
+.vB .acts{display:flex;align-items:center;gap:8px;margin-top:10px}
+.vB .acts .go{height:32px;padding:0 16px;border:0;border-radius:var(--radius-pill);background:var(--primary);color:var(--primary-foreground);font-family:inherit;font-size:var(--font-size-sm);font-weight:700}
+.vB .acts .like{height:32px;padding:0 12px;border:1px solid var(--input);border-radius:var(--radius-pill);background:var(--card);color:var(--muted-foreground);font-family:inherit;font-size:var(--font-size-sm)}
+.vB .acts .sp{flex:1}
+.vB .cast{display:flex;align-items:center;gap:8px;margin:0 var(--x-content-pad) 10px;padding:8px 12px;border-left:2px solid var(--border);font-size:var(--font-size-sm);color:var(--muted-foreground);white-space:nowrap}
+.vB .cast b{color:var(--foreground)}
+.vB .cast .sp{flex:1}
+
+/* ═══ C · 分享卡 ＝ 策略卡（08-12N 修订）════════════════════════════════
+   Hector：「Prefer 卡片剧场's info but dont suddenly use a dark BG.
+   The content should still try to follow the 策略's display info and card look.
+   Only difference is it will show who shared this.」
+   所以这一栏不再是深色「时刻」卡：<b>整张卡就是策略页那张卡</b>
+   （游戏名 ＋ 热门推荐 / 代号 / 今日收益大字 ＋ 曲线 / 最高·最低·爆仓 / 跟投行 / 两颗按钮），
+   上面加一条<b>「谁分享的」</b>抬头 ＋ 他说的那句话，中间一条分隔线把两半分开。
+   ⚠ 差别只有那一条抬头 —— 卡的其余部分与 .pcard（策略页那张）逐条对齐，
+     真做的时候应该<b>直接复用同一个组件</b>，不要在动态页另写一份卡。
+   ⚠ 代价（量出来的）：卡高 <b>355px</b>（深色版 244px、现状 317px），首屏 <b>2 条</b>。
+     也就是说这一栏<b>比现状还高 38px</b>（其中 20px 是 08-12P 补的期号轴）——
+     换来的是一致性、卡上直接能跟、以及「这是几点到几期的定格」说得清楚，不是密度。
+     微调过一轮（说话行、代号、曲线 56→48px、各处 8→6px）已经从 351px 压到 335px；
+     再往下压就要动策略卡本身的排法了，那属于两边一起改，不在这一档。 */
+.vC .item{margin:0 var(--x-content-pad) 12px;padding:12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card)}
+/* 「谁分享的」—— 与策略卡唯一的差别 */
+.vC .by{display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--border);font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vC .av{display:flex;flex:none;width:28px;height:28px;align-items:center;justify-content:center;border-radius:var(--radius-pill);background:var(--secondary);color:var(--secondary-foreground);font-size:var(--font-size-sm);font-weight:700}
+.vC .av.gold{background:var(--x-warning-soft);color:var(--accent)}
+.vC .by b{color:var(--foreground);font-size:var(--font-size-base)}
+.vC .by .badge{padding:1px 6px;border-radius:var(--radius-pill);background:var(--accent);color:var(--accent-foreground);font-size:var(--font-size-xs);font-style:normal;font-weight:700}
+.vC .by .sp{flex:1}
+.vC .say{margin:8px 0 10px;font-size:var(--font-size-base);line-height:1.55}
+/* 以下逐条对齐策略页那张卡 */
+.vC .hd{display:flex;align-items:center;gap:8px;font-size:var(--font-size-sm)}
+.vC .hd .game{color:var(--muted-foreground)}
+.vC .hd .hot{color:var(--warning);font-weight:700}
+/* 方向（跟投/反投）不是「热门」：橙色是推荐标记，方向要中性的蓝 chip —— 第一版把 反投 也套了 .hot，一眼读成「反投很热门」 */
+.vC .hd .tag{padding:1px 6px;border-radius:4px;background:var(--secondary);color:var(--secondary-foreground);font-size:var(--font-size-xs)}
+.vC .code{margin:2px 0 6px;font-family:var(--x-font-code);font-size:var(--x-font-size-title);font-weight:700;letter-spacing:.5px}
+.vC .row{display:flex;align-items:flex-end;gap:12px}
+.vC .pl{flex:none}
+.vC .pl small{display:block;font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vC .pl b{font-size:var(--font-size-xl);color:var(--success)}
+.vC .pl.dn b{color:var(--destructive)}
+.vC .spark{flex:1;height:48px}
+/* ══ 冻结快照的两个标记（08-12P · Hector：分享出去的不是活卡）═══════════════
+   Alex 08-11 原话就要过这个：「快照时间 ＋ 一句『分享后不再更新』…
+   这一点要写在卡上，不能让人以为它在跑」。08-11 三稿把「快照 14:32」删掉了，
+   理由是它与卡头右上角的时间<b>重复</b> —— 那个理由当时成立，但它把<b>冻结</b>这件事
+   一起带走了，含义只剩页顶那枚 ⓘ 里说一次。
+   C 栏把卡做成<b>与策略页那张一模一样</b>之后，这个洞变大了：卡看起来就是活的，
+   还带一颗「跟这一套」。所以两个标记一起补，且<b>都带新信息</b>，不再是重复时间：
+     ① .snap —— 头一行右端一枚灰 chip「快照」。零高度成本，一眼可辨。
+     ② .snapbar —— 曲线正下方的<b>期号轴</b>：这条曲线画的是<b>哪一段期号</b>，
+        以及它<b>停在哪一期／几点</b>。这才是「看的人搞不清指的是哪一期」的正解 ——
+        时间戳答不了这个问题，期号才答得了。
+   ⚠ 越旧越要说：超过 1 小时的卡右端转琥珀并写「已过 N 小时」（.old）。
+     11:20 那张就是拿来演这个的 —— 同一屏里它的数字停在 第00061 期，
+     而顶上的盘面已经跑到 第00089 期。
+   ⚠ <b>没做，留给 Alex 拍板</b>：从一张冻结卡点「跟这一套」，跟的是<b>当前盘面</b>，
+     不是卡上那一段。这是产品口径不是视觉问题，本档没有替他决定，
+     也<b>没有</b>在卡上写第二句小字（会把卡再顶高一行）。
+   ⚠ 期号是<b>写死的展示数</b>：原型里分享卡没有存「起止期号」这条数据。
+     真做时它必须跟着快照一起冻，不能画的时候现算。 */
+.vC .hd .snap{margin-left:auto;padding:1px 6px;border-radius:4px;background:var(--muted);color:var(--muted-foreground);font-size:var(--font-size-xs)}
+.vC .snapbar{display:flex;align-items:center;gap:8px;margin-top:4px;font-size:var(--font-size-xs);color:var(--x-faint);white-space:nowrap}
+.vC .snapbar b{color:var(--muted-foreground);font-weight:700;font-variant-numeric:tabular-nums}
+.vC .snapbar .sp{flex:1}
+.vC .snapbar .old{color:var(--warning);font-weight:700}
+.vC .meta{display:flex;gap:12px;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);font-size:var(--font-size-sm);color:var(--muted-foreground);white-space:nowrap}
+.vC .meta .sp{flex:1}
+.vC .fol{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vC .fol .avs{display:flex}
+.vC .fol .avs i{display:block;width:18px;height:18px;margin-right:-6px;border:2px solid var(--card);border-radius:var(--radius-pill);background:var(--x-primary-line)}
+.vC .fol em{font-style:normal;font-weight:700;color:var(--success)}
+.vC .cta{display:flex;gap:8px;margin-top:10px}
+.vC .cta .go{flex:1;height:var(--x-control-h);border:0;border-radius:var(--radius);background:var(--primary);color:var(--primary-foreground);font-family:inherit;font-size:var(--font-size-base);font-weight:700}
+.vC .cta .alt{height:var(--x-control-h);padding:0 14px;border:1px solid var(--input);border-radius:var(--radius);background:var(--card);color:var(--muted-foreground);font-family:inherit;font-size:var(--font-size-base)}
+.vC .cta .re{height:var(--x-control-h);padding:0 12px;border:1px solid var(--input);border-radius:var(--radius);background:var(--card);color:var(--muted-foreground);font-family:inherit;font-size:var(--font-size-sm)}
+.vC .cta .re.on{border-color:var(--x-primary-line);background:var(--secondary);color:var(--secondary-foreground);font-weight:700}
+/* 播报：留着卡片剧场那一版的白药丸 —— 这是它最好用的一半，和白卡也不冲突 */
+/* ⚠ 播报是一行短句：不 nowrap 的话 flex 会把它挤成每字一行（第一版四栏都中招） */
+.vC .cast{display:flex;align-items:center;gap:10px;margin:0 var(--x-content-pad) 12px;padding:10px 12px;border-radius:var(--radius-pill);background:var(--card);font-size:var(--font-size-sm);white-space:nowrap;box-shadow:var(--shadow)}
+.vC .cast .ic{display:flex;flex:none;width:26px;height:26px;align-items:center;justify-content:center;border-radius:var(--radius-pill);background:var(--x-warning-soft);color:var(--warning);font-size:var(--font-size-sm)}
+.vC .cast .ic.win{background:var(--x-success-soft);color:var(--success)}
+.vC .cast .ic.draw{background:var(--muted);color:var(--muted-foreground)}
+.vC .cast .sp{flex:1}
+.vC .cast time{color:var(--x-faint)}
+.vC .cast em{font-style:normal;font-weight:700;color:var(--success)}
+
+/* ═══ D · 精简版（08-12Q · Hector：Too many content now）════════════════════
+   C 把整张策略卡照搬过来，结果卡上叠了<b>十条带子</b>：
+     谁分享 / 说的话 / 游戏＋方向＋快照 / 代号 / 今日收益 / 大字＋曲线 /
+     期号轴 / 最高·最低·爆仓·已稳 / 跟投行 / 三颗按钮。
+   这一栏<b>不加东西，只做减法与合并</b>，砍的都是「点进去就能看到」或「重复」的：
+     ⓐ <b>最高／最低 整个拿掉</b> —— 那是看图的注解，属于策略页；
+        动态页的问题是「这套今天行不行」，一个大字加一条曲线已经答完。
+     ⓑ <b>游戏 ＋ 方向 并进代号那一行</b> —— 三样都是「这是哪一套」，本来就该同排。
+     ⓒ <b>爆仓 · 已稳 · 跟投人数 并成一行</b> —— 原来占两行（还各带一条分隔线）。
+        Alex 指定要的「今日爆几次 ＋ 距上次爆多少期」<b>一个没删</b>，只是换了排法。
+     ⓓ <b>「看回测」撤掉</b> —— 整张卡本来就点进策略页（Alex：「你直接点进去看这样就好了」），
+        这颗按钮是把同一个去处做成第二条路。留下的正向动作只有 跟这一套 ＋ 🔥。
+     ⓔ 期号轴上的「之后不再更新」删掉 —— 头一行那枚<b>快照</b> chip ＋「定格」两个字
+        已经把这件事说完，那半句是第三次说。含义仍在页顶那枚 ⓘ 里。
+     ⓕ 快照 chip 从代号行<b>搬到最上面那一行</b>（时间旁边）：它形容的是<b>这条分享</b>，
+        不是这个游戏；两个「什么时候」的东西挨在一起，也少一次视线折返。
+     ⓖ <b>「热门推荐」不放了</b> —— 那是货架上的排序标记，回答「该不该点开」；
+        在动态里回答这件事的是<b>谁分享的</b>（官方专家角标就在最上面那一行）。
+        换上去的是 Alex 点名要的<b>方向</b>（跟投／反投）。
+   ⚠ 期号轴与「已过 N 小时」<b>没动</b> —— 那是上一轮刚补的，正是这张卡不能省的部分。
+   ⚠ <b>有两样 Alex 点名要过、而 C 与 D 都没带上</b>（现状卡上是有的），要他拍板：
+       · <b>玩法定位</b>（「冠军 · 大小」）—— 「share 出去应该有一个 indicator，
+         第一眼就看到你这个 plan 的特点在于你是冠军大小」
+       · <b>执行线路几条</b>（现状卡上那个「27 条线」）
+     这两样是 C 把卡换成<b>策略页那张</b>时掉的 —— 策略卡上本来就没有它们。
+     要加回来是<b>一条 xs 行</b>（约 +16px，D 会从 293 回到 309px），
+     也可以由 Alex 确认「整张卡点进去就看得到，动态上可以省」。
+     本档<b>没有替他决定</b>，因为这一轮的指令是「太多了，减」，
+     而这两条属于「加」—— 两个方向的事不该我一个人在同一轮里对冲掉。 */
+.vD .item{margin:0 var(--x-content-pad) 12px;padding:12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card)}
+.vD .by{display:flex;align-items:center;gap:8px;font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vD .av{display:flex;flex:none;width:28px;height:28px;align-items:center;justify-content:center;border-radius:var(--radius-pill);background:var(--secondary);color:var(--secondary-foreground);font-size:var(--font-size-sm);font-weight:700}
+.vD .av.gold{background:var(--x-warning-soft);color:var(--accent)}
+.vD .by b{color:var(--foreground);font-size:var(--font-size-base)}
+.vD .by .badge{padding:1px 6px;border-radius:var(--radius-pill);background:var(--accent);color:var(--accent-foreground);font-size:var(--font-size-xs);font-style:normal;font-weight:700}
+.vD .by .sp{flex:1}
+.vD .by .snap{padding:1px 6px;border-radius:4px;background:var(--muted);color:var(--muted-foreground);font-size:var(--font-size-xs)}
+.vD .say{margin:8px 0 8px;font-size:var(--font-size-base);line-height:1.55}
+.vD .id{display:flex;align-items:baseline;gap:8px}
+.vD .id b{font-family:var(--x-font-code);font-size:var(--x-font-size-title);font-weight:700;letter-spacing:.5px}
+.vD .id span{font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vD .id .tag{padding:1px 6px;border-radius:4px;background:var(--secondary);color:var(--secondary-foreground);font-size:var(--font-size-xs)}
+.vD .row{display:flex;align-items:flex-end;gap:12px;margin-top:6px}
+/* 「今日收益」<b>不另占一行</b>：贴在数字右侧的基线上。省下的 18px 正好让首屏
+   从 2 条变 3 条 —— 这是 D 与 C 之间最后那一格的差别所在。 */
+.vD .pl{display:flex;flex:none;align-items:baseline;gap:6px}
+.vD .pl small{font-size:var(--font-size-sm);color:var(--muted-foreground);order:2}
+.vD .pl b{font-size:var(--font-size-xl);color:var(--success);order:1}
+.vD .pl.dn b{color:var(--destructive)}
+.vD .spark{flex:1;height:48px}
+.vD .snapbar{display:flex;align-items:center;gap:8px;margin-top:4px;font-size:var(--font-size-xs);color:var(--x-faint);white-space:nowrap}
+.vD .snapbar b{color:var(--muted-foreground);font-weight:700;font-variant-numeric:tabular-nums}
+.vD .snapbar .sp{flex:1}
+.vD .snapbar .old{color:var(--warning);font-weight:700}
+.vD .foot{display:flex;align-items:center;gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:var(--font-size-sm);color:var(--muted-foreground);white-space:nowrap}
+.vD .foot .sp{flex:1}
+.vD .foot .avs{display:flex;margin-right:2px}
+.vD .foot .avs i{display:block;width:18px;height:18px;margin-right:-6px;border:2px solid var(--card);border-radius:var(--radius-pill);background:var(--x-primary-line)}
+.vD .cta{display:flex;gap:8px;margin-top:10px}
+.vD .cta .go{flex:1;height:var(--x-control-h);border:0;border-radius:var(--radius);background:var(--primary);color:var(--primary-foreground);font-family:inherit;font-size:var(--font-size-base);font-weight:700}
+.vD .cta .re{height:var(--x-control-h);padding:0 16px;border:1px solid var(--input);border-radius:var(--radius);background:var(--card);color:var(--muted-foreground);font-family:inherit;font-size:var(--font-size-sm)}
+.vD .cta .re.on{border-color:var(--x-primary-line);background:var(--secondary);color:var(--secondary-foreground);font-weight:700}
+.vD .cast{display:flex;align-items:center;gap:10px;margin:0 var(--x-content-pad) 12px;padding:10px 12px;border-radius:var(--radius-pill);background:var(--card);font-size:var(--font-size-sm);white-space:nowrap;box-shadow:var(--shadow)}
+.vD .cast .ic{display:flex;flex:none;width:26px;height:26px;align-items:center;justify-content:center;border-radius:var(--radius-pill);background:var(--x-warning-soft);color:var(--warning);font-size:var(--font-size-sm)}
+.vD .cast .ic.win{background:var(--x-success-soft);color:var(--success)}
+.vD .cast .sp{flex:1}
+.vD .cast time{color:var(--x-faint)}
+.vD .cast em{font-style:normal;font-weight:700;color:var(--success)}
+.vD .new{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 auto 12px;width:148px;height:32px;border-radius:var(--radius-pill);background:var(--primary);color:var(--primary-foreground);font-size:var(--font-size-sm);font-weight:700;box-shadow:var(--shadow)}
+.vC .new{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 auto 12px;width:148px;height:32px;border-radius:var(--radius-pill);background:var(--primary);color:var(--primary-foreground);font-size:var(--font-size-sm);font-weight:700;box-shadow:var(--shadow)}
+</style>
+</head>
+<body>
+
+<header class="pg">
+  <h1>动态 · 四个不无聊的放法</h1>
+  <p>同样六条内容（3 条分享 ＋ 3 条播报），只改怎么摆。A 用<b>层级</b>、B 用<b>回报</b>、C 用<b>一致</b>（分享卡＝策略卡，只多一条「谁分享的」）、D 是 <b>C 的减法版</b>（同样的信息，砍掉重复与点进去就能看到的）。左起第一栏是现状，用来对照——注意它一屏只装得下两条，而且分享卡上唯一能点的正向动作是点赞。</p>
+</header>
+
+<div class="rack">
+
+  <!-- ═══ 现状 ═══ -->
+  <section class="col">
+    <h2>现状</h2>
+    <p class="why">一条分享 ≈ 340px，<b>首屏只装两条</b>。播报（连开 8 期大／赢了 +¥1,240）是全页唯一的实时脉搏，却被做成三行灰字。<b>不能从这里去跟这一套</b>；和点赞并排的是「不看 TA」。</p>
+    <div class="ph vNow">
+      <div class="scr">
+        <div class="top" data-component="HallHeader"><span class="back">‹</span><span class="ttl">动态</span><span class="sp"></span><span class="bal">240,000.00</span></div>
+        <div class="fil" data-component="ActivityFilter"><button class="on">全部</button><button>专家</button><button>策略分享</button><button>播报</button></div>
+        <div class="list">
+          <article class="item" data-component="ActivityShareCard">
+            <div class="who"><span class="av">策</span><b>策略王</b><em class="badge">官方专家</em><span class="sp"></span><time>14:32</time></div>
+            <p class="say">追 8 回的版本，今天只爆两次、收正的 —— 跟我脚步走。</p>
+            <div class="plan">
+              <div class="ph1"><span class="chip">极速飞艇</span><span class="code">C0404R8</span><span class="chip">跟投</span></div>
+              <div class="ph2">连开 4 到 4 期入场 · 倍投 2× · 追 8 回<span class="sp"></span><b>+¥413.28</b></div>
+              <svg class="spark" data-spark="7" viewBox="0 0 320 56" preserveAspectRatio="none"></svg>
+              <div class="ph3">27 条线 · 今日爆 2 次 · 距上次 768 期</div>
+            </div>
+            <div class="acts"><button class="like">👍 128</button><span class="sp"></span><button class="mute">不看 TA</button></div>
+          </article>
+          <div class="cast" data-component="ActivityCast">⚡ <b>极速快乐十分 · 第九名</b> 连开 8 期 大<span class="sp"></span><time>14:29</time></div>
+          <article class="item" data-component="ActivityShareCard">
+            <div class="who"><span class="av p">泰</span><b>阿泰</b><span class="sp"></span><time>14:11</time></div>
+            <p class="say">这条我自己跑了三天了，反着打、追 10 回，今天只爆一次。</p>
+            <div class="plan plain">
+              <div class="ph1"><span class="chip">极速赛车</span><span class="code">B0404R10</span><span class="chip">反投</span></div>
+              <div class="ph2">连开 4 到 4 期入场 · 固定投 · 追 10 回<span class="sp"></span><b class="dn">−¥33.84</b></div>
+              <svg class="spark" data-spark="3" data-dn="1" viewBox="0 0 320 56" preserveAspectRatio="none"></svg>
+              <div class="ph3">27 条线 · 今日爆 1 次 · 距上次 329 期</div>
+            </div>
+            <div class="acts"><button class="like">👍 9</button><span class="sp"></span><button class="mute">不看 TA</button></div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ A · 战报流 ═══ -->
+  <section class="col">
+    <h2>A · 战报流</h2>
+    <p class="why">结构不动，<b>改层级</b>：结果（+¥413.28）提到标题位、说的那句话退成副文、曲线压成 40px 一条、播报升级成带色圆点的节点。每条补一颗<b>跟这一套</b>，「不看 TA」收进 ···。顶部一条今日战报。卡高 <b>317→233px</b>、首屏 <b>2→4 条</b>，改动最小。</p>
+    <div class="ph vA">
+      <div class="scr">
+        <div class="top" data-component="HallHeader"><span class="back">‹</span><span class="ttl">动态</span><span class="sp"></span><span class="bal">240,000.00</span></div>
+        <div class="fil" data-component="ActivityFilter"><button class="on">全部</button><button>专家</button><button>策略分享</button><button>播报</button></div>
+        <div class="list">
+          <div class="sum" data-component="ActivityToday">
+            <span>今日动态<b>128</b></span>
+            <span>今日跟上<b>37</b></span>
+            <span>今日最猛<b class="up">+¥1,240</b></span>
+          </div>
+          <article class="item official" data-component="ActivityShareCard">
+            <div class="hd"><b>策略王</b><em class="badge">官方专家</em><span class="sp"></span><span>3 分钟前</span></div>
+            <div class="head"><b>+¥413.28</b><span>C0404R8</span><small>极速飞艇</small></div>
+            <p class="say">追 8 回的版本，今天只爆两次、收正的 —— 跟我脚步走。</p>
+            <div class="strip">
+              <svg class="spark" data-spark="7" viewBox="0 0 200 40" preserveAspectRatio="none"></svg>
+              <span class="facts">今日爆 2 次<br>已稳 768 期</span>
+            </div>
+            <div class="acts"><button class="go">跟这一套</button><button class="like on">👍 128</button><button class="more">···</button></div>
+          </article>
+          <div class="cast" data-component="ActivityCast"><span class="ic">⚡</span><b>极速快乐十分 · 第九名</b> 连开 8 期 大<span class="sp"></span><time>6 分钟前</time></div>
+          <article class="item" data-component="ActivityShareCard">
+            <div class="hd"><b>阿泰</b><span class="sp"></span><span>24 分钟前</span></div>
+            <div class="head"><b class="dn">−¥33.84</b><span>B0404R10</span><small>极速赛车</small></div>
+            <p class="say">这条我自己跑了三天了，反着打、追 10 回，今天只爆一次。</p>
+            <div class="strip">
+              <svg class="spark" data-spark="3" data-dn="1" viewBox="0 0 200 40" preserveAspectRatio="none"></svg>
+              <span class="facts">今日爆 1 次<br>已稳 329 期</span>
+            </div>
+            <div class="acts"><button class="go">跟这一套</button><button class="like">👍 9</button><button class="more">···</button></div>
+          </article>
+          <div class="cast" data-component="ActivityCast"><span class="ic win">✓</span><b>阿泰</b> 跟着 <b>B0404R10</b> 赢了 <em>+¥1,240</em><span class="sp"></span><time>37 分钟前</time></div>
+          <article class="item official" data-component="ActivityShareCard">
+            <div class="hd"><b>幸运组 · 官方</b><em class="badge">官方专家</em><span class="sp"></span><span>今天 11:20</span></div>
+            <div class="head"><b>+¥109.56</b><span>C0303R12</span><small>极速赛车</small></div>
+            <p class="say">今天主推这一条：追 12 回，一整天一次没爆。</p>
+            <div class="strip">
+              <svg class="spark" data-spark="11" viewBox="0 0 200 40" preserveAspectRatio="none"></svg>
+              <span class="facts">今日爆 0 次<br>已稳 1,204 期</span>
+            </div>
+            <div class="acts"><button class="go">跟这一套</button><button class="like">👍 63</button><button class="more">···</button></div>
+          </article>
+          <div class="cast" data-component="ActivityCast"><span class="ic draw">◷</span><b>极速飞艇 第00089期</b> 已开奖 · 冠军 <b>7</b><span class="sp"></span><time>今天 09:47</time></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ B · 榜单在上 ═══ -->
+  <section class="col">
+    <h2>B · 榜单在上</h2>
+    <p class="why">先给<b>回报</b>再给内容：顶部一条今日风云榜（横滑，带迷你曲线与跟投按钮），流退到第二位当「为什么它第一」。进来三秒内就有东西可拿。代价：榜单吃掉 200px，<b>首屏仍然只剩 2 条流</b>；<b>排名口径要定</b>；「有多少人从动态跟了」这条数据线后端还没有。</p>
+    <div class="ph vB">
+      <div class="scr">
+        <div class="top" data-component="HallHeader"><span class="back">‹</span><span class="ttl">动态</span><span class="sp"></span><span class="bal">240,000.00</span></div>
+        <section class="boardwrap" data-component="ActivityLeaderboard">
+          <div class="bhd"><b>今日风云榜</b><small>按今日收益</small><span class="sp"></span><a href="hall-plans.html">全部策略 ›</a></div>
+          <div class="rail">
+            <article class="bcard lead">
+              <span class="rk">NO.1</span>
+              <p class="code">C0404R8</p>
+              <p class="pl">+¥413.28</p>
+              <svg class="spark" data-spark="7" viewBox="0 0 152 34" preserveAspectRatio="none"></svg>
+              <span class="fol">644 人在跟 · 今日 +30</span>
+              <button class="go">跟这一套</button>
+            </article>
+            <article class="bcard">
+              <span class="rk">NO.2</span>
+              <p class="code">C0303R12</p>
+              <p class="pl">+¥109.56</p>
+              <svg class="spark" data-spark="11" viewBox="0 0 152 34" preserveAspectRatio="none"></svg>
+              <span class="fol">311 人在跟 · 今日 +12</span>
+              <button class="go">跟这一套</button>
+            </article>
+            <article class="bcard">
+              <span class="rk">NO.3</span>
+              <p class="code">A0505R6</p>
+              <p class="pl">+¥88.10</p>
+              <svg class="spark" data-spark="19" viewBox="0 0 152 34" preserveAspectRatio="none"></svg>
+              <span class="fol">96 人在跟 · 今日 +4</span>
+              <button class="go">跟这一套</button>
+            </article>
+          </div>
+        </section>
+        <div class="fil" data-component="ActivityFilter"><button class="on">全部</button><button>专家</button><button>策略分享</button><button>播报</button></div>
+        <div class="list">
+          <article class="item" data-component="ActivityShareCard">
+            <div class="who"><span class="av gold">策</span><b>策略王</b><span class="sp"></span><time>14:32</time></div>
+            <p class="say">追 8 回的版本，今天只爆两次、收正的 —— 跟我脚步走。</p>
+            <div class="mini">
+              <span class="code">C0404R8</span>
+              <svg class="spark" data-spark="7" viewBox="0 0 120 32" preserveAspectRatio="none"></svg>
+              <b>+¥413.28</b>
+            </div>
+            <div class="acts"><button class="go">跟这一套</button><button class="like">👍 128</button><span class="sp"></span></div>
+          </article>
+          <div class="cast" data-component="ActivityCast">⚡ <b>极速快乐十分 · 第九名</b> 连开 8 期 大<span class="sp"></span><time>14:29</time></div>
+          <article class="item" data-component="ActivityShareCard">
+            <div class="who"><span class="av">泰</span><b>阿泰</b><span class="sp"></span><time>14:11</time></div>
+            <p class="say">这条我自己跑了三天了，反着打、追 10 回，今天只爆一次。</p>
+            <div class="mini">
+              <span class="code">B0404R10</span>
+              <svg class="spark" data-spark="3" data-dn="1" viewBox="0 0 120 32" preserveAspectRatio="none"></svg>
+              <b class="dn">−¥33.84</b>
+            </div>
+            <div class="acts"><button class="go">跟这一套</button><button class="like">👍 9</button><span class="sp"></span></div>
+          </article>
+          <div class="cast" data-component="ActivityCast">✓ <b>阿泰</b> 跟着 <b>B0404R10</b> 赢了 <b>+¥1,240</b><span class="sp"></span><time>13:58</time></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ C · 分享卡 ＝ 策略卡 ═══ -->
+  <section class="col">
+    <h2>C · 分享卡 ＝ 策略卡</h2>
+    <p class="why">保留卡片剧场的<b>信息量</b>，去掉深色底：整张卡就是<b>策略页那张卡</b>——游戏名 ＋ 热门推荐、代号、今日收益大字 ＋ 曲线、最高／最低／爆仓、跟投行、两颗按钮。<b>唯一的差别是最上面多一条「谁分享的」</b>与他说的那句话。<b>分享出去的是冻结快照</b>，所以卡上补了两个标记：头一行右端的「快照」chip，与曲线正下方的<b>期号轴</b>（这条线画的是哪一段期号、停在几点）；超过一小时的卡转琥珀写「已过 N 小时」——最下面那张 11:20 的就是。⚠ 卡高 <b>355px</b>、首屏 2 条——<b>比现状还高 38px</b>，这一栏买的是一致性、卡上直接能跟、以及不会误读成活卡，不是密度。</p>
+    <div class="ph vC">
+      <div class="scr">
+        <div class="top" data-component="HallHeader"><span class="back">‹</span><span class="ttl">动态</span><span class="sp"></span><span class="bal">240,000.00</span></div>
+        <div class="fil" data-component="ActivityFilter"><button class="on">全部</button><button>专家</button><button>策略分享</button><button>播报</button></div>
+        <div class="list">
+          <div class="new" data-component="NewPostsPill">↑ 12 条新动态</div>
+          <article class="item" data-component="ActivityShareCard">
+            <div class="by"><span class="av gold">策</span><b>策略王</b><em class="badge">官方专家</em><span class="sp"></span><time>3 分钟前</time></div>
+            <p class="say">追 8 回的版本，今天只爆两次、收正的 —— 跟我脚步走。</p>
+            <div class="hd"><span class="game">极速飞艇</span><span class="hot">热门推荐</span><span class="snap">快照</span></div>
+            <div class="code">C0404R8</div>
+            <div class="row">
+              <span class="pl"><small>今日收益</small><b>+413.28</b></span>
+              <svg class="spark" data-spark="7" viewBox="0 0 180 56" preserveAspectRatio="none"></svg>
+            </div>
+            <div class="snapbar"><b>第00001–00089 期</b><span class="sp"></span><span>14:32 定格 · 之后不再更新</span></div>
+            <div class="meta"><span>最高 +¥469</span><span>最低 −¥310</span><span class="sp"></span><span>今日爆仓 2 次</span><span>已稳 768 期</span></div>
+            <div class="fol"><span class="avs"><i></i><i></i><i></i></span> 644 人在跟 · 今日 <em>+30</em></div>
+            <div class="cta"><button class="go">跟这一套</button><button class="alt">看回测</button><button class="re on">🔥 128</button></div>
+          </article>
+          <div class="cast" data-component="ActivityCast"><span class="ic">⚡</span><b>极速快乐十分 · 第九名</b> 连开 8 期 大<span class="sp"></span><time>6 分钟前</time></div>
+          <article class="item" data-component="ActivityShareCard">
+            <div class="by"><span class="av">泰</span><b>阿泰</b><span class="sp"></span><time>24 分钟前</time></div>
+            <p class="say">这条我自己跑了三天了，反着打、追 10 回，今天只爆一次。</p>
+            <div class="hd"><span class="game">极速赛车</span><span class="tag">反投</span><span class="snap">快照</span></div>
+            <div class="code">B0404R10</div>
+            <div class="row">
+              <span class="pl dn"><small>今日收益</small><b>−33.84</b></span>
+              <svg class="spark" data-spark="3" data-dn="1" viewBox="0 0 180 56" preserveAspectRatio="none"></svg>
+            </div>
+            <div class="snapbar"><b>第00001–00072 期</b><span class="sp"></span><span>14:11 定格 · 之后不再更新</span></div>
+            <div class="meta"><span>最高 +¥88</span><span>最低 −¥120</span><span class="sp"></span><span>今日爆仓 1 次</span><span>已稳 329 期</span></div>
+            <div class="fol"><span class="avs"><i></i><i></i></span> 218 人在跟 · 今日 <em>+6</em></div>
+            <div class="cta"><button class="go">跟这一套</button><button class="alt">看回测</button><button class="re">🔥 9</button></div>
+          </article>
+          <div class="cast" data-component="ActivityCast"><span class="ic win">✓</span><b>阿泰</b> 跟着 <b>B0404R10</b> 赢了 <em>+¥1,240</em><span class="sp"></span><time>37 分钟前</time></div>
+          <article class="item" data-component="ActivityShareCard">
+            <div class="by"><span class="av gold">官</span><b>幸运组 · 官方</b><em class="badge">官方专家</em><span class="sp"></span><time>今天 11:20</time></div>
+            <p class="say">今天主推这一条：追 12 回，一整天一次没爆。</p>
+            <div class="hd"><span class="game">极速赛车</span><span class="hot">热门推荐</span><span class="snap">快照</span></div>
+            <div class="code">C0303R12</div>
+            <div class="row">
+              <span class="pl"><small>今日收益</small><b>+109.56</b></span>
+              <svg class="spark" data-spark="11" viewBox="0 0 180 56" preserveAspectRatio="none"></svg>
+            </div>
+            <div class="snapbar"><b>第00001–00061 期</b><span class="sp"></span><span>11:20 定格 · <span class="old">已过 3 小时</span></span></div>
+            <div class="meta"><span>最高 +¥131</span><span>最低 −¥18</span><span class="sp"></span><span>今日爆仓 0 次</span><span>已稳 1,204 期</span></div>
+            <div class="fol"><span class="avs"><i></i><i></i><i></i></span> 311 人在跟 · 今日 <em>+12</em></div>
+            <div class="cta"><button class="go">跟这一套</button><button class="alt">看回测</button><button class="re">🔥 63</button></div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ D · 精简版 ═══ -->
+  <section class="col">
+    <h2>D · 精简版</h2>
+    <p class="why">C 的减法版：<b>最高／最低整个拿掉</b>（那是策略页的图注）、<b>游戏＋方向并进代号那行</b>、<b>爆仓·已稳·跟投人数并成一行</b>、<b>「看回测」撤掉</b>（整张卡本来就点进策略页）、「今日收益」贴到数字右侧。Alex 指定要的爆仓两个数<b>一个没删</b>，期号轴与「已过 N 小时」照留。十条带子压到七条：卡高 <b>293px</b>（C 355 · 现状 317），首屏 <b>3 条</b>（图上那颗「12 条新动态」药丸只在真有新内容时出现，它在时是 2 条）。</p>
+    <div class="ph vD">
+      <div class="scr">
+        <div class="top" data-component="HallHeader"><span class="back">‹</span><span class="ttl">动态</span><span class="sp"></span><span class="bal">240,000.00</span></div>
+        <div class="fil" data-component="ActivityFilter"><button class="on">全部</button><button>专家</button><button>策略分享</button><button>播报</button></div>
+        <div class="list">
+          <div class="new" data-component="NewPostsPill">↑ 12 条新动态</div>
+          <article class="item" data-component="ActivityShareCard">
+            <div class="by"><span class="av gold">策</span><b>策略王</b><em class="badge">官方专家</em><span class="sp"></span><span class="snap">快照</span><time>3 分钟前</time></div>
+            <p class="say">追 8 回的版本，今天只爆两次、收正的 —— 跟我脚步走。</p>
+            <div class="id"><b>C0404R8</b><span>极速飞艇</span><span class="tag">跟投</span></div>
+            <div class="row">
+              <span class="pl"><small>今日收益</small><b>+413.28</b></span>
+              <svg class="spark" data-spark="7" viewBox="0 0 180 48" preserveAspectRatio="none"></svg>
+            </div>
+            <div class="snapbar"><b>第00001–00089 期</b><span class="sp"></span><span>14:32 定格</span></div>
+            <div class="foot"><span>今日爆 2 次</span><span>已稳 768 期</span><span class="sp"></span><span class="avs"><i></i><i></i><i></i></span>644 人在跟</div>
+            <div class="cta"><button class="go">跟这一套</button><button class="re on">🔥 128</button></div>
+          </article>
+          <div class="cast" data-component="ActivityCast"><span class="ic">⚡</span><b>极速快乐十分 · 第九名</b> 连开 8 期 大<span class="sp"></span><time>6 分钟前</time></div>
+          <article class="item" data-component="ActivityShareCard">
+            <div class="by"><span class="av">泰</span><b>阿泰</b><span class="sp"></span><span class="snap">快照</span><time>24 分钟前</time></div>
+            <p class="say">这条我自己跑了三天了，反着打、追 10 回，今天只爆一次。</p>
+            <div class="id"><b>B0404R10</b><span>极速赛车</span><span class="tag">反投</span></div>
+            <div class="row">
+              <span class="pl dn"><small>今日收益</small><b>−33.84</b></span>
+              <svg class="spark" data-spark="3" data-dn="1" viewBox="0 0 180 48" preserveAspectRatio="none"></svg>
+            </div>
+            <div class="snapbar"><b>第00001–00072 期</b><span class="sp"></span><span>14:11 定格</span></div>
+            <div class="foot"><span>今日爆 1 次</span><span>已稳 329 期</span><span class="sp"></span><span class="avs"><i></i><i></i><i></i></span>218 人在跟</div>
+            <div class="cta"><button class="go">跟这一套</button><button class="re">🔥 9</button></div>
+          </article>
+          <div class="cast" data-component="ActivityCast"><span class="ic win">✓</span><b>阿泰</b> 跟着 <b>B0404R10</b> 赢了 <em>+¥1,240</em><span class="sp"></span><time>37 分钟前</time></div>
+          <article class="item" data-component="ActivityShareCard">
+            <div class="by"><span class="av gold">官</span><b>幸运组 · 官方</b><em class="badge">官方专家</em><span class="sp"></span><span class="snap">快照</span><time>今天 11:20</time></div>
+            <p class="say">今天主推这一条：追 12 回，一整天一次没爆。</p>
+            <div class="id"><b>C0303R12</b><span>极速赛车</span><span class="tag">跟投</span></div>
+            <div class="row">
+              <span class="pl"><small>今日收益</small><b>+109.56</b></span>
+              <svg class="spark" data-spark="11" viewBox="0 0 180 48" preserveAspectRatio="none"></svg>
+            </div>
+            <div class="snapbar"><b>第00001–00061 期</b><span class="sp"></span><span>11:20 定格 · <span class="old">已过 3 小时</span></span></div>
+            <div class="foot"><span>今日爆 0 次</span><span>已稳 1,204 期</span><span class="sp"></span><span class="avs"><i></i><i></i><i></i></span>311 人在跟</div>
+            <div class="cta"><button class="go">跟这一套</button><button class="re">🔥 63</button></div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script data-demo>
+/* ── 演示用，永不移植 ──────────────────────────────────────────────────────
+   曲线不是手绘：mulberry32 seeded RNG → 随机游走。同一个 seed 在四栏画的是<b>同一条线</b>，
+   所以「现状的 C0404R8」与「C 的 C0404R8」形状一致，比的是摆法不是数据。 */
+(function(){
+  function rng(s){ return function(){ s|=0; s=s+0x6D2B79F5|0; var t=Math.imul(s^s>>>15,1|s); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+  function walk(seed,n,drift){ var r=rng(seed),v=0,out=[]; for(var i=0;i<n;i++){ v+=(r()-.5)*2+drift; out.push(v); } return out; }
+  function path(pts,w,h,pad){ var lo=Math.min.apply(null,pts),hi=Math.max.apply(null,pts),rg=(hi-lo)||1,d='';
+    pts.forEach(function(p,i){ var x=i/(pts.length-1)*w, y=h-pad-(p-lo)/rg*(h-pad*2); d+=(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1); });
+    return d; }
+  function box(svg){ var vb=svg.getAttribute('viewBox').split(' '); return [ +vb[2], +vb[3] ]; }
+
+  document.querySelectorAll('[data-spark]').forEach(function(svg){
+    var dn=svg.getAttribute('data-dn')==='1', wh=box(svg);
+    var d=path(walk(+svg.getAttribute('data-spark'),90,dn?-.16:.14),wh[0],wh[1],3);
+    svg.innerHTML='<path d="'+d+' L'+wh[0]+' '+wh[1]+' L0 '+wh[1]+' Z" fill="currentColor" opacity=".10"/>'+
+                  '<path d="'+d+'" fill="none" stroke="currentColor" stroke-width="1.6"/>';
+    svg.style.color=dn?'var(--destructive)':'var(--success)';
+  });
+
+  document.querySelectorAll('[data-wave]').forEach(function(svg){
+    var dn=svg.getAttribute('data-dn')==='1', wh=box(svg), id='w'+svg.getAttribute('data-wave');
+    var d=path(walk(+svg.getAttribute('data-wave'),120,dn?-.16:.14),wh[0],wh[1],8);
+    svg.innerHTML='<defs><linearGradient id="'+id+'" x1="0" y1="0" x2="0" y2="1">'+
+        '<stop offset="0" stop-color="currentColor" stop-opacity=".30"/>'+
+        '<stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs>'+
+      '<path d="'+d+' L'+wh[0]+' '+wh[1]+' L0 '+wh[1]+' Z" fill="url(#'+id+')"/>'+
+      '<path d="'+d+'" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>';
+    svg.style.color=dn?'var(--x-destructive-on-dark)':'var(--x-success-on-dark)';
+  });
+})();
+</script>
+</body></html>

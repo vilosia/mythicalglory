@@ -1,0 +1,563 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>概览 · 三个放法 · IM168</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens.css">
+<!--
+  ══ 2026-08-14 · overview-variants.html · v1 ══════════════════════════════════
+  Hector 08-14 讨论里的三条，其实是<b>同一个问题</b>，所以合成一档：
+    ① 策略页主横幅 → 换成「下面这批策略的概览」
+    ⑥ 我的策略：往下滚时概览自己收成一行（收起那颗撤掉）
+    ⑦ 概览要更好看、要放玩家真想看的东西
+  ⑥ 的「收起态那一行放什么」由 ⑦ 决定，⑦ 又和 ① 是同一块东西的两个位置 ——
+  分开决定必然长成两套。三个变体＝三种「概览是为了回答什么问题」。
+
+  ① 数字全部<b>来自跑着的原型</b>（localhost:8934，08-14 实测），一个没有手编：
+     全部策略 6 套今日：+413.28 / −33.84 / +109.56 / −83.88 / −55.08 / −50.04
+       合计 <b>+300.00</b>　爆仓合计 <b>25 次</b>　5,952 人在跟（今日 +97）
+     我的策略：运行中 3 · 已急停 1 · 未启用 1　总盈亏 <b>+215.80</b>
+       C0404R5 +230.40（150·3注） / C0506R5 +8.00（10·2注） / C0405R12 −9.80（10·2注）
+       C0506R5 的 第四·大小 已经追到 <b>R4/5</b> —— 再输一回就爆（引擎里真是这个数）
+
+  ② <b>横幅说的是「推荐给你的这批」，不是「你自己的」</b>（Hector 08-14 第二轮的更正）
+     第一版我把「我的盘面」放进了策略页横幅（我今日 +215.80 / 本期投入 / 风险行）——<b>放错了</b>。
+     横幅底下接的是<b>推荐</b>那六张卡，横幅却在说你自己的账，读者会以为下面那六套是他持有的。
+     现在第一排三栏<b>全部只描述推荐集</b>，一个「我的」字段都没有；
+     「我的盘面」整套搬到第二排（我的策略），那里才是它的正位。
+
+  ③ <b>一个不舒服的发现</b>（这决定了主位放什么）
+     「今日全场 +300.00」这个合计<b>不是任何人能拿到的数</b> —— 它假设你同时跑了全部六套。
+     而且它是被一套撑起来的：6 套里只有 2 套赚，光 C0404R8 就 +413.28，其余 4 套合计 −222.86。
+     <b>六套今日的中位是 −41.94</b>（排序 −83.88 / −55.08 / −50.04 / −33.84 / +109.56 / +413.28）。
+     所以合计<b>不进主位</b>：A 的主位改成「6 套」，B 的主位是榜首那一套，C 干脆把六个点全画出来。
+     要报合计，就必须<b>同时报 2 赚 / 4 亏</b>。
+     ⚠ 这不是设计偏好，是数据本身的形状。三栏都遵守它。
+
+  ④ 六个变体，两排各三个（两排回答的问题不同，所以<b>编号不共用</b>）
+     第一排 · 策略页横幅（只讲<b>推荐集</b>）
+       A · 记分板 —— 「这批推荐整体怎么样」。数几套、几套在赚、最佳、爆多少、多少人在跟。
+                     最克制，也<b>最不好看</b>：给数字，不给去处。
+       B · 领头羊 —— 「现在最值得看的是哪一套」。榜首整块可点，推荐集退成第二行细字。
+                     ＝ 原来轮播里唯一真有用的那一屏，钉死不转。<b>推荐用它。</b>
+       C · 区间尺 —— 「我在从什么里面挑」。六套摊在一根尺上、零线标出来，
+                     一眼看到的是<b>散得有多开</b>，而不是一个数。最难被单个数字骗到。
+     第二排 · 我的策略概览（讲<b>你自己的</b>）
+       D · 记分板     —— 合计 ＋ 运行中/急停/未启用。收起态：我的今日 ＋ 在跑数。
+       E · 最赚的一条 —— 自己五套里挑一个夸，读起来像营销不像账。
+       F · 我的盘面   —— 我今日 ＋ 距下一期 ＋ 本期投入 ＋ 风险行；<b>收起态让风险抢那一行</b>。
+                         <b>推荐用它。</b>
+     共同硬规矩（＝「简单」的操作定义，与 activity-simplify 同一套）：
+       · 概览<b>最多一个</b>有底色的容器，圆角只用 --radius 一种
+       · 合计<b>不进主位</b>；要报就必须同时报 2 赚 / 4 亏（见 ③）
+       · 第一排<b>不准出现任何「我的」字段</b>（见 ②）
+       · 收起态<b>必须有信息量</b>：不写「3 个在跑」这种废话，写那一行里最要紧的那件事
+       · 概览必须<b>跟着筛选走</b>（切到「稳健」就只算那 2 套）—— 见每栏底下那行小字
+       · 数字一律 --font-code；正负只用 --x-success-ink / --x-destructive-ink
+
+  ⑤ ⑥ 是<b>可以真滑的</b>：第二排每个框都是真滚动容器 ＋ 概览下面一条 1px 的 sentinel。
+     往下滑，概览自己收成一行；滑回顶自己展开。<b>收起那颗 49×26 的钮撤掉了</b>
+     （它本来也没到 44px —— 用滚动位置代替一颗手动开关，少一个控件、少一个状态）。
+     产品里该用 <b>IntersectionObserver</b>（sentinel 离场就收），<b>不要用 scroll 监听</b>：
+     hall-plans.html 是 660KB 的一页，scroll 回调里改布局会抖。
+     ⚠ 但本档另外挂了一条 <b>scroll 兜底</b>，因为实测发现<b>这台预览浏览器既不投递 IO 回调、
+       也不投递 rAF 回调</b>（构造不报错，回调就是不来）—— 只用 IO 的话这一档在这里演不出来，
+       我也没法说「验过了」。兜底只在 250ms 内没听到 IO 时才启动；真机上永不启动。
+
+  ⑥ 量过没量过 —— 老实说
+     本档的高度是<b>浏览器里量的</b>（不是设计意图）：现在那块 #bdBeat 是 192.5px。
+     三个变体（08-14 实测，浏览器里量的）——
+       策略页横幅：A <b>129</b> · B <b>163</b> · C <b>132</b>（都比现在那块 192.5 矮）
+       我的策略概览：D <b>129</b> · E <b>133</b> · F <b>117</b>
+       收起态：<b>三个都恰好 44</b>（＝ --x-touch-min，一行就是一个可点高度）
+     数字见每栏标题右边那枚灰角标。
+-->
+<style>
+/* ═══ 对比台（不是产品的一部分）═══════════════════════════════════════════════ */
+*{box-sizing:border-box}
+body{margin:0;padding:32px 24px 72px;font-family:var(--font-sans);background:var(--background);color:var(--foreground)}
+.pg{max-width:1300px;margin:0 auto 26px}
+.pg h1{margin:0 0 10px;font-size:21px}
+.pg p{margin:0 0 8px;max-width:1000px;font-size:var(--font-size-base);line-height:1.75;color:var(--muted-foreground)}
+.pg p b{color:var(--foreground)}
+.pg .warn{padding:10px 13px;border-left:3px solid var(--x-warning-line);border-radius:var(--radius);
+  background:var(--x-warning-soft);color:var(--foreground)}
+.pg .rec{padding:10px 13px;border-left:3px solid var(--x-primary-strong);border-radius:var(--radius);
+  background:var(--x-primary-soft);color:var(--foreground)}
+.rack{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;align-items:flex-start;margin-bottom:34px}
+.col{width:375px}
+.col h2{display:flex;align-items:baseline;gap:8px;margin:0 0 3px;font-size:var(--x-font-size-title)}
+.col h2 i{font-style:normal;margin-left:auto;padding:1px 7px;border-radius:var(--radius-pill);
+  background:var(--x-surface-sunken);color:var(--x-muted-on-sky);font-size:var(--font-size-xs);font-weight:700}
+.col .why{margin:0 0 10px;min-height:104px;font-size:var(--font-size-sm);line-height:1.7;color:var(--muted-foreground)}
+.col .why b{color:var(--foreground)}
+.col .note{margin:8px 0 0;font-size:var(--font-size-xs);line-height:1.6;color:var(--x-muted-on-sky)}
+.secttl{max-width:1300px;margin:0 auto 12px;font-size:var(--font-size-base);font-weight:700}
+.secttl span{font-weight:400;color:var(--muted-foreground)}
+
+/* ═══ 屏内共用骨架 ══════════════════════════════════════════════════════════ */
+.fr{position:relative;width:375px;border:1px solid var(--input);border-radius:22px;overflow:hidden;
+  background:var(--card);box-shadow:var(--shadow)}
+.scr{background:linear-gradient(180deg,var(--x-page-top) 0%,var(--x-page-mid) 34%,var(--x-page-bottom) 100%)}
+.scr.tall{height:430px;overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+.scr.tall::-webkit-scrollbar{width:0}
+.top{display:flex;align-items:center;gap:8px;height:var(--x-header-h);padding:0 var(--x-content-pad)}
+.top .bk{color:var(--foreground);font-size:17px}
+.top .ttl{font-size:var(--font-size-lg);font-weight:700}
+.top .sp{flex:1}
+.top .bal{display:flex;align-items:center;height:29px;padding:0 11px;border:1px solid var(--x-primary-line);
+  border-radius:var(--radius-pill);color:var(--secondary-foreground);font-size:var(--font-size-sm);font-weight:700}
+.l1{display:flex;gap:18px;padding:0 var(--x-content-pad)}
+.l1 b,.l1 span{position:relative;padding:6px 0 9px;font-size:var(--x-font-size-body-lg)}
+.l1 b{color:var(--x-primary-strong)}
+.l1 b::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;border-radius:2px;background:var(--x-primary-strong)}
+.l1 span{color:var(--muted-foreground);font-weight:400}
+.fil{display:flex;gap:7px;padding:8px var(--x-content-pad) 10px}
+.fil i{font-style:normal;padding:6px 13px;border-radius:9px;background:var(--card);
+  color:var(--muted-foreground);font-size:12.5px}
+.fil i.on{background:var(--x-primary-soft);color:var(--x-primary-strong);font-weight:700}
+.pad{padding:0 var(--x-content-pad)}
+.num{font-family:var(--x-font-code);font-weight:700;letter-spacing:.2px}
+.up{color:var(--x-success-ink)}
+.dn{color:var(--x-destructive-ink)}
+.dim{color:var(--x-muted-on-sky)}
+.faint{color:var(--x-faint)}
+.sep{height:1px;margin:9px 0;background:var(--border)}
+.chev{font-family:var(--font-sans);font-weight:400}
+/* 货架卡的头两行（只为了让横幅有上下文，不是这一档要评的东西） */
+.card{margin:0 var(--x-content-pad) 12px;padding:12px;border-radius:var(--radius);background:var(--card);
+  box-shadow:var(--x-card-shadow)}
+.card .g{font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.card .c{display:flex;align-items:center;gap:6px;font-size:var(--x-font-size-title);font-weight:700}
+.card .c em{margin-left:auto;font-style:normal;padding:2px 8px;border-radius:6px;font-size:var(--font-size-xs);font-weight:700}
+.card .c em.steady{background:var(--x-tag-steady-bg);color:var(--x-tag-steady-ink)}
+.card .c em.hot{background:var(--x-tag-hot-bg);color:var(--x-tag-hot-ink)}
+.card .pl{margin-top:8px;font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.card .pl b{display:block;font-family:var(--x-font-code);font-size:24px}
+/* 概览容器：三个变体<b>共用这一个</b>盒子（硬规矩：最多一个有底色的容器） */
+/* ⚠ padding 写<b>四个长手</b>，不写 `padding:12px var(--x-content-pad)` 简写。
+   踩过的坑（08-14 实测两次）：带 var() 的简写会让四个长手变成 pending-substitution 值，
+   于是<b>后面specificity 更高的 .ov.is-tight{padding-top:0} 也盖不掉它</b> ——
+   计算值一直是 12px，收起态量出来 68px（44 ＋ 上下各 12）而不是 44。
+   长手对长手就没有这个问题。 */
+.ov{position:sticky;top:0;z-index:4;margin:0 0 10px;
+  padding-top:12px;padding-bottom:12px;
+  padding-left:var(--x-content-pad);padding-right:var(--x-content-pad);
+  background:var(--card);box-shadow:var(--x-card-shadow)}
+.ovrow{display:flex;align-items:center;gap:8px}
+.ovlbl{font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.big{font-family:var(--x-font-code);font-size:26px;font-weight:700;line-height:1.15}
+.mini{display:block;width:100%;height:30px}
+.stats{display:flex;gap:0;margin-top:9px;padding-top:9px;border-top:1px solid var(--border)}
+.stats div{flex:1;min-width:0}
+.stats i{display:block;font-style:normal;font-size:var(--font-size-xs);color:var(--x-muted-on-sky)}
+.stats b{font-family:var(--x-font-code);font-size:var(--x-font-size-number);font-weight:700}
+.risk{display:flex;align-items:center;gap:6px;margin-top:9px;padding:7px 9px;border-radius:var(--radius);
+  background:var(--x-warning-soft);font-size:var(--font-size-sm);color:var(--foreground)}
+.risk svg{width:15px;height:15px;flex:none;fill:none;stroke:var(--warning);stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.risk b{font-family:var(--x-font-code)}
+/* 收起态：三个变体各自决定「哪一件事留在那一行」，但机制与高度共用 */
+.tight{display:none;align-items:center;gap:8px;height:44px}
+/* ⚠ 收起态的 .ov 必须<b>自己变成 flex</b>：否则元素之间的空白文本节点会生成一个行盒，
+   实测收起态量出来是 <b>68px</b> 而不是 44（44 ＋ 一个 24px 的空行）。
+   flex 容器会忽略纯空白的子文本节点，这是唯一不用改 HTML 缩排就能修掉的办法。 */
+/* ⚠ 用<b>长手</b> padding-top/bottom，不要写 `padding:0 var(--x-content-pad)` 简写：
+   带 var() 的简写在这里<b>没能盖掉</b> .ov 自己那条简写（实测计算值仍是 12px 12px，
+   收起态于是 44＋24＝68px）。长手一定赢，也不用猜引擎怎么解 pending-substitution。 */
+.ov.is-tight{display:flex;padding-top:0;padding-bottom:0}
+.ov.is-tight .full{display:none}
+.ov.is-tight .tight{display:flex}
+.sentinel{height:1px;margin:0}
+.ghost{padding:0 var(--x-content-pad) 22px}
+/* 概览下面的执行卡 —— 只画到「看得出是一叠卡」，本档要评的是概览怎么收，不是卡。
+   ⚠ 必须<b>够高</b>：滚动余量小于一屏时 sentinel 永远不离场，收起态就演不出来
+     （本档第一版就是这样，只有 82px 余量，怎么滑都不收）。 */
+.mcard{margin:0 0 10px;padding:11px 12px;border-radius:var(--radius);background:var(--card);
+  box-shadow:var(--x-card-shadow)}
+.mcard .r1{display:flex;align-items:center;gap:6px}
+.mcard .r1 b{font-family:var(--x-font-code);font-size:var(--x-font-size-body-lg)}
+.mcard .r1 span{margin-left:auto;font-family:var(--x-font-code);font-weight:700}
+.mcard .r2{margin-top:5px;font-size:var(--font-size-sm);color:var(--x-muted-on-sky)}
+.mcard .r3{display:flex;gap:6px;margin-top:8px}
+.mcard .r3 i{flex:1;height:26px;border-radius:7px;background:var(--x-surface-sunken)}
+.mcard.warnline{border-left:3px solid var(--x-warning-line)}
+/* 收起／展开<b>不做过渡</b>：129px → 44px 是一次结构切换（换的是内容，不是尺寸），
+   给 padding 加 transition 会看到「边框先收、字后跳」两段动作。真机上要动效的话，
+   该动的是那一行文字的淡入，不是容器的内距。 */
+
+/* ═══ A · 记分板 ════════════════════════════════════════════════════════════ */
+.vA .ov .big{color:var(--x-success-ink)}
+.vA .split{display:inline-flex;gap:6px;margin-left:8px;font-size:var(--font-size-sm);font-weight:400}
+
+/* ═══ B · 领头羊 ════════════════════════════════════════════════════════════ */
+.vB .lead{display:flex;align-items:flex-start;gap:10px}
+.vB .lead .txt{flex:1;min-width:0}
+.vB .kick{font-size:var(--font-size-xs);font-weight:700;color:var(--x-primary-strong)}
+.vB .code{display:flex;align-items:center;gap:5px;font-size:var(--x-font-size-title);font-weight:700}
+.vB .code em{font-style:normal;padding:1px 7px;border-radius:6px;font-size:var(--font-size-xs);
+  background:var(--x-tag-steady-bg);color:var(--x-tag-steady-ink)}
+.vB .lead .big{color:var(--x-success-ink)}
+.vB .allrow{display:flex;align-items:center;gap:6px;margin-top:9px;padding-top:9px;
+  border-top:1px solid var(--border);font-size:var(--font-size-sm);color:var(--muted-foreground)}
+
+/* ═══ C · 区间尺（第一排）＋ 我的盘面（第二排）═══════════════════════════════ */
+.vC .ov .big{color:var(--x-success-ink)}
+.vC .cd{display:flex;align-items:baseline;gap:5px;margin-left:auto;font-size:var(--font-size-sm);
+  color:var(--muted-foreground)}
+.vC .cd b{font-family:var(--x-font-code);font-size:var(--x-font-size-number);color:var(--foreground)}
+/* 尺：一条横轴 ＋ 每套一个点 ＋ 一条零线。
+   ⚠ 点用 margin-left:-4px 自己居中，不用 transform —— left:100% 那一颗要留在尺内，
+     translateX(-50%) 会让它跑出右边缘半个点。 */
+.vC .ruler{position:relative;height:26px;margin-top:10px}
+/* ⚠ 点在<b>内缩 6px 的轨道</b>里定位，不是直接贴 .ruler 的两边。
+   实测过的问题：left:0% 那一颗（margin-left:-4px）会探出左缘 3.5px，
+   left:100% 那一颗右缘也超出 1px —— 两端的点各被切掉一小块。
+   6px＝最大那颗点的半径，于是<b>两端的点刚好完整落在尺内</b>。 */
+.vC .rtrack{position:absolute;left:6px;right:6px;top:0;bottom:0}
+.vC .ruler::before{content:"";position:absolute;left:6px;right:6px;top:12px;height:2px;border-radius:2px;
+  background:var(--x-surface-sunken)}
+.vC .zero{position:absolute;top:4px;width:1px;height:18px;background:var(--x-faint)}
+.vC .dot{position:absolute;top:8px;width:9px;height:9px;margin-left:-4.5px;border-radius:50%;
+  box-shadow:0 0 0 2px var(--card)}
+.vC .dot.up{background:var(--x-success-ink)}
+.vC .dot.dn{background:var(--x-destructive-ink)}
+.vC .dot.best{width:12px;height:12px;top:7px;margin-left:-6px}
+.vC .rlbl{position:relative;display:flex;justify-content:space-between;
+  font-size:var(--font-size-xs);color:var(--muted-foreground)}
+.vC .rlbl .rtrack{top:auto;bottom:auto;height:1em}
+.vC .rlbl .zlbl{position:absolute;transform:translateX(-50%);color:var(--x-faint)}
+.vC .allrow{display:flex;align-items:center;gap:6px;margin-top:9px;padding-top:9px;
+  border-top:1px solid var(--border);font-size:var(--font-size-sm);color:var(--muted-foreground)}
+</style>
+</head>
+<body>
+
+<div class="pg">
+  <h1>概览 · 三个放法</h1>
+  <p>Hector 08-14 的 ①⑥⑦ 三条是同一块东西：<b>概览是为了回答什么问题</b>。三栏＝三个答案。
+     数字全部来自跑着的原型（08-14 实测），一个没有手编。</p>
+  <p class="warn"><b>第一排一个「我的」字段都没有。</b>横幅底下接的是<b>推荐给你的</b>那六张卡，
+     横幅要是在说你自己的账（我今日 +215.80、本期投入…），读者会以为下面那六套是他持有的 ——
+     第一版我就是这么放的，放错了。「我的盘面」整套搬到<b>第二排</b>，那里才是它的正位。</p>
+  <p class="warn"><b>另一个不舒服的发现：合计不该进主位。</b>「今日全场 <b>+300.00</b>」
+     <b>不是任何人能拿到的数</b> —— 它假设你同时跑了全部六套。而且它被一套撑着：
+     只有 2 套在赚，光 C0404R8 就 +413.28，其余 4 套合计 −222.86，
+     <b>六套的中位是 −41.94</b>。所以 A 的主位改成「6 套」、B 的主位是榜首那一套、
+     C 干脆把六个点全画出来；要报合计就必须同时报「2 赚 / 4 亏」。这不是审美偏好，是数据的形状。</p>
+  <p class="rec"><b>我的建议是拆开选：策略页用 B（领头羊），我的策略用 F（我的盘面）。</b>
+     策略页是<b>逛</b>的地方 —— 纯数字板（A）给了数字却没有去处，而 B 的「榜首那一套整块可点」
+     正是原来轮播里唯一真有用的那一屏，钉死不转就是它最好的形态。
+     我的策略是<b>看自己钱</b>的地方 —— 那里最要紧的从来不是合计，而是
+     <b>「C0506R5 追到 R4/5，再输一回就爆」</b>（引擎里真是这个数）。F 把它放在了会被读到的位置，
+     滚下去之后那一行还在。
+     ⚠ 要是你更想让第一屏<b>说实话而不是说亮话</b>，那就选 C（区间尺）——
+     它把「五套挤在左边、一套独自在右边」画出来，代价是当场摆出中位 −41.94。</p>
+</div>
+
+<div class="secttl">① 策略页 · 主横幅（替掉现在那个 6 屏轮播）
+  <span>—— 下面接着货架第一张卡，只为了看上下文</span></div>
+<div class="rack">
+
+  <!-- ══ A ══ -->
+  <div class="col vA">
+    <h2>A · 记分板 <i>横幅 129px</i></h2>
+    <p class="why">概览回答「<b>这批推荐整体怎么样</b>」。数几套、几套在赚、爆多少、多少人在跟。
+      最克制、最容易维护，也<b>最不好看</b>：它给数字，不给去处 —— 逛的人看完不知道下一步点哪。
+      放在这里主要是当<b>纪律基准</b>：另两栏的数字规矩都是从它来的。</p>
+    <div class="fr"><div class="scr">
+      <div class="top"><span class="bk">‹</span><span class="ttl">策略投注</span>
+        <span class="dim">· 幸运组</span><span class="sp"></span><span class="bal">240,000.00</span></div>
+      <div class="l1"><b>全部策略</b><span>我的策略</span></div>
+      <div class="fil"><i class="on">全部</i><i>热门推荐</i><i>最新上线</i><i>稳健</i></div>
+      <div class="ov" data-component="ShelfOverview">
+        <div class="full">
+          <div class="ovrow"><span class="ovlbl">今日推荐 · 全部</span></div>
+          <div class="ovrow"><span class="big">6 <small>套</small></span>
+            <span class="split"><span class="up num">2 套在赚</span><span class="faint">/</span><span class="dn num">4 套在亏</span></span></div>
+          <div class="stats">
+            <div><i>今日最佳</i><b class="up">+413</b></div>
+            <div><i>今日爆仓</i><b class="dn">25</b></div>
+            <div><i>在跟人数</i><b>5,952</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="g">极速飞艇</div>
+        <div class="c">C0404R8 <span class="chev faint">›</span><em class="steady">稳健</em></div>
+        <div class="pl">今日收益<b class="up">+413.28</b></div>
+      </div>
+    </div></div>
+    <p class="note">跟着筛选走：切到「稳健」→ <b class="num">2 套 · 2 赚 0 亏 · 最佳 +413 · 爆 12 次</b>
+      （C0404R8＋C0506R6）。每个数都重算，否则「推荐」这个词在筛选态下就是假话。
+      ⚠ 主位<b>是「6 套」不是「+300.00」</b> —— 理由见上面那段黄框：那个合计没人能拿到。</p>
+  </div>
+
+  <!-- ══ B ══ -->
+  <div class="col vB">
+    <h2>B · 领头羊 <i>横幅 163px</i></h2>
+    <p class="why">概览回答「<b>现在最值得看的是哪一套</b>」。榜首那一套占主位、<b>整块可点</b>，
+      合计退成第二行细字。＝ 原来 6 屏轮播里唯一真有用的那一屏，<b>钉死不转</b> ——
+      轮播的毛病本来就是「任何一屏六分之五的时间不在场」。<b>策略页我推这个。</b></p>
+    <div class="fr"><div class="scr">
+      <div class="top"><span class="bk">‹</span><span class="ttl">策略投注</span>
+        <span class="dim">· 幸运组</span><span class="sp"></span><span class="bal">240,000.00</span></div>
+      <div class="l1"><b>全部策略</b><span>我的策略</span></div>
+      <div class="fil"><i class="on">全部</i><i>热门推荐</i><i>最新上线</i><i>稳健</i></div>
+      <div class="ov" data-component="ShelfOverview" role="button" tabindex="0"
+           aria-label="今日榜首 C0404R8 极速飞艇 今日 +413.28，点开看回测">
+        <div class="full">
+          <div class="lead">
+            <span class="txt">
+              <span class="kick">今日榜首</span>
+              <span class="code">C0404R8 <em>稳健</em><span class="chev faint">›</span></span>
+              <span class="ovlbl">极速飞艇 · 已稳 768 期 · 爆 2 次</span>
+            </span>
+            <span class="big num up">+413.28</span>
+          </div>
+          <svg class="mini" viewBox="0 0 340 30" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 26 L34 24 L58 25 L74 18 L96 21 L118 20 L140 22 L166 14 L188 16 L212 11 L238 13 L266 8 L292 9 L316 5 L340 3"
+                  fill="none" stroke="var(--x-success-ink)" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
+          </svg>
+          <div class="allrow"><span>今日推荐 <b class="num">6 套</b></span>
+            <span class="faint">·</span><span class="num up">2 赚</span><span class="num dn">4 亏</span>
+            <span class="sp" style="flex:1"></span><span class="faint">最差</span><span class="num dn">−83.88</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="g">极速飞艇</div>
+        <div class="c">C0404R8 <span class="chev faint">›</span><em class="steady">稳健</em></div>
+        <div class="pl">今日收益<b class="up">+413.28</b></div>
+      </div>
+    </div></div>
+    <p class="note">跟着筛选走：榜首＝<b>当前筛选里</b>今日最高的那一套（切「热门」→ B0404R10 −33.84，
+      那时横幅会是<b>红的</b> —— 这是对的，不该藏）。
+      ⚠ 一个已知的重复：榜首常常就是货架第一张卡（现在正是），两块紧挨着说同一套。
+      要么货架按代号排、榜首另外挑，要么接受这一次重复 —— 这条得你定。</p>
+  </div>
+
+  <!-- ══ C ══ 08-14 改：原来这一栏放的是「我的盘面」（我今日 +215.80 / 本期投入 / 风险行）——
+       Hector：「Shouldn't show my own plans, but an overview of the currently suggested plans.」
+       说得对，那是<b>放错了地方</b>：策略页横幅底下接的是<b>推荐给你的</b>那批策略，
+       横幅却在说你自己的账，读者会以为下面六张卡是他持有的。
+       「我的盘面」整套搬到第二排（我的策略），那里才是它的正位。
+       这一栏换成第三个真正关于<b>推荐集</b>的答案：把六套<b>摊在一根尺上</b>。 -->
+  <div class="col vC">
+    <h2>C · 区间尺 <i>横幅 132px</i></h2>
+    <p class="why">概览回答「<b>我在从什么里面挑</b>」。六套今日表现摊在一根尺上，零线标出来 ——
+      一眼看到的不是一个数，而是<b>散得有多开</b>。它是唯一一个把「五套挤在左边、
+      一套独自在右边」这件事<b>画出来</b>的放法，也因此最难被单个数字骗到。</p>
+    <div class="fr"><div class="scr">
+      <div class="top"><span class="bk">‹</span><span class="ttl">策略投注</span>
+        <span class="dim">· 幸运组</span><span class="sp"></span><span class="bal">240,000.00</span></div>
+      <div class="l1"><b>全部策略</b><span>我的策略</span></div>
+      <div class="fil"><i class="on">全部</i><i>热门推荐</i><i>最新上线</i><i>稳健</i></div>
+      <div class="ov" data-component="ShelfOverview">
+        <div class="full">
+          <div class="ovrow"><span class="ovlbl">今日推荐 <b class="num">6 套</b> · 表现分布</span>
+            <span class="split" style="margin-left:auto"><span class="up num">2</span><span class="faint">/</span><span class="dn num">4</span></span></div>
+          <!-- 点的横向位置＝按今日盈亏线性映射（−83.88 → 0%，+413.28 → 100%），
+               零线在 16.87%。数值与位置都是算出来的，不是摆好看的。 -->
+          <div class="ruler"><span class="rtrack">
+            <span class="zero" style="left:16.87%"></span>
+            <span class="dot dn" style="left:0%"></span>
+            <span class="dot dn" style="left:5.79%"></span>
+            <span class="dot dn" style="left:6.81%"></span>
+            <span class="dot dn" style="left:10.07%"></span>
+            <span class="dot up" style="left:38.91%"></span>
+            <span class="dot up best" style="left:100%"></span>
+          </span></div>
+          <div class="rlbl">
+            <span class="dn num">−83.88</span>
+            <span class="rtrack"><span class="zlbl" style="left:16.87%">0</span></span>
+            <span class="up num">+413.28</span>
+          </div>
+          <div class="allrow"><span>中位</span><b class="num dn">−41.94</b>
+            <span class="sp" style="flex:1"></span>
+            <span class="faint">最佳</span><b class="num">C0404R8</b><span class="chev faint">›</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="g">极速飞艇</div>
+        <div class="c">C0404R8 <span class="chev faint">›</span><em class="steady">稳健</em></div>
+        <div class="pl">今日收益<b class="up">+413.28</b></div>
+      </div>
+    </div></div>
+    <p class="note">⚠ 它<b>诚实到有点扎</b>：这根尺当场说出「六套里的中位是 −41.94」。
+      要是不希望第一屏就摆出这句话，那要动的<b>不是这块 UI，是货架的挑选口径</b>
+      （现在这六套是引擎里真实跑出来的）。这条我不替你决定。</p>
+  </div>
+</div>
+
+<div class="secttl">② 我的策略 · 概览（<span>往下滑 —— 它自己收成一行；滑回顶自己展开。
+  <b>收起那颗 49×26 的钮撤掉了</b></span>）</div>
+<div class="rack">
+
+  <div class="col vA">
+    <h2>D · 记分板 <i>129 → 44px</i></h2>
+    <p class="why">收起态留<b>合计 ＋ 在跑数</b>。够用，但那一行说不出「有没有事要处理」——
+      而我的策略这一屏，人来就是为了看有没有事要处理。</p>
+    <div class="fr"><div class="scr tall" data-scroller>
+      <div class="ov" data-component="MineOverview">
+        <div class="full">
+          <div class="ovrow"><span class="ovlbl">我的策略 · 今日</span></div>
+          <div class="ovrow"><span class="big num up">+215.80</span></div>
+          <div class="stats">
+            <div><i>运行中</i><b>3</b></div>
+            <div><i>已急停</i><b>1</b></div>
+            <div><i>未启用</i><b>1</b></div>
+          </div>
+        </div>
+        <div class="tight"><span class="ovlbl">我的今日</span><b class="num up">+215.80</b>
+          <span class="faint">·</span><span class="dim">3 套在跑</span></div>
+      </div>
+      <div class="sentinel"></div>
+      <div class="ghost">
+        <div class="mcard"><div class="r1"><b>C0404R5</b><span class="up">+230.40</span></div>
+          <div class="r2">极速飞艇 · 运行中 · 执行线路 6 · 累计 43 期</div>
+          <div class="r3"><i></i><i></i><i></i></div></div>
+        <div class="mcard"><div class="r1"><b>C0506R5</b><span class="up">+8.00</span></div>
+          <div class="r2">极速飞艇 · 运行中 · 执行线路 12 · 累计 27 期</div>
+          <div class="r3"><i></i><i></i><i></i></div></div>
+        <div class="mcard"><div class="r1"><b>C0405R12</b><span class="dn">−9.80</span></div>
+          <div class="r2">极速飞艇 · 运行中 · 执行线路 6 · 累计 62 期</div>
+          <div class="r3"><i></i><i></i><i></i></div></div>
+        <div class="mcard"><div class="r1"><b>B0405R4</b><span class="dn">−12.80</span></div>
+          <div class="r2">极速飞艇 · 已急停 · 执行线路 4</div></div>
+        <div class="mcard"><div class="r1"><b>C0304R6</b><span class="faint">未启用</span></div>
+          <div class="r2">极速飞艇 · 已保存 · 启用前不会产生投注</div></div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="col vB">
+    <h2>E · 最赚的一条 <i>133 → 44px</i></h2>
+    <p class="why">收起态留<b>最赚的那一条</b>。在「我的」这一屏这条有点怪 ——
+      你自己的五套里挑一个「榜首」出来夸，读起来像营销而不像账。</p>
+    <div class="fr"><div class="scr tall" data-scroller>
+      <div class="ov" data-component="MineOverview" role="button" tabindex="0">
+        <div class="full">
+          <div class="lead">
+            <span class="txt">
+              <span class="kick">我最赚的一条</span>
+              <span class="code">C0404R5 <span class="chev faint">›</span></span>
+              <span class="ovlbl">极速飞艇 · 150·3注 · 累计 43 期</span>
+            </span>
+            <span class="big num up">+230.40</span>
+          </div>
+          <div class="allrow"><span>我的 5 套今日</span><b class="num up">+215.80</b>
+            <span class="faint">·</span><span class="dim">运行中 3 · 急停 1 · 未启用 1</span></div>
+        </div>
+        <div class="tight"><span class="kick">最赚</span><b class="num">C0404R5</b>
+          <b class="num up">+230.40</b><span class="sp" style="flex:1"></span><span class="chev faint">›</span></div>
+      </div>
+      <div class="sentinel"></div>
+      <div class="ghost">
+        <div class="mcard"><div class="r1"><b>C0404R5</b><span class="up">+230.40</span></div>
+          <div class="r2">极速飞艇 · 运行中 · 执行线路 6 · 累计 43 期</div>
+          <div class="r3"><i></i><i></i><i></i></div></div>
+        <div class="mcard"><div class="r1"><b>C0506R5</b><span class="up">+8.00</span></div>
+          <div class="r2">极速飞艇 · 运行中 · 执行线路 12 · 累计 27 期</div>
+          <div class="r3"><i></i><i></i><i></i></div></div>
+        <div class="mcard"><div class="r1"><b>C0405R12</b><span class="dn">−9.80</span></div>
+          <div class="r2">极速飞艇 · 运行中 · 执行线路 6 · 累计 62 期</div>
+          <div class="r3"><i></i><i></i><i></i></div></div>
+        <div class="mcard"><div class="r1"><b>B0405R4</b><span class="dn">−12.80</span></div>
+          <div class="r2">极速飞艇 · 已急停 · 执行线路 4</div></div>
+        <div class="mcard"><div class="r1"><b>C0304R6</b><span class="faint">未启用</span></div>
+          <div class="r2">极速飞艇 · 已保存 · 启用前不会产生投注</div></div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="col vC">
+    <h2>F · 我的盘面 <i>117 → 44px</i></h2>
+    <p class="why">收起态<b>让风险抢那一行</b>：有线快爆了就报它，没有才退回报合计。
+      这就是「收起态必须有信息量」最强的一种 —— 滚到第三张卡时，头上那一行还在提醒你
+      <b>R4/5</b>。<b>我的策略我推这个。</b></p>
+    <div class="fr"><div class="scr tall" data-scroller>
+      <div class="ov" data-component="MineOverview">
+        <div class="full">
+          <div class="ovrow"><span class="ovlbl">我今日</span>
+            <span class="cd">距下一期 <b>0:02</b></span></div>
+          <div class="ovrow"><span class="big num up">+215.80</span>
+            <span class="split dim" style="margin-left:8px;font-size:var(--font-size-sm)">3 套在跑 · 本期投入 <b class="num">¥170</b></span></div>
+          <div class="risk">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.6 20h18.8z"/><path d="M12 10v4.4"/><path d="M12 17.3v.1"/></svg>
+            <span><b>C0506R5</b> 第四·大小 追到 <b>R4/5</b> —— 再输 1 回就爆</span>
+          </div>
+        </div>
+        <div class="tight">
+          <svg viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px;flex:none;fill:none;stroke:var(--warning);stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M12 3 2.6 20h18.8z"/><path d="M12 10v4.4"/><path d="M12 17.3v.1"/></svg>
+          <b class="num">C0506R5</b><span class="dim">还剩 1 回</span>
+          <span class="sp" style="flex:1"></span><b class="num up">+215.80</b></div>
+      </div>
+      <div class="sentinel"></div>
+      <div class="ghost">
+        <div class="mcard"><div class="r1"><b>C0404R5</b><span class="up">+230.40</span></div>
+          <div class="r2">极速飞艇 · 运行中 · 执行线路 6 · 累计 43 期</div>
+          <div class="r3"><i></i><i></i><i></i></div></div>
+        <div class="mcard warnline"><div class="r1"><b>C0506R5</b><span class="up">+8.00</span></div>
+          <div class="r2">极速飞艇 · 运行中 · 第四·大小 <b>R4/5</b> · 累计 27 期</div>
+          <div class="r3"><i></i><i></i><i></i></div></div>
+        <div class="mcard"><div class="r1"><b>C0405R12</b><span class="dn">−9.80</span></div>
+          <div class="r2">极速飞艇 · 运行中 · 执行线路 6 · 累计 62 期</div>
+          <div class="r3"><i></i><i></i><i></i></div></div>
+        <div class="mcard"><div class="r1"><b>B0405R4</b><span class="dn">−12.80</span></div>
+          <div class="r2">极速飞艇 · 已急停 · 执行线路 4</div></div>
+        <div class="mcard"><div class="r1"><b>C0304R6</b><span class="faint">未启用</span></div>
+          <div class="r2">极速飞艇 · 已保存 · 启用前不会产生投注</div></div>
+      </div>
+    </div></div>
+    <p class="note">没有任何线接近爆仓时，这一行退回 <b>「我的今日 +215.80 · 3 套在跑」</b>（＝A 的收起态）。
+      风险行<b>不是常驻</b>，常驻的警告等于没有警告。</p>
+  </div>
+</div>
+
+<script data-demo>
+/* ⑥ 的机制 —— <b>sentinel ＋ IntersectionObserver</b>，不是 scroll 监听。
+   为什么：hall-plans.html 是 660KB 的一页，scroll 事件里改布局会抖（那一档已经踩过一次）。
+   sentinel 是概览下面那条 1px 的线：它滑出视口就收起，滑回来就展开 —— 一次布局都不用算。
+   ⚠ root 必须是那个滚动容器（默认 root 是视窗，在这种内滚框里永远不触发）。 */
+/* ⚠ 2026-08-14 实测到的一件事，<b>本档为此加了兜底</b>：
+   这台预览浏览器<b>根本不投递 IntersectionObserver 回调</b> —— 连 root 用视窗、
+   观察页面标题都一次不响（window.IntersectionObserver 是 native function，构造不报错，
+   回调就是不来）。也就是说：只用 IO 写的话，这一档在这里<b>演不出来</b>，
+   而我也就没法说「验过了」。
+   所以：IO 仍然是主路（产品里就该用它，理由见上），但 250ms 内一次回调都没来，
+   就切到 <b>rAF 节流的 scroll 兜底</b>。真机上 IO 正常，兜底永远不会启动。
+   这段兜底也不全是为了对比稿 —— 有些内嵌 webview 的 IO 就是这样坏的。 */
+(function(){
+  function wire(sc){
+    var ov=sc.querySelector('.ov'), sen=sc.querySelector('.sentinel');
+    if(!ov||!sen)return;
+    var heard=false;
+    function apply(tight){ ov.classList.toggle('is-tight',!!tight); }
+    if('IntersectionObserver' in window){
+      try{
+        new IntersectionObserver(function(es){
+          heard=true;
+          es.forEach(function(e){ apply(!e.isIntersecting); });
+        },{root:sc,threshold:0}).observe(sen);
+      }catch(e){}
+    }
+    setTimeout(function(){
+      if(heard)return;                      /* IO 正常，什么都不做 */
+      /* ⚠ 节流用 setTimeout，<b>不用 requestAnimationFrame</b> —— 这台预览浏览器
+         连 rAF 回调也不投递（与 IO 同一个毛病，实测 300ms 内一次不响）。
+         兜底路本来就已经是降级路，再依赖一个可能不跑的循环就没有意义了。 */
+      var q=false;
+      function read(){
+        q=false;
+        apply(sen.getBoundingClientRect().top < sc.getBoundingClientRect().top);
+      }
+      sc.addEventListener('scroll',function(){
+        if(q)return; q=true; setTimeout(read,16);
+      },{passive:true});
+      read();
+      ov.setAttribute('data-fallback','scroll');
+    },250);
+  }
+  [].forEach.call(document.querySelectorAll('[data-scroller]'),wire);
+})();
+</script>
+</body></html>

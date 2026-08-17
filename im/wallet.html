@@ -5,14 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>钱包 · IM168 原型</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css"><!-- 唯一令牌来源，必须排在其它样式表之前 -->
 <link rel="stylesheet" href="shared/styles.css?v=20260730g">
 <!-- 样式已迁至 shared/styles.css（2026-07-09 拆分）；新增样式请直接写入该文件 -->
 <!-- 历史试跑「工作台」（V3 · 2026-07-30 移植）的样式单独一档，不混进 530KB 的 styles.css -->
 <link rel="stylesheet" href="shared/trialrun.css?v=20260730g">
-<link rel="stylesheet" href="shared/reference-theme.css?v=20260812bluecanvas54">
-<script src="shared/ui-consistency.js?v=20260812auth1" defer></script>
+<link rel="stylesheet" href="shared/reference-theme.css?v=20260817f1">
+<script src="shared/ui-consistency.js?v=20260817f1" defer></script>
+<script src="shared/role.js?v=20260813role4" defer></script>
 </head>
-<body data-im168-default="wallet">
+<body class="page-wallet x-fade" data-im168-default="wallet">
   <div class="stage">
     <div class="phone" data-game="pk">
       <div class="screen">
@@ -21,8 +23,7 @@
           <div class="gtop">
             <span class="gback" data-act="show" data-arg="groups"><svg class="icx" viewBox="25.0 51.0 11.0 17.0" fill="none"><path d="M34 66L27 59.5L34 53" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
             <span class="gtitle" data-act="gameheadmenu" role="button" aria-label="切换游戏" aria-haspopup="menu" aria-expanded="false" tabindex="0">
-              <b class="gname gname-pk">SG飞艇</b><b class="gname gname-pk10">PK10</b><b class="gname gname-ssc">极速时时彩</b><b class="gname gname-soon">游戏厅</b><i class="tcaret"><svg class="icx" viewBox="371.3 56.9 12.6 7.4" fill="none"><path d="M321.5 47.5L326 52L321.5 56.5" stroke="currentColor" stroke-width="1.8px" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="rotate(90 377.57 60.64) matrix(1.1661579810495626 0 0 1.1661579810495626 0 0.00044415087462888964)"/></svg></i>
-
+              <b class="gname gname-pk">SG飞艇</b><b class="gname gname-pk10">PK10</b><b class="gname gname-ssc">极速时时彩</b><b class="gname gname-soon">游戏厅</b><!-- 2026-08-13（Hector）：顶栏统一成「标题 · 群组」两段式，与彩票那一屏一致 --><small>· 幸运组</small><i class="tcaret"><svg class="icx" viewBox="371.3 56.9 12.6 7.4" fill="none"><path d="M321.5 47.5L326 52L321.5 56.5" stroke="currentColor" stroke-width="1.8px" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="rotate(90 377.57 60.64) matrix(1.1661579810495626 0 0 1.1661579810495626 0 0.00044415087462888964)"/></svg></i>
             </span>
             <span class="sp"></span>
             <span class="bal" data-act="show" data-arg="wallet"><svg class="wic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"/><path d="M3 8V6a2 2 0 0 1 2-2h10"/><circle cx="16.5" cy="12.5" r="1.3" fill="currentColor" stroke="none"/></svg><b>240,000.00</b></span>
@@ -36,8 +37,8 @@
             <div class="ri-line1">
               <span class="rper"><b>00089期</b></span>
               <span class="sealgrp">
-                <svg class="sealpie" viewBox="0 0 20 20" aria-hidden="true"><circle class="track" cx="10" cy="10" r="8"/><circle class="prog" cx="10" cy="10" r="8"/></svg>
-                <span class="rseal-lab">投注时间还剩</span><span class="rseal">0分48秒</span>
+                <svg class="sealpie tclock" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.2V12l3.2 2"/></svg>
+                <span class="rseal-lab">投注时间还剩</span><span class="rseal">00:48</span>
               </span>
             </div>
             <div class="ri-line2" data-act="results">
@@ -96,7 +97,7 @@
                   <button class="wbtn" id="uwUpBtn" data-act="show" data-arg="request"><span aria-hidden="true">↑</span>上分</button>
                   <button class="wbtn" id="uwDnBtn" data-act="show" data-arg="withdraw">下分<span aria-hidden="true">↓</span></button>
                 </div>
-                <div class="uw-lockmsg" id="uwLockMsg" style="display:none"><i>ⓘ</i><span>有 <b id="uwLockCnt">1</b> 笔申请待审核，审核完成后可再次申请。</span></div>
+                <div class="uw-lockmsg" id="uwLockMsg" style="display:none"><i>ⓘ</i><span>有 <b id="uwLockCnt">1</b> 笔申请待审核，通过后可再次提交。</span></div>
                 <div class="fg-comm uw-comm" data-act="show" data-arg="bets">
                   <div class="uws2"><span>今日盈亏</span><b class="win">+78.00</b></div>
                   <div class="uws2 dv"><span>今日未结</span><b>3 笔</b></div>
@@ -185,7 +186,33 @@
 
           <!-- ===== 申请下分（Amount Input · 严格按 spec）===== -->
           <div class="view view-withdraw amount-page">
-            <div class="subhead"><span class="bk" data-act="show" data-arg="wallet"><svg class="icx" viewBox="25.0 51.0 11.0 17.0" fill="none"><path d="M34 66L27 59.5L34 53" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>申请下分</b><span class="rt"></span></div>
+            <!-- ══ 2026-08-16 · 蓝区细修 ③（Hector：looks ridiculous, change to a drawer）════════
+                 病：这两屏是<b>整页</b>做一件事 —— 900 高的屏里只有「一个金额 ＋ 五颗面额丸 ＋
+                 一块数字盘」，实测大数字卡与面额丸之间空了 152px，纯粹是把 spec 里的手机页
+                 拉满了屏。上下分本来就是<b>钱包上的一次弹出操作</b>，不是一个目的地。
+                 改法（取巧优先，路由一个字不动）：view 还是 view、data-act="show" 还是原来那些，
+                 只把这一屏<b>装扮成抽屉</b> ——
+                   · view 自己变成 backdrop（绝对定位盖满 .screen ＋ rgba(12,22,44,.45)，
+                     与站内 .cf-backdrop / .fz-back 同一个值）；
+                   · 内容整包进 .apx-sheet：贴底、18px 顶圆角、白 sheet（＝ .cf-sheet 的形状）；
+                   · sheet 之上留 .apx-scrim 可点区，点它＝返回钱包（等于点背景关抽屉）。
+                 ⚠ backdrop 后面<b>真的是钱包</b>：showView() 会把所有 .view 的 .on 摘掉，
+                   所以钱包页身影靠 reference-theme 尾部一条 :has() 规则留住
+                   （`.body:has(>.view-withdraw.on) .view-wallet{display:flex}`）——
+                   不带 !important，也不用碰 app.js / pagenav.js。
+                 ⚠ 返回语义不变：原来那颗 ‹ 收起（CSS display:none），换成标题行右端的 ×，
+                   data-act / data-arg 与原来一模一样。
+                 回滚：删掉 .apx-scrim 与 .apx-sheet 两层包裹（内容三块原样放回 view 下）、
+                       删掉 .rt 里那颗 .apx-x、删掉 reference-theme 尾部 ③ 段。 -->
+            <div class="apx-scrim" data-act="show" data-arg="wallet" aria-hidden="true"></div>
+            <div class="apx-sheet">
+            <!-- 抽屉标题行：原来那颗 ‹ 返回<b>整个删掉</b>（不是 CSS 藏起来）——
+                 styles.css 有一条 `.bk,.gback,.fg-head .bk{display:inline-flex!important}`，
+                 而本轮铁律是 display 不准带 !important（E⑧ 的教训），CSS 压不掉它；
+                 与其用 width:0/visibility 这类偏方，不如把这颗按钮从 markup 拿掉。
+                 动作一个字没丢：× 上的 data-act="show" data-arg="wallet" 与原来的 ‹ 完全相同。
+                 回滚：把下面这行的 <span class="bk" …>‹</span> 加回 <b> 之前、删掉 .apx-x。 -->
+            <div class="subhead"><b>申请下分</b><span class="rt"><button type="button" class="apx-x" data-act="show" data-arg="wallet" aria-label="关闭">×</button></span></div>
             <main class="amount-page__content">
               <section class="amount-entry">
                                 <div class="amount-entry__value-row"><input id="wdHeroAmt" class="amount-entry__value withdraw-amt" type="text" inputmode="numeric" value="200.00" aria-label="申请金额">
@@ -198,6 +225,7 @@
             <footer class="amount-page__footer">
               <button class="amount-page__next" data-act="apnext" data-dir="down">继续</button>
             </footer>
+            </div><!-- /.apx-sheet -->
           </div>
 
 
@@ -208,9 +236,9 @@
             <div class="cf-sheet">
               <div class="cf-h">什么是上分 / 下分？</div>
               <div class="uwh-body">
-                <p><b>上分</b>：把你与群主结算好的金额，转成场内可下注的额度，群主确认后到账。</p>
+                <p><b>上分</b>：将与群主结算的金额转为场内额度，群主确认后到账。</p>
                 <p><b>下分</b>：把额度换回，与群主结算取回。</p>
-                <p>两者同一时间各只能有一笔申请，通过后才能提交下一笔。</p>
+                <p>上下分各限一笔在途申请，通过后方可再提交。</p>
               </div>
               <div class="fz-btns solo"><button class="cta" data-act="uwhelpclose">知道了</button></div>
             </div>
@@ -243,7 +271,11 @@
 
           <!-- ===== 申请上分（Amount Input · 严格按 spec）===== -->
           <div class="view view-request amount-page">
-            <div class="subhead"><span class="bk" data-act="show" data-arg="wallet"><svg class="icx" viewBox="25.0 51.0 11.0 17.0" fill="none"><path d="M34 66L27 59.5L34 53" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>申请上分</b><span class="rt"></span></div>
+            <!-- 2026-08-16 · 蓝区细修 ③ —— 与上面 view-withdraw 同构同改，理由见那一块的注释。 -->
+            <div class="apx-scrim" data-act="show" data-arg="wallet" aria-hidden="true"></div>
+            <div class="apx-sheet">
+            <!-- 同上：‹ 删掉，× 接手同一个 data-act（理由见 view-withdraw 那一行的注释）。 -->
+            <div class="subhead"><b>申请上分</b><span class="rt"><button type="button" class="apx-x" data-act="show" data-arg="wallet" aria-label="关闭">×</button></span></div>
             <main class="amount-page__content">
               <section class="amount-entry">
                                 <div class="amount-entry__value-row"><input id="reqHeroAmt" class="amount-entry__value amtin" type="text" inputmode="numeric" value="500.00" aria-label="申请金额">
@@ -256,6 +288,7 @@
             <footer class="amount-page__footer">
               <button class="amount-page__next" data-act="apnext" data-dir="up">继续</button>
             </footer>
+            </div><!-- /.apx-sheet -->
           </div>
 
 
@@ -290,13 +323,13 @@
                 <span class="fchip on" data-act="lfilter" data-target="pl-reqhistory" data-f="all">全部</span>
                 <span class="fchip" data-act="lfilter" data-target="pl-reqhistory" data-f="pending">待确认</span>
                 <span class="fchip" data-act="lfilter" data-target="pl-reqhistory" data-f="done">已到账</span>
-                <span class="fchip" data-act="lfilter" data-target="pl-reqhistory" data-f="rejected">已拒绝</span>
+                <span class="fchip" data-act="lfilter" data-target="pl-reqhistory" data-f="rejected">已驳回</span>
               </div>
               <div class="blist pagelist txlist" id="pl-reqhistory" data-size="5">
                 <div class="bi" data-t="pending"><div class="q"><b><i class="stag pd">待审核</i>申请 300 额度</b><span>2026/07/07 10:02</span></div><div class="r"><b>+300.00</b></div></div>
                 <div class="bi" data-t="done"><div class="q"><b><i class="stag ok">已完成</i>申请 500 额度</b><span>2026/07/07 09:28</span></div><div class="r"><b class="win">+500.00</b></div></div>
                 <div class="bi" data-t="done"><div class="q"><b><i class="stag ok">已完成</i>申请 300 额度</b><span>2026/07/06 21:00</span></div><div class="r"><b class="win">+300.00</b></div></div>
-                <div class="bi rej" data-t="rejected"><div class="q"><b><i class="stag no">已拒绝</i>申请 1,000 额度</b><span>2026/07/06 18:30</span></div><div class="r"><b>+1,000.00</b></div></div>
+                <div class="bi rej" data-t="rejected"><div class="q"><b><i class="stag no">已驳回</i>申请 1,000 额度</b><span>2026/07/06 18:30</span></div><div class="r"><b>+1,000.00</b></div></div>
                 <div class="bi" data-t="done"><div class="q"><b><i class="stag ok">已完成</i>申请 200 额度</b><span>2026/07/05 14:12</span></div><div class="r"><b class="win">+200.00</b></div></div>
                 <div class="bi" data-t="done"><div class="q"><b><i class="stag ok">已完成</i>申请 300 额度</b><span>2026/07/04 20:45</span></div><div class="r"><b class="win">+300.00</b></div></div>
               </div>
@@ -356,20 +389,7 @@
         </div>
 
         <!-- ===== 底部导航（外壳级：资讯 · 聊天 · 消息 · 我的）===== -->
-        <nav class="tabbar" data-navviews="news groups home me">
-          <div class="nav" data-act="show" data-arg="news"><svg class="icx ic-off" viewBox="0 0 52 30" fill="none">
-<g clip-path="url(#clip0_40008731_35691)">
-<path d="M24.202 4.91874C25.2344 4.02709 26.7652 4.02709 27.7977 4.91874L37.4901 13.2898C37.8032 13.5606 37.8378 14.0341 37.5672 14.3474C37.2965 14.6607 36.823 14.6951 36.5096 14.4246L34.7498 12.9041V22.0574C34.7497 24.1283 33.0708 25.8073 30.9998 25.8074H20.9998C18.9288 25.8074 17.2499 24.1284 17.2498 22.0574V12.9041L15.4901 14.4246C15.1767 14.6952 14.7032 14.6606 14.4324 14.3474C14.1617 14.034 14.1962 13.5606 14.5096 13.2898L24.202 4.91874ZM26.8172 6.0535C26.3479 5.64821 25.6517 5.64821 25.1824 6.0535L18.7498 11.6092V22.0574C18.7499 23.3 19.7572 24.3074 20.9998 24.3074H23.9998V19.0574C23.9998 18.5051 24.4475 18.0574 24.9998 18.0574H26.9998C27.552 18.0575 27.9998 18.5052 27.9998 19.0574V24.3074H30.9998C32.2423 24.3073 33.2497 23.2999 33.2498 22.0574V11.6092L26.8172 6.0535Z" fill="currentColor"/>
-<path d="M24.202 4.91874C25.2344 4.02709 26.7652 4.02709 27.7977 4.91874L37.4901 13.2898C37.8032 13.5606 37.8378 14.0341 37.5672 14.3474C37.2965 14.6607 36.823 14.6951 36.5096 14.4246L34.7498 12.9041V22.0574C34.7497 24.1283 33.0708 25.8073 30.9998 25.8074H20.9998C18.9288 25.8074 17.2499 24.1284 17.2498 22.0574V12.9041L15.4901 14.4246C15.1767 14.6952 14.7032 14.6606 14.4324 14.3474C14.1617 14.034 14.1962 13.5606 14.5096 13.2898L24.202 4.91874ZM26.8172 6.0535C26.3479 5.64821 25.6517 5.64821 25.1824 6.0535L18.7498 11.6092V22.0574C18.7499 23.3 19.7572 24.3074 20.9998 24.3074H23.9998V19.0574C23.9998 18.5051 24.4475 18.0574 24.9998 18.0574H26.9998C27.552 18.0575 27.9998 18.5052 27.9998 19.0574V24.3074H30.9998C32.2423 24.3073 33.2497 23.2999 33.2498 22.0574V11.6092L26.8172 6.0535Z" fill="black" fill-opacity="0.2"/>
-</g>
-<defs>
-<clipPath id="clip0_40008731_35691">
-<rect width="52" height="30" fill="white"/>
-</clipPath>
-</defs>
-</svg><svg class="icx ic-on" viewBox="0 0 52 30" fill="none">
-<path d="M24.202 4.91874C25.2344 4.02709 26.7652 4.02709 27.7977 4.91874L37.4901 13.2898C37.8032 13.5606 37.8378 14.0341 37.5672 14.3474C37.2965 14.6607 36.823 14.6951 36.5096 14.4246L34.7498 12.9041V22.0574C34.7497 24.1283 33.0708 25.8073 30.9998 25.8074H20.9998C18.9288 25.8074 17.2499 24.1284 17.2498 22.0574V12.9041L15.4901 14.4246C15.1767 14.6952 14.7032 14.6606 14.4324 14.3474C14.1617 14.034 14.1962 13.5606 14.5096 13.2898L24.202 4.91874ZM24.9998 18.0574C24.4475 18.0574 23.9998 18.5051 23.9998 19.0574V24.3074H27.9998V19.0574C27.9998 18.5052 27.552 18.0575 26.9998 18.0574H24.9998Z" fill="currentColor"/>
-</svg><span>资讯</span></div>
+        <nav class="tabbar" data-navviews="groups">
           <div class="nav" data-act="show" data-arg="groups"><svg class="icx ic-off" viewBox="0 0 52 30" fill="none">
 <g clip-path="url(#clip0_40008731_35855)">
 <mask id="path-1-inside-1_40008731_35855" fill="white">
@@ -394,40 +414,6 @@
 </svg><svg class="icx ic-on" viewBox="0 0 52 30" fill="none">
 <path d="M26.2482 4.93164C31.667 4.93164 36.0596 9.3244 36.0597 14.7432C36.0597 20.162 31.667 24.5547 26.2482 24.5547C24.387 24.5547 22.6469 24.0367 21.1642 23.1367L17.6007 24.8213C16.7024 25.2456 15.7374 24.3762 16.0656 23.4385L17.5324 19.2471C16.8338 17.898 16.4366 16.3672 16.4366 14.7432C16.4368 9.32444 20.8294 4.9317 26.2482 4.93164ZM21.8439 13.501C21.1537 13.5012 20.5939 14.0607 20.5939 14.751C20.5941 15.441 21.1538 16.0008 21.8439 16.001C22.5341 16.001 23.0936 15.4411 23.0939 14.751C23.0939 14.0606 22.5342 13.501 21.8439 13.501ZM26.5099 13.501C25.8195 13.501 25.2599 14.0606 25.2599 14.751C25.2602 15.4411 25.8197 16.001 26.5099 16.001C27.1999 16.0008 27.7596 15.441 27.7599 14.751C27.7599 14.0607 27.2001 13.5011 26.5099 13.501ZM31.1749 13.501C30.4846 13.501 29.9249 14.0606 29.9249 14.751C29.9252 15.4411 30.4848 16.001 31.1749 16.001C31.8651 16.001 32.4247 15.4411 32.4249 14.751C32.4249 14.0606 31.8653 13.501 31.1749 13.501Z" fill="currentColor"/>
 </svg><span>聊天</span></div>
-          <div class="nav on" data-act="show" data-arg="home"><svg class="icx ic-off ic-stroke" viewBox="0 0 52 30" fill="none">
-<g clip-path="url(#clip0_40008731_35857)">
-<path d="M29.9523 21.7692V22.6154C29.9523 23.513 29.5886 24.3739 28.9413 25.0087C28.294 25.6434 27.4161 26 26.5006 26C25.5852 26 24.7073 25.6434 24.06 25.0087C23.4127 24.3739 23.049 23.513 23.049 22.6154V21.7692M35.7596 20.0468C34.3746 18.3846 33.3969 17.5385 33.3969 12.956C33.3969 8.75962 31.2116 7.26457 29.4129 6.53846C29.174 6.44221 28.9491 6.22115 28.8763 5.98053C28.5608 4.9276 27.6764 4 26.5006 4C25.3249 4 24.4399 4.92813 24.1277 5.98159C24.0548 6.22486 23.83 6.44221 23.591 6.53846C21.7903 7.26562 19.6071 8.75538 19.6071 12.956C19.6044 17.5385 18.6266 18.3846 17.2417 20.0468C16.6678 20.7353 17.1705 21.7692 18.1742 21.7692H34.8325C35.8308 21.7692 36.3302 20.7322 35.7596 20.0468Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M29.9523 21.7692V22.6154C29.9523 23.513 29.5886 24.3739 28.9413 25.0087C28.294 25.6434 27.4161 26 26.5006 26C25.5852 26 24.7073 25.6434 24.06 25.0087C23.4127 24.3739 23.049 23.513 23.049 22.6154V21.7692M35.7596 20.0468C34.3746 18.3846 33.3969 17.5385 33.3969 12.956C33.3969 8.75962 31.2116 7.26457 29.4129 6.53846C29.174 6.44221 28.9491 6.22115 28.8763 5.98053C28.5608 4.9276 27.6764 4 26.5006 4C25.3249 4 24.4399 4.92813 24.1277 5.98159C24.0548 6.22486 23.83 6.44221 23.591 6.53846C21.7903 7.26562 19.6071 8.75538 19.6071 12.956C19.6044 17.5385 18.6266 18.3846 17.2417 20.0468C16.6678 20.7353 17.1705 21.7692 18.1742 21.7692H34.8325C35.8308 21.7692 36.3302 20.7322 35.7596 20.0468Z" stroke="black" stroke-opacity="0.2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
-<defs>
-<clipPath id="clip0_40008731_35857">
-<rect width="52" height="30" fill="white"/>
-</clipPath>
-</defs>
-</svg><svg class="icx ic-on" viewBox="0 0 52 30" fill="none">
-<g clip-path="url(#clip0_40008731_35858)">
-<path d="M35.7596 20.0468C34.3746 18.3846 33.3969 17.5385 33.3969 12.956C33.3969 8.75962 31.2116 7.26457 29.4129 6.53846C29.174 6.44221 28.9491 6.22115 28.8763 5.98053C28.5608 4.9276 27.6764 4 26.5006 4C25.3249 4 24.4399 4.92813 24.1277 5.98159C24.0548 6.22486 23.83 6.44221 23.591 6.53846C21.7903 7.26562 19.6071 8.75538 19.6071 12.956C19.6044 17.5385 18.6266 18.3846 17.2417 20.0468C16.6678 20.7353 17.1705 21.7692 18.1742 21.7692H34.8325C35.8308 21.7692 36.3302 20.7322 35.7596 20.0468ZM29.9523 21.7692V22.6154C29.9523 23.513 29.5886 24.3739 28.9413 25.0087C28.294 25.6434 27.4161 26 26.5006 26C25.5852 26 24.7073 25.6434 24.06 25.0087C23.4127 24.3739 23.049 23.513 23.049 22.6154V21.7692" fill="currentColor"/>
-<path d="M29.9523 21.7692V22.6154C29.9523 23.513 29.5886 24.3739 28.9413 25.0087C28.294 25.6434 27.4161 26 26.5006 26C25.5852 26 24.7073 25.6434 24.06 25.0087C23.4127 24.3739 23.049 23.513 23.049 22.6154V21.7692M35.7596 20.0468C34.3746 18.3846 33.3969 17.5385 33.3969 12.956C33.3969 8.75962 31.2116 7.26457 29.4129 6.53846C29.174 6.44221 28.9491 6.22115 28.8763 5.98053C28.5608 4.9276 27.6764 4 26.5006 4C25.3249 4 24.4399 4.92813 24.1277 5.98159C24.0548 6.22486 23.83 6.44221 23.591 6.53846C21.7903 7.26562 19.6071 8.75538 19.6071 12.956C19.6044 17.5385 18.6266 18.3846 17.2417 20.0468C16.6678 20.7353 17.1705 21.7692 18.1742 21.7692H34.8325C35.8308 21.7692 36.3302 20.7322 35.7596 20.0468Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
-<defs>
-<clipPath id="clip0_40008731_35858">
-<rect width="52" height="30" fill="white"/>
-</clipPath>
-</defs>
-</svg><i class="nav-alert" aria-label="有未读消息"></i><span>消息</span></div>
-          <div class="nav" data-act="show" data-arg="me"><svg class="icx ic-off" viewBox="0 0 52 30" fill="none">
-<path d="M25.9583 16.6797C28.8349 16.6797 30.8963 17.5361 32.3519 18.7041C33.7956 19.8626 34.5969 21.2895 35.0316 22.3701C35.2962 23.0283 35.1663 23.6997 34.7835 24.1914C34.4095 24.6717 33.8136 24.9619 33.1615 24.9619H18.7552C18.1031 24.9619 17.5072 24.6718 17.1332 24.1914C16.7504 23.6997 16.6205 23.0283 16.8851 22.3701C17.3198 21.2895 18.1211 19.8626 19.5648 18.7041C21.0204 17.5361 23.0818 16.6797 25.9583 16.6797ZM25.9583 18.1797C23.4026 18.1797 21.6778 18.9324 20.5042 19.874C19.3192 20.825 18.6475 22.0087 18.2767 22.9307C18.2203 23.0712 18.2474 23.1814 18.3167 23.2705C18.395 23.3707 18.5467 23.4619 18.7552 23.4619H33.1615C33.37 23.4619 33.5217 23.3707 33.5999 23.2705C33.6693 23.1814 33.6964 23.0713 33.64 22.9307C33.2692 22.0087 32.5976 20.825 31.4124 19.874C30.2388 18.9324 28.5141 18.1797 25.9583 18.1797ZM25.9583 5.16406C28.447 5.16414 30.3363 7.37572 30.3363 9.93652C30.3359 12.497 28.4467 14.7079 25.9583 14.708C23.4699 14.708 21.5808 12.497 21.5804 9.93652C21.5804 7.37568 23.4696 5.16406 25.9583 5.16406ZM25.9583 6.66406C24.4399 6.66406 23.0804 8.05482 23.0804 9.93652C23.0808 11.8178 24.4401 13.208 25.9583 13.208C27.4765 13.2079 28.8359 11.8177 28.8363 9.93652C28.8363 8.05487 27.4768 6.66415 25.9583 6.66406Z" fill="currentColor"/>
-<path d="M25.9583 16.6797C28.8349 16.6797 30.8963 17.5361 32.3519 18.7041C33.7956 19.8626 34.5969 21.2895 35.0316 22.3701C35.2962 23.0283 35.1663 23.6997 34.7835 24.1914C34.4095 24.6717 33.8136 24.9619 33.1615 24.9619H18.7552C18.1031 24.9619 17.5072 24.6718 17.1332 24.1914C16.7504 23.6997 16.6205 23.0283 16.8851 22.3701C17.3198 21.2895 18.1211 19.8626 19.5648 18.7041C21.0204 17.5361 23.0818 16.6797 25.9583 16.6797ZM25.9583 18.1797C23.4026 18.1797 21.6778 18.9324 20.5042 19.874C19.3192 20.825 18.6475 22.0087 18.2767 22.9307C18.2203 23.0712 18.2474 23.1814 18.3167 23.2705C18.395 23.3707 18.5467 23.4619 18.7552 23.4619H33.1615C33.37 23.4619 33.5217 23.3707 33.5999 23.2705C33.6693 23.1814 33.6964 23.0713 33.64 22.9307C33.2692 22.0087 32.5976 20.825 31.4124 19.874C30.2388 18.9324 28.5141 18.1797 25.9583 18.1797ZM25.9583 5.16406C28.447 5.16414 30.3363 7.37572 30.3363 9.93652C30.3359 12.497 28.4467 14.7079 25.9583 14.708C23.4699 14.708 21.5808 12.497 21.5804 9.93652C21.5804 7.37568 23.4696 5.16406 25.9583 5.16406ZM25.9583 6.66406C24.4399 6.66406 23.0804 8.05482 23.0804 9.93652C23.0808 11.8178 24.4401 13.208 25.9583 13.208C27.4765 13.2079 28.8359 11.8177 28.8363 9.93652C28.8363 8.05487 27.4768 6.66415 25.9583 6.66406Z" fill="black" fill-opacity="0.2"/>
-</svg><svg class="icx ic-on" viewBox="0 0 52 30" fill="none">
-<g clip-path="url(#clip0_40008731_35860)">
-<path d="M25.9583 16.6797C28.8349 16.6797 30.8963 17.5361 32.3519 18.7041C33.7956 19.8626 34.5969 21.2895 35.0316 22.3701C35.2962 23.0283 35.1663 23.6997 34.7835 24.1914C34.4095 24.6717 33.8136 24.9619 33.1615 24.9619H18.7552C18.1031 24.9619 17.5072 24.6718 17.1332 24.1914C16.7504 23.6997 16.6205 23.0283 16.8851 22.3701C17.3198 21.2895 18.1211 19.8626 19.5648 18.7041C21.0204 17.5361 23.0818 16.6797 25.9583 16.6797ZM25.9583 5.16406C28.447 5.16414 30.3363 7.37572 30.3363 9.93652C30.3359 12.497 28.4467 14.7079 25.9583 14.708C23.4699 14.708 21.5808 12.497 21.5804 9.93652C21.5804 7.37568 23.4696 5.16406 25.9583 5.16406Z" fill="currentColor"/>
-</g>
-<defs>
-<clipPath id="clip0_40008731_35860">
-<rect width="52" height="30" fill="white"/>
-</clipPath>
-</defs>
-</svg><span>我的</span></div>
         </nav>
 
         <!-- ===== 侧边抽屉 side menu（我的群组）===== -->
@@ -462,13 +448,13 @@
           <div class="sm-backdrop" data-act="tplcancel"></div>
           <div class="sm-sheet">
             <div class="sm-h">启动「小本试水」</div>
-            <div class="sm-sub">启动后每期自动下注，你随时可以急停</div>
+            <div class="sm-sub">启动后每期自动执行，可随时急停</div>
             <div class="srow"><span>玩法</span><b>两面 · 跟投</b></div>
             <div class="srow"><span>每期投入</span><b>10 起 · 倍投最高 40</b></div>
             <div class="srow"><span>最坏情况</span><b class="rd">−100 自动停止</b></div>
             <div class="srow"><span>达到止盈</span><b class="gn">+100 自动停止</b></div>
             <div class="srow"><span>占用预算</span><b>100 <small>/ 余额 400</small></b></div>
-            <div class="sm-note"><i><svg class="icx" viewBox="355.8 52.9 22.2 22.2" fill="none"><circle cx="344" cy="60" r="9" stroke="currentColor" stroke-width="1.5px" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="matrix(1.0666458333333333 0 0 1.0666458333333333 0 0.008197916666639004)"></circle><path d="M344.135 65.3424C343.731 65.3517 343.398 65.0263 343.398 64.6217L343.398 59.3993C343.398 59.0011 343.721 58.6784 344.119 58.6784C344.517 58.6784 344.84 59.0012 344.84 59.3993L344.84 62.0023L344.84 64.6217C344.84 65.0133 344.527 65.3333 344.135 65.3424ZM344.119 54.9994C344.425 54.9994 344.688 55.1092 344.908 55.3288C345.128 55.5484 345.237 55.8115 345.237 56.118C345.237 56.4246 345.128 56.6877 344.908 56.9073C344.688 57.1269 344.425 57.2366 344.119 57.2366C343.812 57.2366 343.549 57.1269 343.329 56.9073C343.11 56.6877 343 56.4246 343 56.118C343 55.915 343.052 55.7286 343.155 55.5587C343.255 55.3889 343.39 55.2521 343.559 55.1486C343.725 55.0491 343.912 54.9994 344.119 54.9994Z" fill="currentColor" transform="matrix(1.0666458333333333 0 0 1.0666458333333333 0 0.008197916666639004)"></path></svg></i><span>预算从余额中预留，本轮运行结束后未用部分自动退回。</span></div>
+            <div class="sm-note"><i><svg class="icx" viewBox="355.8 52.9 22.2 22.2" fill="none"><circle cx="344" cy="60" r="9" stroke="currentColor" stroke-width="1.5px" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="matrix(1.0666458333333333 0 0 1.0666458333333333 0 0.008197916666639004)"></circle><path d="M344.135 65.3424C343.731 65.3517 343.398 65.0263 343.398 64.6217L343.398 59.3993C343.398 59.0011 343.721 58.6784 344.119 58.6784C344.517 58.6784 344.84 59.0012 344.84 59.3993L344.84 62.0023L344.84 64.6217C344.84 65.0133 344.527 65.3333 344.135 65.3424ZM344.119 54.9994C344.425 54.9994 344.688 55.1092 344.908 55.3288C345.128 55.5484 345.237 55.8115 345.237 56.118C345.237 56.4246 345.128 56.6877 344.908 56.9073C344.688 57.1269 344.425 57.2366 344.119 57.2366C343.812 57.2366 343.549 57.1269 343.329 56.9073C343.11 56.6877 343 56.4246 343 56.118C343 55.915 343.052 55.7286 343.155 55.5587C343.255 55.3889 343.39 55.2521 343.559 55.1486C343.725 55.0491 343.912 54.9994 344.119 54.9994Z" fill="currentColor" transform="matrix(1.0666458333333333 0 0 1.0666458333333333 0 0.008197916666639004)"></path></svg></i><span>预算自余额预留，本轮结束后未用部分退回。</span></div>
             <div class="sm-btns"><button class="ghost" data-act="tpladjust">调整设置</button><button class="cta" data-act="tplconfirm">确认启动</button></div>
           </div>
         </div>
@@ -492,8 +478,8 @@
             <div class="ob-page on" data-ob="1">
               <div class="ob-img"><img src="shared/auto-guide/01.png" alt="" onerror="this.remove()"></div>
               <div class="ob-body">
-                <div class="ob-title">让系统帮你盯盘看走势</div>
-                <div class="ob-copy">按设定规则自动下注，实时追踪，随时急停。</div>
+                <div class="ob-title">系统自动盯盘</div>
+                <div class="ob-copy">按设定规则自动执行，实时追踪，可随时急停。</div>
               </div>
               <div class="ob-dots"><span class="on"></span><span></span><span></span></div>
               <div class="ob-ftr"><button class="pri" data-act="obnext">下一步</button></div>
@@ -501,8 +487,8 @@
             <div class="ob-page" data-ob="2">
               <div class="ob-img"><img src="shared/auto-guide/02.png" alt="" onerror="this.remove()"></div>
               <div class="ob-body">
-                <div class="ob-title">你的策略设置</div>
-                <div class="ob-copy">玩家设定触发条件、金额、倍数、止盈止损，系统只按规则执行。</div>
+                <div class="ob-title">策略设置</div>
+                <div class="ob-copy">触发条件、金额、倍数与止盈止损由玩家设定，系统按规则执行。</div>
               </div>
               <div class="ob-dots"><span></span><span class="on"></span><span></span></div>
               <div class="ob-ftr"><button class="ghost" data-act="obprev">上一步</button><button class="pri" data-act="obnext">下一步</button></div>
@@ -511,7 +497,7 @@
               <div class="ob-img"><img src="shared/auto-guide/04.png" alt="" onerror="this.remove()"></div>
               <div class="ob-body">
                 <div class="ob-title">结果一目了然</div>
-                <div class="ob-copy">实时报告命中、盈亏，并可随时急停或修改。</div>
+                <div class="ob-copy">实时回报命中与盈亏，可急停或修改。</div>
               </div>
               <div class="ob-dots"><span></span><span></span><span class="on"></span></div>
               <div class="ob-ftr"><button class="ghost" data-act="obprev">上一步</button><button class="pri" data-act="obclose">立即体验</button></div>
@@ -531,7 +517,7 @@
     </div>
   </div>
 <script src="shared/pagenav.js?v=20260730-split"></script>
-<script src="shared/app.js?v=20260808c"></script>
+<script src="shared/app.js?v=20260817f1"></script>
 <script src="shared/trialrun.js?v=20260730g"></script>
 </body>
 </html>

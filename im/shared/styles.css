@@ -2,6 +2,16 @@
 :root{--cta-lg-h:40px;--subtab-h:30px;--subtab-radius:15px;--subtab-gap:8px;--icon-chevron:16px;--radius-drawer:var(--radius-sheet);--radius-frame:var(--radius-md);--radius-inner:var(--radius-sm);--radius-filter:var(--radius-md);--radius-cta-lg:var(--radius-md);--radius-cta-sm:var(--radius-sm);--radius-control:var(--radius-md);--fs-heading:var(--fs-title);}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;}
 button,input,select,textarea{font-family:inherit;color:inherit;}
+/* ══ 2026-08-11（Hector：全站不要用斜体）════════════════════════════════════════
+   全站的斜体没有一处是 CSS 写出来的 —— 全是 <i> / <em> 的<b>浏览器默认渲染</b>
+   在漏掉 font-style:normal 的地方冒出来（这两个标签在本原型里当的是「小标签 / 单位 /
+   图标容器」，从来不是「强调语气」）。所以在最底层复位一次，比逐处补 normal 可靠。
+   放在这里（reset 之后、所有组件样式之前）：特异度只有 0,0,1，
+   哪天真要一处斜体，任何 class 规则都压得过它。
+   ⚠ 覆盖范围＝所有加载 styles.css 的页面（18 档）。
+     不加载它的四档各自补了同一条：curve-study.html（生成的，见 gen-curve-study.js）、
+     pages.html、games-*.html 那几张 08-08 对照稿、index.html（转发页，没有正文）。 */
+em,i,cite,dfn,var,address{font-style:normal;}
 
 /* ── Numeric type: tabular figures while staying inside Noto Sans SC ── */
 .opt .od,.amtchip,.amtin,.credit .amt,.bal b,.ri-line1 b,.rlastlab b,.bb,.miniballs i,.rb .b,

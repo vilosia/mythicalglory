@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>长龙条改造 · 三案 v1</title>
+<!--
+  ══ 变更记录 ═══════════════════════════════════════════════════════════
+  v1 · 2026-08-16
+  背景：Hector —— 长龙条搬到「即将开奖」之后（已落地），并要 visual overhaul。
+  现状病灶：白药丸里塞「‹ 游戏 · 玩法 … 连开 N 期 [标] ›」，一次只见一条、
+  左右箭头吃掉两端空间、红字与红标撞色；它是「机会看板」却长得像一条通知。
+  三案共同前提：位置已在 即将开奖 之下（先看几时开 → 再看哪有龙）。
+-->
+<style>
+  :root{
+    --blue:#2F6BE8;--blue-d:#1D4FD8;--ink:#172033;--muted:#66738A;--faint:#9AA6B8;
+    --line:#E6ECF2;--fill:#F1F5F9;--page:#F5F7F9;--win:#0E9F5B;--red:#E0454F;--gold:#B8741A;
+    --font:"Noto Sans SC","PingFang SC",sans-serif;--data:"DIN Alternate","Arial Narrow",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#D8DEE6;font-family:var(--font);color:var(--ink);padding:24px 0 60px;}
+  h1{font-size:16px;text-align:center;margin-bottom:4px;}
+  .sub{font-size:12px;color:var(--muted);text-align:center;margin:0 auto 20px;max-width:700px;}
+  .row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;align-items:flex-start;}
+  .opt{width:390px;}
+  .opt h2{font-size:13px;margin:0 2px 2px;}
+  .opt .why{font-size:11.5px;line-height:1.55;color:var(--muted);margin:0 2px 10px;}
+  .opt .why b{color:var(--ink);}
+  .rec{display:inline-block;font-size:10px;font-weight:800;color:#fff;background:var(--blue);border-radius:6px;padding:2px 7px;vertical-align:2px;margin-left:5px;}
+  .num{font-family:var(--data);font-variant-numeric:tabular-nums;}
+  .phone{border:1px solid #B9C6D3;border-radius:16px;background:var(--page);padding:12px;min-height:330px;}
+  .sech{display:flex;align-items:baseline;gap:7px;margin:0 2px 8px;}
+  .sech b{font-size:14px;}
+  .sech small{font-size:11px;color:var(--muted);}
+  .sech em{margin-left:auto;font-style:normal;font-size:11.5px;color:var(--blue-d);font-weight:700;}
+  .card{background:#fff;border-radius:14px;box-shadow:0 1px 2px rgba(23,32,51,.05);}
+  .note{opacity:.55;text-align:center;font-size:11px;color:var(--muted);padding:9px 0 2px;}
+
+  /* A 机会卡横滑 */
+  .a-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;}
+  .a-card{flex:none;width:150px;padding:10px 11px;border-radius:13px;background:#fff;
+    box-shadow:0 1px 2px rgba(23,32,51,.05);position:relative;}
+  .a-card .g{font-size:10.5px;color:var(--muted);}
+  .a-card .pl{font-size:13px;font-weight:800;margin-top:1px;}
+  .a-beads{display:flex;gap:3px;margin-top:7px;}
+  .a-beads i{width:13px;height:13px;border-radius:4px;background:var(--red);color:#fff;
+    font:800 8.5px/13px var(--data);text-align:center;font-style:normal;}
+  .a-beads i.b{background:var(--blue);}
+  .a-foot{display:flex;align-items:baseline;gap:5px;margin-top:8px;font-size:11px;color:var(--muted);}
+  .a-foot b{font-family:var(--data);font-size:14px;color:var(--gold);font-weight:800;}
+  .a-go{margin-left:auto;color:var(--blue-d);font-weight:700;}
+
+  /* B 榜单三行 */
+  .b-list{padding:4px 2px;}
+  .b-row{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:11px;}
+  .b-row+.b-row{margin-top:2px;}
+  .b-row:nth-child(1){background:linear-gradient(90deg,#FFF6E8,#FFFDF8);}
+  .b-rank{flex:none;width:18px;height:18px;border-radius:6px;background:var(--fill);color:var(--muted);
+    font:800 10px/18px var(--data);text-align:center;}
+  .b-row:nth-child(1) .b-rank{background:var(--gold);color:#fff;}
+  .b-nm{font-size:12.5px;font-weight:700;}
+  .b-nm small{font-weight:400;color:var(--muted);font-size:11px;margin-left:5px;}
+  .b-run{margin-left:auto;font-size:11px;color:var(--muted);}
+  .b-run b{font-family:var(--data);font-size:15px;color:var(--ink);font-weight:800;margin-right:1px;}
+  .b-side{flex:none;width:22px;height:22px;border-radius:7px;background:var(--red);color:#fff;
+    font:800 11px/22px var(--font);text-align:center;}
+  .b-side.b{background:var(--blue);}
+
+  /* C 单条重做 */
+  .c-bar{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:13px;background:#fff;
+    box-shadow:0 1px 2px rgba(23,32,51,.05);}
+  .c-flame{flex:none;width:30px;height:30px;border-radius:10px;background:#FFF1E4;color:var(--gold);
+    display:grid;place-items:center;font-size:15px;}
+  .c-mid{min-width:0;flex:1;}
+  .c-t{font-size:12.5px;font-weight:700;}
+  .c-t small{font-weight:400;color:var(--muted);margin-left:5px;font-size:11px;}
+  .c-beads{display:flex;gap:3px;margin-top:5px;}
+  .c-beads i{width:12px;height:12px;border-radius:4px;background:var(--red);font-style:normal;}
+  .c-beads i.b{background:var(--blue);}
+  .c-run{flex:none;text-align:right;}
+  .c-run b{display:block;font-family:var(--data);font-size:17px;font-weight:800;color:var(--gold);line-height:1;}
+  .c-run span{font-size:10px;color:var(--muted);}
+  .c-dots{display:flex;justify-content:center;gap:4px;margin-top:7px;}
+  .c-dots s{width:5px;height:5px;border-radius:50%;background:#D3DCE6;text-decoration:none;}
+  .c-dots s.on{background:var(--blue);}
+</style>
+</head>
+<body>
+  <h1>长龙条改造 · 三案</h1>
+  <div class="sub">位置已搬到「即将开奖」之后（先答几时开，再答哪儿有龙）。三案的分歧：<b>一次看几条</b>、以及<b>龙用什么表达</b></div>
+  <div class="row">
+
+    <!-- A -->
+    <div class="opt">
+      <h2>A · 机会卡横滑<span class="rec">推荐</span></h2>
+      <p class="why">每条龙一张小卡，横滑看全部：<b>珠串把「连开」画出来</b>（红/蓝一眼看清是哪边在连），
+        期数用金色数字压轴。与上方「即将开奖」三张卡同一种卡语言，两段读起来是一套。
+        箭头退役——横滑本身就是提示。</p>
+      <div class="phone">
+        <div class="sech"><b>正在连开</b><small>4 条</small><em>全部 ›</em></div>
+        <div class="a-scroll">
+          <div class="a-card"><div class="g">极速快乐十分</div><div class="pl">第九名 · 大</div>
+            <div class="a-beads"><i>大</i><i>大</i><i>大</i><i>大</i><i>大</i><i>大</i><i>大</i><i>大</i></div>
+            <div class="a-foot">连开 <b>8</b> 期<span class="a-go">跟 ›</span></div></div>
+          <div class="a-card"><div class="g">极速赛车</div><div class="pl">龙虎 · 龙</div>
+            <div class="a-beads"><i>龙</i><i>龙</i><i>龙</i><i>龙</i><i>龙</i><i>龙</i></div>
+            <div class="a-foot">连开 <b>6</b> 期<span class="a-go">跟 ›</span></div></div>
+          <div class="a-card"><div class="g">澳洲幸运10</div><div class="pl">冠军 · 单</div>
+            <div class="a-beads"><i class="b">单</i><i class="b">单</i><i class="b">单</i><i class="b">单</i><i class="b">单</i></div>
+            <div class="a-foot">连开 <b>5</b> 期<span class="a-go">跟 ›</span></div></div>
+        </div>
+        <div class="note">与上方三张开奖卡同族；珠串＝把「连开」画出来</div>
+      </div>
+    </div>
+
+    <!-- B -->
+    <div class="opt">
+      <h2>B · 榜单三行</h2>
+      <p class="why">当成<b>排行榜</b>：按连开期数排序，冠军行镀金。一屏见三条、不用滑，
+        期数右对齐可比。最省空间、最好扫；代价是<b>没有珠串</b>，「连开」只剩一个数字，
+        少了盘面感。</p>
+      <div class="phone">
+        <div class="sech"><b>连开榜</b><small>期数最长的三条</small><em>全部 4 条 ›</em></div>
+        <div class="card b-list">
+          <div class="b-row"><span class="b-rank">1</span><span class="b-nm">第九名<small>极速快乐十分</small></span><span class="b-run">连开 <b>8</b>期</span><span class="b-side">大</span></div>
+          <div class="b-row"><span class="b-rank">2</span><span class="b-nm">第一球<small>极速时时彩</small></span><span class="b-run">连开 <b>7</b>期</span><span class="b-side b">双</span></div>
+          <div class="b-row"><span class="b-rank">3</span><span class="b-nm">龙虎<small>极速赛车</small></span><span class="b-run">连开 <b>6</b>期</span><span class="b-side">龙</span></div>
+        </div>
+        <div class="note">排序即叙事：越长越靠上</div>
+      </div>
+    </div>
+
+    <!-- C -->
+    <div class="opt">
+      <h2>C · 单条重做</h2>
+      <p class="why">保留「一次一条＋轮播」的老骨架，只把皮换掉：左边火苗徽、中间玩法＋珠串、
+        右边金色期数，圆点指示第几条。改动最小、最快落地；
+        但<b>一次只见一条</b>的老问题还在（其余的要等它转）。</p>
+      <div class="phone">
+        <div class="sech"><b>正在连开</b><small>4 条</small></div>
+        <div class="c-bar">
+          <span class="c-flame">🔥</span>
+          <span class="c-mid"><span class="c-t">极速赛车 龙虎<small>龙</small></span>
+            <span class="c-beads"><i></i><i></i><i></i><i></i><i></i><i></i></span></span>
+          <span class="c-run"><b>6</b><span>期连开</span></span>
+        </div>
+        <div class="c-dots"><s class="on"></s><s></s><s></s><s></s></div>
+        <div class="note">骨架不动、只换皮 —— 改动成本最低</div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

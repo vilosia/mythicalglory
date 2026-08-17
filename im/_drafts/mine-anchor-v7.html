@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>指挥牌换皮 · 两种高对比 v7</title>
+<!--
+  ══ 变更记录 ═══════════════════════════════════════════════════════════
+  v7 · 2026-08-16
+  背景：v6-A「一套一行」概念通过，但视觉不好看、玻璃在淡蓝上对比发糊。
+  本稿只换皮不动骨架（IA 原样：一套一行 · 异常并行内 · 行=电梯）。两种皮：
+    A1 深舰桥 —— 深海军蓝面板压在淡蓝上（与对局卡倒计时药丸同族深蓝），
+                 白字满对比、倒计时冰蓝、命中亮绿；「指挥舱」气质（推荐）
+    A2 白瓷牌 —— 精工白卡承载（与首屏三格同族），墨字+彩色状态点；
+                 最稳妥、与全站卡语言零冲突，但「live」气质弱一档
+  共同修正：行高加大到 46px、游戏名做成小徽、金额/倒计时全部 data-font、
+            爆仓行给实底色不再半透明。
+-->
+<style>
+  :root{
+    --blue:#2F6BE8;--blue-d:#1D4FD8;--ink:#172033;--muted:#66738A;--faint:#9AA6B8;
+    --line:#E6ECF2;--fill:#F1F5F9;--page:#F5F7F9;--win:#0E9F5B;--red:#E0454F;
+    --font:"Noto Sans SC","PingFang SC",sans-serif;--data:"DIN Alternate","Arial Narrow",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#D8DEE6;font-family:var(--font);color:var(--ink);padding:26px 0 60px;}
+  h1{font-size:16px;text-align:center;margin-bottom:4px;}
+  .sub{font-size:12px;color:var(--muted);text-align:center;margin:0 auto 22px;max-width:680px;}
+  .row{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;align-items:flex-start;}
+  .opt{width:375px;}
+  .opt h2{font-size:13px;margin:0 2px 2px;}
+  .opt .why{font-size:11.5px;line-height:1.55;color:var(--muted);margin:0 2px 10px;}
+  .opt .why b{color:var(--ink);}
+  .rec{display:inline-block;font-size:10px;font-weight:800;color:#fff;background:var(--blue);border-radius:6px;padding:2px 7px;vertical-align:2px;margin-left:5px;}
+  .num{font-family:var(--data);font-variant-numeric:tabular-nums;}
+  .up{color:var(--win);}
+  .phone{border:1px solid #B9C6D3;border-radius:18px;overflow:hidden;
+    background:linear-gradient(180deg,#4372E9 0%,#5F8AEF 30%,#A3BEF5 52%,var(--page) 66%);
+    padding:14px 12px 16px;min-height:500px;}
+  .hero-lab{font-size:11px;color:rgba(255,255,255,.78);display:flex;align-items:center;gap:6px;}
+  .hero-lab i{width:6px;height:6px;border-radius:50%;background:#7CF5B4;}
+  .hero-num{font-family:var(--data);font-size:31px;font-weight:800;color:#FFFFFF;line-height:1.08;letter-spacing:-.5px;
+    text-shadow:0 2px 14px rgba(10,40,120,.35);}
+  .hero-num em{font-style:normal;color:#A9F5C9;}
+  .card{background:linear-gradient(168deg,rgba(255,255,255,.98),rgba(247,250,255,.94));
+    border:1px solid rgba(255,255,255,.72);border-radius:14px;margin-top:12px;
+    box-shadow:inset 0 1.5px 0 rgba(255,255,255,.95),0 2px 10px -2px rgba(30,60,120,.08),0 12px 28px -20px rgba(30,60,120,.28);}
+  .b-h{display:flex;align-items:center;gap:8px;padding:11px 14px 0;}
+  .b-h .g{font-size:11px;color:var(--muted);}
+  .b-h .code{font-size:16px;font-weight:800;}
+  .b-cd{margin-left:auto;display:inline-flex;align-items:center;gap:5px;background:#12306E;color:#fff;
+    border-radius:999px;padding:4px 11px;font-size:11px;font-weight:700;}
+  .b-cd .num{color:#8FE7FF;}
+  .b-f{display:flex;align-items:center;padding:9px 14px 12px;font-size:11px;color:var(--muted);gap:12px;}
+  .b-f .pl{margin-left:auto;font-size:13px;font-weight:800;font-family:var(--data);}
+  .note{opacity:.55;text-align:center;font-size:11px;color:var(--muted);padding:10px 0 2px;}
+
+  /* ── A1 深舰桥 ─────────────────────────── */
+  .d-board{margin-top:11px;border-radius:15px;overflow:hidden;
+    background:linear-gradient(172deg,#132F7C 0%,#0E2560 100%);
+    border:1px solid rgba(140,180,255,.35);
+    box-shadow:inset 0 1px 0 rgba(160,200,255,.25),0 14px 30px -18px rgba(8,25,80,.65);}
+  .d-r{display:flex;align-items:center;gap:9px;min-height:46px;padding:8px 13px;
+    border-bottom:1px solid rgba(140,180,255,.14);}
+  .d-r:last-child{border-bottom:0;}
+  .d-g{flex:none;font-size:9.5px;font-weight:800;color:#9DBCFF;background:rgba(120,160,255,.16);
+    border:1px solid rgba(140,180,255,.3);border-radius:6px;padding:2px 6px;letter-spacing:.3px;}
+  .d-r b{color:#fff;font-size:13px;font-weight:800;letter-spacing:.2px;}
+  .d-st{margin-left:auto;text-align:right;font-size:11.5px;color:rgba(215,228,255,.85);white-space:nowrap;}
+  .d-st .cd{color:#8FE7FF;font-family:var(--data);font-weight:800;font-size:12.5px;}
+  .d-st .m{color:#fff;font-family:var(--data);font-weight:800;}
+  .d-st .hit{color:#7DF0B4;font-family:var(--data);font-weight:800;}
+  .d-go{flex:none;color:rgba(160,190,255,.65);font-size:12px;}
+  .d-r.warn{background:linear-gradient(90deg,rgba(224,69,79,.28),rgba(224,69,79,.10));}
+  .d-r.warn .d-g{color:#FFC3C7;border-color:rgba(255,150,155,.4);background:rgba(255,120,128,.15);}
+  .d-r.warn .d-st{color:#FFD4D6;}
+  .d-r.warn .d-st em{font-style:normal;color:#fff;font-weight:800;}
+  .d-r.idle{opacity:.52;}
+
+  /* ── A2 白瓷牌 ─────────────────────────── */
+  .w-board{margin-top:11px;border-radius:15px;overflow:hidden;
+    background:linear-gradient(168deg,rgba(255,255,255,.98),rgba(247,250,255,.94));
+    border:1px solid rgba(255,255,255,.75);
+    box-shadow:inset 0 1.5px 0 rgba(255,255,255,.95),0 12px 28px -20px rgba(30,60,120,.35);}
+  .w-r{display:flex;align-items:center;gap:9px;min-height:46px;padding:8px 13px;border-bottom:1px solid #EDF2F8;}
+  .w-r:last-child{border-bottom:0;}
+  .w-g{flex:none;font-size:9.5px;font-weight:800;color:var(--blue-d);background:#EAF1FF;
+    border-radius:6px;padding:2px 6px;letter-spacing:.3px;}
+  .w-r b{color:var(--ink);font-size:13px;font-weight:800;}
+  .w-st{margin-left:auto;text-align:right;font-size:11.5px;color:var(--muted);white-space:nowrap;}
+  .w-st .cd{color:var(--blue-d);font-family:var(--data);font-weight:800;font-size:12.5px;}
+  .w-st .m{color:var(--ink);font-family:var(--data);font-weight:800;}
+  .w-st .hit{color:var(--win);font-family:var(--data);font-weight:800;}
+  .w-r.warn{background:#FDF1F1;}
+  .w-r.warn .w-g{color:#C43A44;background:#FBE2E4;}
+  .w-r.warn .w-st em{font-style:normal;color:var(--blue-d);font-weight:800;}
+  .w-r.idle{opacity:.55;}
+  .w-go{flex:none;color:var(--faint);font-size:12px;}
+</style>
+</head>
+<body>
+  <h1>指挥牌换皮 · 两种高对比</h1>
+  <div class="sub">骨架不动（一套一行 · 异常并行内 · 行=电梯）。共同修正：行高 46px、
+    游戏名做成小徽、数字全上 data-font、爆仓行实底不再半透。</div>
+  <div class="row">
+
+    <!-- A1 -->
+    <div class="opt">
+      <h2>A1 · 深舰桥<span class="rec">推荐</span></h2>
+      <p class="why">面板沉到<b>深海军蓝</b>（与对局卡倒计时药丸同族），压在淡蓝页顶上对比拉满：
+        白字代号、冰蓝倒计时、亮绿命中、爆仓行左起红光。它把「指挥舱」的气质做实——
+        深色一块 = 屏上唯一的暗部，眼睛第一落点就是它。</p>
+      <div class="phone">
+        <div class="hero-lab"><i></i>总盈亏 · 3 套运行中</div>
+        <div class="hero-num num"><em>+767.00</em></div>
+        <div class="d-board">
+          <div class="d-r"><span class="d-g">飞艇</span><b>C0404R5</b><span class="d-st">在场 <span class="m">150</span> · 封盘 <span class="cd">0:07</span></span><span class="d-go">›</span></div>
+          <div class="d-r"><span class="d-g">赛车</span><b>C0506R5</b><span class="d-st">刚命中 <span class="hit">+41.40</span> · 下期 <span class="cd">0:19</span></span><span class="d-go">›</span></div>
+          <div class="d-r warn"><span class="d-g">时时彩</span><b>B0405R4</b><span class="d-st">已爆仓 · 若继续 +35.20 <em>继续 ›</em></span></div>
+          <div class="d-r idle"><span class="d-g">飞艇</span><b>C0304R6</b><span class="d-st">未启用 · 启用 ›</span></div>
+        </div>
+        <div class="card"><div class="b-h"><span><span class="g">极速飞艇</span><div class="code">C0404R5 ›</div></span><span class="b-cd">封盘 <span class="num">0:07</span></span></div><div class="b-f"><span>3 注在场 · 待触发 3</span><span class="pl up num">+726.00</span></div></div>
+        <div class="note">深色面板是全屏唯一暗部——盘面永远是第一眼</div>
+      </div>
+    </div>
+
+    <!-- A2 -->
+    <div class="opt">
+      <h2>A2 · 白瓷牌</h2>
+      <p class="why">同一骨架落在<b>精工白</b>上（与首屏三格、下方卡片同族）：墨字满对比，
+        游戏名蓝徽、爆仓行粉底。与全站卡语言零冲突、最不会错，
+        但它和下面的卡长得像亲戚——「指挥」的气场弱一档，要靠行内彩色状态撑活力。</p>
+      <div class="phone">
+        <div class="hero-lab"><i></i>总盈亏 · 3 套运行中</div>
+        <div class="hero-num num"><em>+767.00</em></div>
+        <div class="w-board">
+          <div class="w-r"><span class="w-g">飞艇</span><b>C0404R5</b><span class="w-st">在场 <span class="m">150</span> · 封盘 <span class="cd">0:07</span></span><span class="w-go">›</span></div>
+          <div class="w-r"><span class="w-g">赛车</span><b>C0506R5</b><span class="w-st">刚命中 <span class="hit">+41.40</span> · 下期 <span class="cd">0:19</span></span><span class="w-go">›</span></div>
+          <div class="w-r warn"><span class="w-g">时时彩</span><b>B0405R4</b><span class="w-st">已爆仓 · 若继续 +35.20 <em>继续 ›</em></span></div>
+          <div class="w-r idle"><span class="w-g">飞艇</span><b>C0304R6</b><span class="w-st">未启用 · 启用 ›</span></div>
+        </div>
+        <div class="card"><div class="b-h"><span><span class="g">极速飞艇</span><div class="code">C0404R5 ›</div></span><span class="b-cd">封盘 <span class="num">0:07</span></span></div><div class="b-f"><span>3 注在场 · 待触发 3</span><span class="pl up num">+726.00</span></div></div>
+        <div class="note">最稳妥；「live」感靠冰蓝倒计时与命中绿撑</div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

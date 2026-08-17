@@ -5,24 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>管理中心 · IM168 原型</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css"><!-- 唯一令牌来源，必须排在其它样式表之前 -->
 <link rel="stylesheet" href="shared/styles.css?v=20260730g">
 <!-- 样式已迁至 shared/styles.css（2026-07-09 拆分）；新增样式请直接写入该文件 -->
 <!-- 历史试跑「工作台」（V3 · 2026-07-30 移植）的样式单独一档，不混进 530KB 的 styles.css -->
 <link rel="stylesheet" href="shared/trialrun.css?v=20260730g">
-<link rel="stylesheet" href="shared/reference-theme.css?v=20260812bluecanvas54">
-<script src="shared/ui-consistency.js?v=20260812auth1" defer></script>
+<link rel="stylesheet" href="shared/reference-theme.css?v=20260817f1">
+<script src="shared/ui-consistency.js?v=20260817f1" defer></script>
 </head>
-<body data-im168-default="owner">
+<body class="page-admin x-fade" data-im168-default="owner">
   <div class="stage">
     <div class="phone" data-game="pk">
       <div class="screen">
         <!-- 游戏厅 chrome：四 Tab（2026-07-11 新增 查爆仓） -->
         <div class="ghead chrome" data-mainviews="bet chat bust">
           <div class="gtop">
-            <span class="gback" data-act="show" data-arg="groups"><svg class="icx" viewBox="25.0 51.0 11.0 17.0" fill="none"><path d="M34 66L27 59.5L34 53" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <!-- 08-15 二改（Hector：应回「来的那一页」，不是写死某一页）——
+                 返回键改走<b>真实浏览历史</b>：页内换 view 用的是 replaceState（不进栈），
+                 所以 history.back() 一定落在<b>进管理中心之前的那一页</b>；
+                 直接开档没有历史时，兜底回频道。见 data-admback 那段 JS。 -->
+            <span class="gback" data-admback="1"><svg class="icx" viewBox="25.0 51.0 11.0 17.0" fill="none"><path d="M34 66L27 59.5L34 53" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
             <span class="gtitle" data-act="gameheadmenu" role="button" aria-label="切换游戏" aria-haspopup="menu" aria-expanded="false" tabindex="0">
-              <b class="gname gname-pk">极速飞艇</b><b class="gname gname-pk10">极速赛车</b><b class="gname gname-ssc">极速时时彩</b><b class="gname gname-soon">游戏厅</b><i class="tcaret"><svg class="icx" viewBox="371.3 56.9 12.6 7.4" fill="none"><path d="M321.5 47.5L326 52L321.5 56.5" stroke="currentColor" stroke-width="1.8px" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="rotate(90 377.57 60.64) matrix(1.1661579810495626 0 0 1.1661579810495626 0 0.00044415087462888964)"/></svg></i>
-
+              <b class="gname gname-pk">极速飞艇</b><b class="gname gname-pk10">极速赛车</b><b class="gname gname-ssc">极速时时彩</b><b class="gname gname-soon">游戏厅</b><!-- 2026-08-13（Hector）：顶栏统一成「标题 · 群组」两段式，与彩票那一屏一致 --><small>· 幸运组</small><i class="tcaret"><svg class="icx" viewBox="371.3 56.9 12.6 7.4" fill="none"><path d="M321.5 47.5L326 52L321.5 56.5" stroke="currentColor" stroke-width="1.8px" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="rotate(90 377.57 60.64) matrix(1.1661579810495626 0 0 1.1661579810495626 0 0.00044415087462888964)"/></svg></i>
             </span>
             <span class="sp"></span>
             <span class="bal" data-act="show" data-arg="wallet"><svg class="wic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"/><path d="M3 8V6a2 2 0 0 1 2-2h10"/><circle cx="16.5" cy="12.5" r="1.3" fill="currentColor" stroke="none"/></svg><b>240,000.00</b></span>
@@ -36,8 +40,8 @@
             <div class="ri-line1">
               <span class="rper"><b>00089期</b></span>
               <span class="sealgrp">
-                <svg class="sealpie" viewBox="0 0 20 20" aria-hidden="true"><circle class="track" cx="10" cy="10" r="8"/><circle class="prog" cx="10" cy="10" r="8"/></svg>
-                <span class="rseal-lab">投注时间还剩</span><span class="rseal">0分48秒</span>
+                <svg class="sealpie tclock" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.2V12l3.2 2"/></svg>
+                <span class="rseal-lab">投注时间还剩</span><span class="rseal">00:48</span>
               </span>
             </div>
             <div class="ri-line2" data-act="results">
@@ -88,7 +92,8 @@
           <!-- ===== 管理中心首页（单页纵览 · Figma Phase2 风格）===== -->
           <div class="view view-owner">
             <div class="fg-head">
-              <span class="bk" data-act="show" data-arg="groups"><svg class="icx" viewBox="25.0 51.0 11.0 17.0" fill="none"><path d="M34 66L27 59.5L34 53" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>管理中心</b>
+              <!-- 08-15 二改：同上 —— 走真实历史回「来处」 -->
+              <span class="bk" data-admback="1"><svg class="icx" viewBox="25.0 51.0 11.0 17.0" fill="none"><path d="M34 66L27 59.5L34 53" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>管理中心</b>
               <span class="fg-grp fg-grp-inline">幸运组</span>
               <span class="fg-gear" data-act="show" data-arg="rake"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
             </div>
@@ -103,24 +108,47 @@
                     <div class="g g3">
                       <div><span>今日抽成</span><b id="rkToday">68.00</b></div>
                       <div><span>累计抽成</span><b id="rkTotal">1,240.00</b></div>
-                      <div><span>抽成比例<i class="rk-info" data-act="rkinfo" data-tip="抽成比例是按成员投注计算">?</i></span><b id="rkRateShow">0.0008%</b></div>
+                      <div><span>抽成比例<i class="rk-info" data-act="rkinfo" data-tip="抽成比例是按成员投注计算" aria-label="抽成比例说明"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 10.5v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7.4" r="1.15" fill="currentColor"/></svg></i></span><b id="rkRateShow">0.08%</b></div>
                     </div>
                   </div>
                 </div>
 
+                <!-- ══ 2026-08-15 七改（Hector：两处审批太怪，定案留<b>全页 待审批</b>）═══════
+                     审批段撤出首页、入口小卡回来 —— 快批场景整页做得更好（搜索/筛选/额度上下文），
+                     首页只保留「有几件在等」的信号与一扇门。件数 5＝上分 4＋下分 1，
+                     副行报方向拆分（上一版是个孤零零的时间戳，读不出该不该点进去）。 -->
                 <div class="admin-2col">
                   <div class="fg-card fg-stat" data-act="show" data-arg="members">
                     <div class="row1"><strong id="memHomeCnt">8</strong><b>成员</b><i>›</i></div>
                     <span>活跃 4/8 · 已停用 1</span>
                   </div>
                   <div class="fg-card fg-stat" data-act="show" data-arg="approvals">
-                    <div class="row1"><strong id="apHomeCnt">4</strong><b>待审批<u class="fg-dot"></u></b><i>›</i></div>
-                    <span>2026/07/07 08:56</span>
+                    <div class="row1"><strong id="apHomeCnt">5</strong><b>待审批<u class="fg-dot"></u></b><i>›</i></div>
+                    <span>上分 4 · 下分 1</span>
                   </div>
                 </div>
 
-                <!-- 额度明细内联：日期范围驱动汇总与已完成明细；待审批不混入流水 -->
-                <div class="otx-wrap">
+                <!-- ══ 2026-08-15 · 额度 ｜ 投注 ｜ 审批 三段（Hector：include player bets list）══
+                     量出来的账：内容区 840px，<b>额度明细自己占 611px＝73%</b>，
+                     而这 611 里压在列表上面的<b>头有四条</b>（标题 40 ＋ 汇总 55 ＋ 筛选 57 ＋ 表头 30
+                     ＝ 182px），托着 365px 的列表。
+                     所以投注记录<b>不能往下再加一段</b> —— 那只会长出第五条头。
+                     三件事（钱进出 · 人在玩什么 · 要我处理的）<b>形状完全一样</b>
+                     （一个时段 ＋ 一个汇总 ＋ 一串记录），共用一套骨架才是对的。
+                     ⚠ 额度那一段<b>内部一个字没改</b>：它的 dtpop/dtpick/wff/otxmore 全是既有委托，
+                       动它等于把一套跑通的东西重写一遍。这里只是给它加了个外壳与两个兄弟。
+                     ⚠ 表头「类型 / 时间 ｜ 额度」撤掉（见下面 CSS）：每一行自带 上分/下分 药丸，
+                       列头在解释一张不需要解释的表。 -->
+                <!-- 2026-08-15 四改（Hector：segs 浮着，该与下面的框合体）——
+                     分段控件管的是卡里的内容，它就是<b>卡的头</b>，不是卡外的浮条。
+                     .adm-shell＝唯一的壳（白底+描边+圆角），三段的旧壳全部退役；
+                     .adm-seghead＝壳的钉顶头（sticky 搬到这层：白底把滑过的行挡住）。
+                     ⚠ 壳必须 overflow:visible —— 任何非 visible 的 overflow 都会
+                       变成 sticky 的临时滚动口，钉顶就失效（CSS 规范行为）。 -->
+                <div class="adm-shell">
+                <!-- 08-15 七改：审批段撤销后只剩额度一段 —— 单段页签没有意义，
+                     seghead 与 .adm-shell 壳一并退役，额度卡回到自己的卡皮（styles.css:5022）。 -->
+                <div class="otx-wrap adm-pane" data-admpane="tx">
                   <div class="md-sec otx-head">
                     <b>额度明细</b>
                     <span class="dt-trigger md-dt" data-act="dtpop" data-list="pl-owner-tx"><b>今天</b><i><svg class="icx" viewBox="371.3 56.9 12.6 7.4" fill="none"><path d="M321.5 47.5L326 52L321.5 56.5" stroke="currentColor" stroke-width="1.8px" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="rotate(90 377.57 60.64) matrix(1.1661579810495626 0 0 1.1661579810495626 0 0.00044415087462888964)"></path></svg></i></span>
@@ -130,13 +158,21 @@
                       <span data-act="dtpick" data-v="month">本月</span>
                       <span data-act="dtpick" data-v="custom">自定义日期</span>
                     </div>
+                    <!-- 2026-08-15 二改：净变化＝下分−上分，这一段唯一没被说出来的数。
+                         由 data-admsegjs 从 #otxUp/#otxDown observe 出来（既有代码写那两个数，不重算口径）。 -->
+                    <span class="otx-net"><i>净变化</i><b id="otxNet">—</b></span>
                   </div>
+                  <!-- 2026-08-15 二改（Hector：still not well structured）——
+                       「上分/下分」在这一段印了<b>三遍</b>（这两格 · 下面那排 chips · 每行的标签）。
+                       汇总格与筛选 chips 说的是<b>同一对东西</b>，合成一件：点「上分」格＝只看上分，
+                       再点一下恢复全部。chips 那一行（38px）不再显示，但<b>留在 DOM 里</b> ——
+                       既有的 wff 委托拿它们当状态载体，这里只是把点击转发过去（见 data-admsegjs）。 -->
                   <div class="wallet-period-summary admin-period-summary" id="ownerTxSummary">
-                    <div class="wallet-period-metric">
+                    <div class="wallet-period-metric" data-dir="out" role="button" tabindex="0" aria-pressed="false">
                       <span>上分 <b><i id="otxUpCount">0</i>笔</b></span>
                       <strong id="otxUp">0.00</strong>
                     </div>
-                    <div class="wallet-period-metric">
+                    <div class="wallet-period-metric" data-dir="in" role="button" tabindex="0" aria-pressed="false">
                       <span>下分 <b><i id="otxDownCount">0</i>笔</b></span>
                       <strong id="otxDown">0.00</strong>
                     </div>
@@ -213,11 +249,27 @@
                   <div class="lst-empty" data-list="pl-owner-tx" style="display:none"><b>没有符合条件的交易记录</b><span>尝试调整方向或时间范围</span></div>
                   <div class="loadmore" id="ownerTxMore" data-act="otxmore" style="display:none"><span class="tx-more-divider" aria-hidden="true"></span><span class="tx-more-label">查看更多 (+6)</span></div>
                 </div>
+
+                <!-- ══ 投注段 ══════════════════════════════════════════════════════════
+                     管理者最常问的那一句是「今天下分 16 万，那他们到底投了多少」——
+                     所以这一段与额度段<b>共用同一个时段</b>（都是「今天/7天/本月」这套口径）。
+                     筛选给三层，都是代理真的会用的：
+                       ① 来源：全部 / 策略投注 / 手动　—— 策略跑出来的量与人手下的量要分得开
+                       ② 会员：一个下拉　　　　　　　—— 「张三今天投了什么」是最高频的追问
+                       ③ 时段：与额度段同一套
+                     ⚠ 结果：会员 · 游戏 · 来源 · 期号 · 本金 · 盈亏。<b>不给「派彩」单列</b> ——
+                       盈亏已经是净额，两个数并排只会让人算第二遍。 -->
+
               </div>
             </div>
           </div>
 
 
+
+          </div><!-- /.view-owner ⚠ 七改删审批段时少还的那枚 </div> 缺口在这里：
+                      不补则 view-member/view-rake 被吞进 view-owner（owner 失焦即隐藏
+                      → 点成员看到空白页）。之前误补在 rake 之后，全档总数平了、逐段账
+                      才照出来 —— 数账要按 view 分段数，不能只看全档差值。 -->
 
           <!-- ===== 成员详情 V3（身份+编辑 · 额度 · 记录；低频动作移编辑页）===== -->
           <div class="view view-member">
@@ -244,17 +296,19 @@
                 </div>
               </div>
 
-              <div class="member-tx-card">
-              <div class="md-sec member-tx-head">
-                <b>额度明细</b>
-                <span class="dt-trigger md-dt" data-act="mhpop" data-list="pl-member-hist"><b>本月</b><i><svg class="icx" viewBox="371.3 56.9 12.6 7.4" fill="none"><path d="M321.5 47.5L326 52L321.5 56.5" stroke="currentColor" stroke-width="1.8px" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="rotate(90 377.57 60.64) matrix(1.1661579810495626 0 0 1.1661579810495626 0 0.00044415087462888964)"></path></svg></i></span>
-                <div class="dt-pop" id="mhPop">
-                  <span data-act="mhpick" data-v="0">今天</span>
-                  <span data-act="mhpick" data-v="7">最近 7 天</span>
-                  <span class="on" data-act="mhpick" data-v="month">本月</span>
-                  <span data-act="mhpick" data-v="custom">自定义日期</span>
-                </div>
-              </div>
+              <!-- ══ 08-15 四改（Hector：do tabs here as well）—— 成员页的 额度明细/投注记录
+                   两张叠卡合成<b>一张壳＋页签</b>，与管理中心首页同一套（.adm-shell/.adm-segs）。
+                   ⚠ 时段选择器（本月▾）住在额度页签里 —— 投注页签的时段跟它走（一页一个口径），
+                     要换时段切回额度签；标题「额度明细/投注记录」由页签代言，撤（CSS 藏）。 -->
+              <div class="adm-shell adm-shell-member">
+                <div class="adm-seghead"><div class="adm-segs" id="mbSegs" role="tablist">
+                  <button type="button" class="bd-on" data-mbseg="tx" role="tab" aria-selected="true">额度</button>
+                  <button type="button" data-mbseg="bet" role="tab" aria-selected="false">投注</button>
+                </div></div>
+                <!-- 08-15 八改（Hector：wrong row —— 时段下拉贴的是「筛选签」那行，
+                     不是页签行）：两只选择器各回自己 pane 的筛选行右侧，pane 显隐自带切换 -->
+              <div class="member-tx-card adm-pane" data-mbpane="tx">
+              <div class="md-sec member-tx-head"><b>额度明细</b></div>
               <div class="wallet-period-summary admin-period-summary member-tx-summary" id="memberTxSummary">
                 <div class="wallet-period-metric">
                   <span>上分 <b><i id="mhUpCount">0</i>笔</b></span>
@@ -271,6 +325,15 @@
                   <span class="fchip" data-act="mhtab" data-f="up">上分</span>
                   <span class="fchip" data-act="mhtab" data-f="down">下分</span>
                 </div>
+                <span class="mb-dtslot">
+                  <span class="dt-trigger md-dt" data-act="mhpop" data-list="pl-member-hist"><b>本月</b><i><svg class="icx" viewBox="371.3 56.9 12.6 7.4" fill="none"><path d="M321.5 47.5L326 52L321.5 56.5" stroke="currentColor" stroke-width="1.8px" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="rotate(90 377.57 60.64) matrix(1.1661579810495626 0 0 1.1661579810495626 0 0.00044415087462888964)"></path></svg></i></span>
+                  <div class="dt-pop" id="mhPop">
+                    <span data-act="mhpick" data-v="0">今天</span>
+                    <span data-act="mhpick" data-v="7">最近 7 天</span>
+                    <span class="on" data-act="mhpick" data-v="month">本月</span>
+                    <span data-act="mhpick" data-v="custom">自定义日期</span>
+                  </div>
+                </span>
               </div>
               <div class="tx-list-head" data-list="pl-member-hist" aria-hidden="true"><span>类型 / 时间</span><span>额度</span></div>
               <div class="blist txlist tx-quiet tx-tag" id="pl-member-hist">
@@ -291,6 +354,41 @@
               <div class="lst-empty" id="mhEmpty" style="display:none"><b>该时间范围内没有记录</b><span>试试更换时间范围</span></div>
               <div class="loadmore" id="mhMore" data-act="lmore" data-list="pl-member-hist" style="display:none"><span class="tx-more-divider" aria-hidden="true"></span><span class="tx-more-label">查看更多 (+6)</span></div>
               </div>
+              <!-- ══ 08-15 三改 · 投注记录（从管理中心首页搬来，Hector：nest under player's page）══
+                   时段跟上面「额度明细」<b>同一个选择器</b>（mhpick）——一页一个时间口径。
+                   会员下拉没有了：这一页本身就是这个人。汇总里的时段是<b>纯文字</b>，
+                   不再做成药丸（Hector：别跟下面的筛选签长一个样）。 -->
+              <div class="member-tx-card adm-pane" data-mbpane="bet" hidden id="memberBetsCard">
+                <div class="md-sec member-tx-head"><b>投注记录</b></div>
+                <!-- 08-15 六改：统计与 额度 签同框件；时段选择器八改搬去 seghead（见上）-->
+                <div class="wallet-period-summary admin-period-summary">
+                  <div class="wallet-period-metric">
+                    <span>注单 <b><i id="mbN">0</i>笔</b></span>
+                    <strong id="mbAmt">0.00</strong>
+                  </div>
+                  <div class="wallet-period-metric">
+                    <span>盈亏</span>
+                    <strong id="mbPl">0.00</strong>
+                  </div>
+                </div>
+                <div class="adm-filters">
+                  <div class="adm-chips" id="mbSrc">
+                    <span class="fchip on" data-mbsrc="all">全部</span>
+                    <span class="fchip" data-mbsrc="plan">策略投注</span>
+                    <span class="fchip" data-mbsrc="manual">手动</span>
+                  </div>
+                  <span class="mb-dtslot">
+                    <select class="adm-sel" id="mbPeriod" aria-label="时间范围">
+                      <option value="0">今天</option>
+                      <option value="7">最近 7 天</option>
+                      <option value="month" selected>本月</option>
+                    </select>
+                  </span>
+                </div>
+                <div class="blist adm-betlist" id="mbList"></div>
+                <div class="lst-empty adm-empty" id="mbEmpty" style="display:none"><b>这个时段没有注单</b><span>换个来源或时间范围</span></div>
+              </div>
+              </div><!-- /.adm-shell-member -->
             </div>
           </div>
 
@@ -300,6 +398,27 @@
           <div class="view view-rake">
             <div class="subhead"><span class="bk" data-act="rkback"><svg class="icx" viewBox="25.0 51.0 11.0 17.0" fill="none"><path d="M34 66L27 59.5L34 53" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>抽成设置</b><span class="rt"></span></div>
             <div class="scroll2">
+              <!-- ══ 2026-08-16 · 蓝区细修 ①（Hector：weird no header, put 抽成 stats as transparent card）══
+                   病：这一屏 subhead 收在 0-54，白色 .rakecard 从 y=64 就开始 —— 而渐隐蓝的落地点
+                   在 306（page-admin --x-fade-end:34% × 900）。也就是说这一页的蓝区<b>只露出 10px</b>，
+                   看起来像「头画到一半被白纸切掉」。别的屏（首页/待审批/成员）顶区都有东西坐在蓝上，
+                   只有这一屏空着。
+                   解法不是把白卡往下推（那是留白，不是内容），而是<b>把这一屏真正的主角数字提上来</b>：
+                   抽成设置改的是比例，看的人第一眼要的就是「现在抽了多少、比例是几」。
+                   件＝与 admin 首页 .view-owner .fg-hero、钱包 .uw-hero <b>同一件玻璃</b>
+                   （白 .15 ＋ blur8 ＋ 白描边 .34 ＋ 白字，见 reference-theme 尾部「玻璃卡与去框」段）。
+                   ⚠ 数值与首页 #rkToday / #rkTotal / #rkRateShow <b>同源同值</b>（原型写死），
+                     id 另起 rkStat* 免与首页那三个撞；比例格由 app.js 的 rkconfirm 同步点一并更新。
+                   回滚：删掉这一整块 <div class="fg-card rk-statcard"> ＋ reference-theme 尾部 ① 段。 -->
+              <div class="fg-card rk-statcard" data-component="RakeStatCard">
+                <div class="fg-comm rk-statrow">
+                  <div class="g g3">
+                    <div><span>今日抽成</span><b id="rkStatToday">68.00</b></div>
+                    <div><span>累计抽成</span><b id="rkStatTotal">1,240.00</b></div>
+                    <div><span>当前比例</span><b id="rkStatRate">0.08%</b></div>
+                  </div>
+                </div>
+              </div>
               <div class="rakecard rk-formula">
                 <div class="rk-lab rk-titlelab">抽成方式</div>
                 <div class="rk-modes" id="rkSeg">
@@ -307,22 +426,22 @@
                   <div class="rk-mode" data-act="rkseg" data-arg="win"><b>按成员盈利</b><span>按成员投注获得的盈利计算抽成</span></div>
                 </div>
 
-                <div class="rk-lab rk-lab-gap">抽成比例 (%) <em class="rk-sub">支持 4 位小数</em></div>
+                <div class="rk-lab rk-lab-gap">抽成比例 (%) <em class="rk-sub">支持 2 位小数</em></div>
                 <div class="rk-presets">
-                  <span class="rkp" data-act="rkp" data-v="0.0005">0.0005</span>
-                  <span class="rkp on" data-act="rkp" data-v="0.0008">0.0008</span>
-                  <span class="rkp" data-act="rkp" data-v="0.0010">0.0010</span>
+                  <span class="rkp" data-act="rkp" data-v="0.05">0.05</span>
+                  <span class="rkp on" data-act="rkp" data-v="0.08">0.08</span>
+                  <span class="rkp" data-act="rkp" data-v="0.10">0.10</span>
                   <span class="rkp" data-act="rkpcustom" id="rkpOther">自定义</span>
                 </div>
-                <div class="rk-custom" id="rkCustomRow" style="display:none"><span>自定义比例 (%)</span><div class="rk-in"><input type="text" id="rkRate" value="0.0008" inputmode="decimal" maxlength="8"></div></div>
+                <div class="rk-custom" id="rkCustomRow" style="display:none"><span>自定义比例 (%)</span><div class="rk-in"><input type="text" id="rkRate" value="0.08" inputmode="decimal" maxlength="6"></div></div>
 
                 <div class="rk-current">
-                  <i class="rk-current-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 8h9M17.5 8H21"/><circle cx="15" cy="8" r="2.6"/><path d="M3 16h3.5M12 16h9"/><circle cx="9" cy="16" r="2.6"/></svg></i><div><b>当前设置</b><span><em id="rkCurrentMode">按成员投注额度抽成</em><i></i>比例 <strong id="rkCurrentRate">0.0008%</strong></span></div>
+                  <i class="rk-current-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 8h9M17.5 8H21"/><circle cx="15" cy="8" r="2.6"/><path d="M3 16h3.5M12 16h9"/><circle cx="9" cy="16" r="2.6"/></svg></i><div><b>当前设置</b><span><em id="rkCurrentMode">按成员投注额度抽成</em><i></i>比例 <strong id="rkCurrentRate">0.08%</strong></span></div>
                 </div>
 
                 <div class="rk-tool" data-act="rksimopen">
                   <i class="rkpv-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="16" height="19" rx="2.5"/><path d="M8 7h8"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01"/></svg></i>
-                  <div><b>试算工具</b><span>输入额度，估算预计可获得的抽成，<br>仅供参考。</span></div><em>试算</em><i class="arr">›</i>
+                  <div><b>试算工具</b><span>输入额度，试算可得抽成，<br>仅供参考。</span></div><em>试算</em><i class="arr">›</i>
                 </div>
               </div>
             </div>
@@ -341,14 +460,14 @@
               <div class="cf-backdrop" data-act="rksimclose"></div>
               <div class="cf-sheet">
                 <div class="rk-sim-title">抽成试算</div>
-                <div class="rk-sim-sub">输入额度查看预计抽成，仅供参考</div>
+                <div class="rk-sim-sub">输入额度试算抽成，仅供参考</div>
                 <label class="rkpv-lab2" id="rkTestLab">成员投注额度</label>
                 <div class="rk-sim-input"><input class="rkpv-in" type="text" id="rkTest" value="10,000" inputmode="numeric"></div>
                 <div class="rkpv-out rk-sim-out">
                   <small class="rk-sim-lab">预计抽成</small>
                   <div class="rk-sim-row">
                     <b id="rkOut" class="rk-sim-amt">0.08</b>
-                    <span class="rkpv-rate"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.66 3.13 3 7 3s7-1.34 7-3V6"/><path d="M5 12v6c0 1.66 3.13 3 7 3s7-1.34 7-3v-6"/></svg>按当前比例 <b id="rkRateLine">0.0008%</b> 计算</span>
+                    <span class="rkpv-rate"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.66 3.13 3 7 3s7-1.34 7-3V6"/><path d="M5 12v6c0 1.66 3.13 3 7 3s7-1.34 7-3v-6"/></svg>按当前比例 <b id="rkRateLine">0.08%</b> 计算</span>
                   </div>
                 </div>
                 <button class="cta rk-sim-close" data-act="rksimclose">关闭</button>
@@ -358,13 +477,14 @@
 
 
 
+
           <!-- ===== 待审批 V1（任务队列：等待时长排序 · 即批即走 auto-next）===== -->
           <div class="view view-approvals">
             <div class="subhead"><span class="bk" data-act="show" data-arg="owner"><svg class="icx" viewBox="25.0 51.0 11.0 17.0" fill="none"><path d="M34 66L27 59.5L34 53" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>待审批</b><span class="rt apr-balchip" data-act="show" data-arg="owner"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"/><path d="M3 8V6a2 2 0 0 1 2-2h10"/></svg><b id="apPoolNum" data-v="240000">240,000.00</b></span></div>
             <div class="scroll2">
               <div class="btabs fg-btabs">
-                <span class="btab on" data-act="bettab" data-arg="apup" data-scope="apv">上分申请<u class="cnt">3</u></span>
-                <span class="btab" data-act="bettab" data-arg="apdown" data-scope="apv">下分申请<u class="cnt">1</u></span>
+                <span class="btab on" data-act="bettab" data-arg="apup" data-scope="apv">上分<u class="cnt">4</u></span>
+                <span class="btab" data-act="bettab" data-arg="apdown" data-scope="apv">下分<u class="cnt">1</u></span>
               </div>
 
               <div class="ctl-row apr-ctl">
@@ -374,32 +494,32 @@
 
               <div class="btabpanel on" data-btab="apup" data-scope="apv">
                                 <div class="apr-card" data-pool="-20000" data-nm="王哥" data-amt="20000" data-days="0" data-typ="上分申请">
-                  <div class="apr-r1"><span class="av">王</span><span class="apr-who"><b>王哥</b><span class="apr-wait">2026/07/07 08:56 • 已申请: 3次</span></span><span class="apr-side"><em class="amt">20,000.00</em><span class="apr-credit">当前额度: 100</span></span></div>
-                  <div class="apc-btns"><span class="abtn stop" data-act="aprno">拒绝</span><span class="abtn pri2" data-act="aprok">通过</span></div>
+                  <div class="apr-r1"><span class="av">王</span><span class="apr-who"><b>王哥</b><span class="apr-wait">2026/07/07 08:56 · 1 小时前</span></span><span class="apr-side"><em class="amt">20,000.00</em><span class="apr-credit">当前额度: 100</span></span></div>
+                  <div class="apc-btns"><span class="abtn stop" data-act="aprno">驳回</span><span class="abtn pri2" data-act="aprok">通过</span></div>
                 </div>
 
                 <div class="apr-card" data-nm="刘姐" data-amt="300000" data-days="0" data-typ="上分申请">
-                  <div class="apr-r1"><span class="av" style="background:#F7D9E2;color:#C2337E">刘</span><span class="apr-who"><b>刘姐</b><span class="apr-wait">2026/07/07 08:21 • 已申请: 2次</span></span><span class="apr-side"><em class="amt">300,000.00</em><span class="apr-credit">当前额度: 0</span></span></div>
+                  <div class="apr-r1"><span class="av" style="background:#F7D9E2;color:#C2337E">刘</span><span class="apr-who"><b>刘姐</b><span class="apr-wait">2026/07/07 08:21 · 1 小时前</span></span><span class="apr-side"><em class="amt">300,000.00</em><span class="apr-credit">当前额度: 0</span></span></div>
                   <div class="apr-guard"><i class="mi-info gd"></i>可分配额度不足</div>
-                  <div class="apc-btns"><span class="abtn stop" data-act="aprno">拒绝</span><span class="abtn pri2 dis">通过</span></div>
+                  <div class="apc-btns"><span class="abtn stop" data-act="aprno">驳回</span><span class="abtn pri2 dis">通过</span></div>
                 </div>
 
                 <div class="apr-card" data-pool="-50000" data-nm="杨姐" data-amt="50000" data-days="0" data-typ="上分申请">
-                  <div class="apr-r1"><span class="av" style="background:#FFE9A0;color:var(--warning)">杨</span><span class="apr-who"><b>杨姐</b><span class="apr-wait">2026/07/07 06:26 • 已申请: 1次</span></span><span class="apr-side"><em class="amt">50,000.00</em><span class="apr-credit">当前额度: 80</span></span></div>
-                  <div class="apc-btns"><span class="abtn stop" data-act="aprno">拒绝</span><span class="abtn pri2" data-act="aprok">通过</span></div>
+                  <div class="apr-r1"><span class="av" style="background:#FFE9A0;color:var(--warning)">杨</span><span class="apr-who"><b>杨姐</b><span class="apr-wait">2026/07/07 06:26 · 3 小时前</span></span><span class="apr-side"><em class="amt">50,000.00</em><span class="apr-credit">当前额度: 80</span></span></div>
+                  <div class="apc-btns"><span class="abtn stop" data-act="aprno">驳回</span><span class="abtn pri2" data-act="aprok">通过</span></div>
                 </div>
 
                 <div class="apr-card" data-pool="-12000" data-nm="周先生" data-amt="12000" data-days="1" data-typ="上分申请">
-                  <div class="apr-r1"><span class="av" style="background:#DDEFE0;color:#1FA971">周</span><span class="apr-who"><b>周先生</b><span class="apr-wait">2026/07/06 21:40 • 已申请: 1次</span></span><span class="apr-side"><em class="amt">12,000.00</em><span class="apr-credit">当前额度: 60</span></span></div>
-                  <div class="apc-btns"><span class="abtn stop" data-act="aprno">拒绝</span><span class="abtn pri2" data-act="aprok">通过</span></div>
+                  <div class="apr-r1"><span class="av" style="background:#DDEFE0;color:#1FA971">周</span><span class="apr-who"><b>周先生</b><span class="apr-wait">2026/07/06 21:40 · 12 小时前</span></span><span class="apr-side"><em class="amt">12,000.00</em><span class="apr-credit">当前额度: 60</span></span></div>
+                  <div class="apc-btns"><span class="abtn stop" data-act="aprno">驳回</span><span class="abtn pri2" data-act="aprok">通过</span></div>
                 </div>
                 <div class="lst-empty" data-apr="apup" style="display:none"><b>没有符合条件的申请</b><span>调整搜索或筛选条件</span></div>
               </div>
 
               <div class="btabpanel" data-btab="apdown" data-scope="apv">
                                 <div class="apr-card" data-pool="80000" data-nm="吴先生" data-amt="80000" data-days="0" data-typ="下分申请">
-                  <div class="apr-r1"><span class="av" style="background:#E3DBFF;color:#5A3FC0">吴</span><span class="apr-who"><b>吴先生</b><span class="apr-wait">2026/07/07 09:18 • 已申请: 1次</span></span><span class="apr-side"><em class="amt">80,000.00</em><span class="apr-credit">当前额度: 300</span></span></div>
-                  <div class="apc-btns"><span class="abtn stop" data-act="aprno">拒绝</span><span class="abtn pri2" data-act="aprok">通过</span></div>
+                  <div class="apr-r1"><span class="av" style="background:#E3DBFF;color:#5A3FC0">吴</span><span class="apr-who"><b>吴先生</b><span class="apr-wait">2026/07/07 09:18 · 37 分钟前</span></span><span class="apr-side"><em class="amt">80,000.00</em><span class="apr-credit">当前额度: 300</span></span></div>
+                  <div class="apc-btns"><span class="abtn stop" data-act="aprno">驳回</span><span class="abtn pri2" data-act="aprok">通过</span></div>
                 </div>
                 <div class="lst-empty" data-apr="apdown" style="display:none"><b>没有符合条件的申请</b><span>调整搜索或筛选条件</span></div>
               </div>
@@ -424,6 +544,7 @@
                 </div>
                 <div class="fz-btns"><button class="fz-ghost" data-act="aprfreset">重置</button><button class="cta" data-act="aprfapply" id="aprfApplyBtn">查看 5 条申请</button></div>
               </div>
+
             </div>
           </div>
 
@@ -490,7 +611,7 @@
               <div class="fz-back" data-act="fzclose"></div>
               <div class="fz-panel">
                 <div class="fz-title" id="fzTitle">停用游戏权限 - 王哥</div>
-                <div class="fz-body" id="fzBody">停用后，该成员将无法：<ul><li>下注或使用策略投注</li><li>申请额度</li></ul>已下注单照常开奖结算，现有额度会保留，您可随时恢复。</div>
+                <div class="fz-body" id="fzBody">停用后，该成员将无法：<ul><li>下注或使用策略投注</li><li>申请额度</li></ul>已投注单照常结算，额度保留，可随时恢复。</div>
                 <div class="fz-note-wrap" id="fzNoteWrap"><div class="fz-note-lab">停用原因（选填）</div><textarea class="pm-reason fz-note" id="fzNote" rows="2" placeholder="例如: 异常投注"></textarea></div>
                 <div class="fz-btns"><button class="fz-ghost" data-act="fzclose">取消</button><button class="cta danger fz-go" data-act="fzdone">确认停用</button></div>
               </div>
@@ -571,20 +692,7 @@
         </div>
 
         <!-- ===== 底部导航（外壳级：资讯 · 聊天 · 消息 · 我的）===== -->
-        <nav class="tabbar" data-navviews="news groups home me">
-          <div class="nav" data-act="show" data-arg="news"><svg class="icx ic-off" viewBox="0 0 52 30" fill="none">
-<g clip-path="url(#clip0_40008731_35691)">
-<path d="M24.202 4.91874C25.2344 4.02709 26.7652 4.02709 27.7977 4.91874L37.4901 13.2898C37.8032 13.5606 37.8378 14.0341 37.5672 14.3474C37.2965 14.6607 36.823 14.6951 36.5096 14.4246L34.7498 12.9041V22.0574C34.7497 24.1283 33.0708 25.8073 30.9998 25.8074H20.9998C18.9288 25.8074 17.2499 24.1284 17.2498 22.0574V12.9041L15.4901 14.4246C15.1767 14.6952 14.7032 14.6606 14.4324 14.3474C14.1617 14.034 14.1962 13.5606 14.5096 13.2898L24.202 4.91874ZM26.8172 6.0535C26.3479 5.64821 25.6517 5.64821 25.1824 6.0535L18.7498 11.6092V22.0574C18.7499 23.3 19.7572 24.3074 20.9998 24.3074H23.9998V19.0574C23.9998 18.5051 24.4475 18.0574 24.9998 18.0574H26.9998C27.552 18.0575 27.9998 18.5052 27.9998 19.0574V24.3074H30.9998C32.2423 24.3073 33.2497 23.2999 33.2498 22.0574V11.6092L26.8172 6.0535Z" fill="currentColor"/>
-<path d="M24.202 4.91874C25.2344 4.02709 26.7652 4.02709 27.7977 4.91874L37.4901 13.2898C37.8032 13.5606 37.8378 14.0341 37.5672 14.3474C37.2965 14.6607 36.823 14.6951 36.5096 14.4246L34.7498 12.9041V22.0574C34.7497 24.1283 33.0708 25.8073 30.9998 25.8074H20.9998C18.9288 25.8074 17.2499 24.1284 17.2498 22.0574V12.9041L15.4901 14.4246C15.1767 14.6952 14.7032 14.6606 14.4324 14.3474C14.1617 14.034 14.1962 13.5606 14.5096 13.2898L24.202 4.91874ZM26.8172 6.0535C26.3479 5.64821 25.6517 5.64821 25.1824 6.0535L18.7498 11.6092V22.0574C18.7499 23.3 19.7572 24.3074 20.9998 24.3074H23.9998V19.0574C23.9998 18.5051 24.4475 18.0574 24.9998 18.0574H26.9998C27.552 18.0575 27.9998 18.5052 27.9998 19.0574V24.3074H30.9998C32.2423 24.3073 33.2497 23.2999 33.2498 22.0574V11.6092L26.8172 6.0535Z" fill="black" fill-opacity="0.2"/>
-</g>
-<defs>
-<clipPath id="clip0_40008731_35691">
-<rect width="52" height="30" fill="white"/>
-</clipPath>
-</defs>
-</svg><svg class="icx ic-on" viewBox="0 0 52 30" fill="none">
-<path d="M24.202 4.91874C25.2344 4.02709 26.7652 4.02709 27.7977 4.91874L37.4901 13.2898C37.8032 13.5606 37.8378 14.0341 37.5672 14.3474C37.2965 14.6607 36.823 14.6951 36.5096 14.4246L34.7498 12.9041V22.0574C34.7497 24.1283 33.0708 25.8073 30.9998 25.8074H20.9998C18.9288 25.8074 17.2499 24.1284 17.2498 22.0574V12.9041L15.4901 14.4246C15.1767 14.6952 14.7032 14.6606 14.4324 14.3474C14.1617 14.034 14.1962 13.5606 14.5096 13.2898L24.202 4.91874ZM24.9998 18.0574C24.4475 18.0574 23.9998 18.5051 23.9998 19.0574V24.3074H27.9998V19.0574C27.9998 18.5052 27.552 18.0575 26.9998 18.0574H24.9998Z" fill="currentColor"/>
-</svg><span>资讯</span></div>
+        <nav class="tabbar" data-navviews="groups">
           <div class="nav" data-act="show" data-arg="groups"><svg class="icx ic-off" viewBox="0 0 52 30" fill="none">
 <g clip-path="url(#clip0_40008731_35855)">
 <mask id="path-1-inside-1_40008731_35855" fill="white">
@@ -609,40 +717,6 @@
 </svg><svg class="icx ic-on" viewBox="0 0 52 30" fill="none">
 <path d="M26.2482 4.93164C31.667 4.93164 36.0596 9.3244 36.0597 14.7432C36.0597 20.162 31.667 24.5547 26.2482 24.5547C24.387 24.5547 22.6469 24.0367 21.1642 23.1367L17.6007 24.8213C16.7024 25.2456 15.7374 24.3762 16.0656 23.4385L17.5324 19.2471C16.8338 17.898 16.4366 16.3672 16.4366 14.7432C16.4368 9.32444 20.8294 4.9317 26.2482 4.93164ZM21.8439 13.501C21.1537 13.5012 20.5939 14.0607 20.5939 14.751C20.5941 15.441 21.1538 16.0008 21.8439 16.001C22.5341 16.001 23.0936 15.4411 23.0939 14.751C23.0939 14.0606 22.5342 13.501 21.8439 13.501ZM26.5099 13.501C25.8195 13.501 25.2599 14.0606 25.2599 14.751C25.2602 15.4411 25.8197 16.001 26.5099 16.001C27.1999 16.0008 27.7596 15.441 27.7599 14.751C27.7599 14.0607 27.2001 13.5011 26.5099 13.501ZM31.1749 13.501C30.4846 13.501 29.9249 14.0606 29.9249 14.751C29.9252 15.4411 30.4848 16.001 31.1749 16.001C31.8651 16.001 32.4247 15.4411 32.4249 14.751C32.4249 14.0606 31.8653 13.501 31.1749 13.501Z" fill="currentColor"/>
 </svg><span>聊天</span></div>
-          <div class="nav on" data-act="show" data-arg="home"><svg class="icx ic-off ic-stroke" viewBox="0 0 52 30" fill="none">
-<g clip-path="url(#clip0_40008731_35857)">
-<path d="M29.9523 21.7692V22.6154C29.9523 23.513 29.5886 24.3739 28.9413 25.0087C28.294 25.6434 27.4161 26 26.5006 26C25.5852 26 24.7073 25.6434 24.06 25.0087C23.4127 24.3739 23.049 23.513 23.049 22.6154V21.7692M35.7596 20.0468C34.3746 18.3846 33.3969 17.5385 33.3969 12.956C33.3969 8.75962 31.2116 7.26457 29.4129 6.53846C29.174 6.44221 28.9491 6.22115 28.8763 5.98053C28.5608 4.9276 27.6764 4 26.5006 4C25.3249 4 24.4399 4.92813 24.1277 5.98159C24.0548 6.22486 23.83 6.44221 23.591 6.53846C21.7903 7.26562 19.6071 8.75538 19.6071 12.956C19.6044 17.5385 18.6266 18.3846 17.2417 20.0468C16.6678 20.7353 17.1705 21.7692 18.1742 21.7692H34.8325C35.8308 21.7692 36.3302 20.7322 35.7596 20.0468Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M29.9523 21.7692V22.6154C29.9523 23.513 29.5886 24.3739 28.9413 25.0087C28.294 25.6434 27.4161 26 26.5006 26C25.5852 26 24.7073 25.6434 24.06 25.0087C23.4127 24.3739 23.049 23.513 23.049 22.6154V21.7692M35.7596 20.0468C34.3746 18.3846 33.3969 17.5385 33.3969 12.956C33.3969 8.75962 31.2116 7.26457 29.4129 6.53846C29.174 6.44221 28.9491 6.22115 28.8763 5.98053C28.5608 4.9276 27.6764 4 26.5006 4C25.3249 4 24.4399 4.92813 24.1277 5.98159C24.0548 6.22486 23.83 6.44221 23.591 6.53846C21.7903 7.26562 19.6071 8.75538 19.6071 12.956C19.6044 17.5385 18.6266 18.3846 17.2417 20.0468C16.6678 20.7353 17.1705 21.7692 18.1742 21.7692H34.8325C35.8308 21.7692 36.3302 20.7322 35.7596 20.0468Z" stroke="black" stroke-opacity="0.2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
-<defs>
-<clipPath id="clip0_40008731_35857">
-<rect width="52" height="30" fill="white"/>
-</clipPath>
-</defs>
-</svg><svg class="icx ic-on" viewBox="0 0 52 30" fill="none">
-<g clip-path="url(#clip0_40008731_35858)">
-<path d="M35.7596 20.0468C34.3746 18.3846 33.3969 17.5385 33.3969 12.956C33.3969 8.75962 31.2116 7.26457 29.4129 6.53846C29.174 6.44221 28.9491 6.22115 28.8763 5.98053C28.5608 4.9276 27.6764 4 26.5006 4C25.3249 4 24.4399 4.92813 24.1277 5.98159C24.0548 6.22486 23.83 6.44221 23.591 6.53846C21.7903 7.26562 19.6071 8.75538 19.6071 12.956C19.6044 17.5385 18.6266 18.3846 17.2417 20.0468C16.6678 20.7353 17.1705 21.7692 18.1742 21.7692H34.8325C35.8308 21.7692 36.3302 20.7322 35.7596 20.0468ZM29.9523 21.7692V22.6154C29.9523 23.513 29.5886 24.3739 28.9413 25.0087C28.294 25.6434 27.4161 26 26.5006 26C25.5852 26 24.7073 25.6434 24.06 25.0087C23.4127 24.3739 23.049 23.513 23.049 22.6154V21.7692" fill="currentColor"/>
-<path d="M29.9523 21.7692V22.6154C29.9523 23.513 29.5886 24.3739 28.9413 25.0087C28.294 25.6434 27.4161 26 26.5006 26C25.5852 26 24.7073 25.6434 24.06 25.0087C23.4127 24.3739 23.049 23.513 23.049 22.6154V21.7692M35.7596 20.0468C34.3746 18.3846 33.3969 17.5385 33.3969 12.956C33.3969 8.75962 31.2116 7.26457 29.4129 6.53846C29.174 6.44221 28.9491 6.22115 28.8763 5.98053C28.5608 4.9276 27.6764 4 26.5006 4C25.3249 4 24.4399 4.92813 24.1277 5.98159C24.0548 6.22486 23.83 6.44221 23.591 6.53846C21.7903 7.26562 19.6071 8.75538 19.6071 12.956C19.6044 17.5385 18.6266 18.3846 17.2417 20.0468C16.6678 20.7353 17.1705 21.7692 18.1742 21.7692H34.8325C35.8308 21.7692 36.3302 20.7322 35.7596 20.0468Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
-<defs>
-<clipPath id="clip0_40008731_35858">
-<rect width="52" height="30" fill="white"/>
-</clipPath>
-</defs>
-</svg><i class="nav-alert" aria-label="有未读消息"></i><span>消息</span></div>
-          <div class="nav" data-act="show" data-arg="me"><svg class="icx ic-off" viewBox="0 0 52 30" fill="none">
-<path d="M25.9583 16.6797C28.8349 16.6797 30.8963 17.5361 32.3519 18.7041C33.7956 19.8626 34.5969 21.2895 35.0316 22.3701C35.2962 23.0283 35.1663 23.6997 34.7835 24.1914C34.4095 24.6717 33.8136 24.9619 33.1615 24.9619H18.7552C18.1031 24.9619 17.5072 24.6718 17.1332 24.1914C16.7504 23.6997 16.6205 23.0283 16.8851 22.3701C17.3198 21.2895 18.1211 19.8626 19.5648 18.7041C21.0204 17.5361 23.0818 16.6797 25.9583 16.6797ZM25.9583 18.1797C23.4026 18.1797 21.6778 18.9324 20.5042 19.874C19.3192 20.825 18.6475 22.0087 18.2767 22.9307C18.2203 23.0712 18.2474 23.1814 18.3167 23.2705C18.395 23.3707 18.5467 23.4619 18.7552 23.4619H33.1615C33.37 23.4619 33.5217 23.3707 33.5999 23.2705C33.6693 23.1814 33.6964 23.0713 33.64 22.9307C33.2692 22.0087 32.5976 20.825 31.4124 19.874C30.2388 18.9324 28.5141 18.1797 25.9583 18.1797ZM25.9583 5.16406C28.447 5.16414 30.3363 7.37572 30.3363 9.93652C30.3359 12.497 28.4467 14.7079 25.9583 14.708C23.4699 14.708 21.5808 12.497 21.5804 9.93652C21.5804 7.37568 23.4696 5.16406 25.9583 5.16406ZM25.9583 6.66406C24.4399 6.66406 23.0804 8.05482 23.0804 9.93652C23.0808 11.8178 24.4401 13.208 25.9583 13.208C27.4765 13.2079 28.8359 11.8177 28.8363 9.93652C28.8363 8.05487 27.4768 6.66415 25.9583 6.66406Z" fill="currentColor"/>
-<path d="M25.9583 16.6797C28.8349 16.6797 30.8963 17.5361 32.3519 18.7041C33.7956 19.8626 34.5969 21.2895 35.0316 22.3701C35.2962 23.0283 35.1663 23.6997 34.7835 24.1914C34.4095 24.6717 33.8136 24.9619 33.1615 24.9619H18.7552C18.1031 24.9619 17.5072 24.6718 17.1332 24.1914C16.7504 23.6997 16.6205 23.0283 16.8851 22.3701C17.3198 21.2895 18.1211 19.8626 19.5648 18.7041C21.0204 17.5361 23.0818 16.6797 25.9583 16.6797ZM25.9583 18.1797C23.4026 18.1797 21.6778 18.9324 20.5042 19.874C19.3192 20.825 18.6475 22.0087 18.2767 22.9307C18.2203 23.0712 18.2474 23.1814 18.3167 23.2705C18.395 23.3707 18.5467 23.4619 18.7552 23.4619H33.1615C33.37 23.4619 33.5217 23.3707 33.5999 23.2705C33.6693 23.1814 33.6964 23.0713 33.64 22.9307C33.2692 22.0087 32.5976 20.825 31.4124 19.874C30.2388 18.9324 28.5141 18.1797 25.9583 18.1797ZM25.9583 5.16406C28.447 5.16414 30.3363 7.37572 30.3363 9.93652C30.3359 12.497 28.4467 14.7079 25.9583 14.708C23.4699 14.708 21.5808 12.497 21.5804 9.93652C21.5804 7.37568 23.4696 5.16406 25.9583 5.16406ZM25.9583 6.66406C24.4399 6.66406 23.0804 8.05482 23.0804 9.93652C23.0808 11.8178 24.4401 13.208 25.9583 13.208C27.4765 13.2079 28.8359 11.8177 28.8363 9.93652C28.8363 8.05487 27.4768 6.66415 25.9583 6.66406Z" fill="black" fill-opacity="0.2"/>
-</svg><svg class="icx ic-on" viewBox="0 0 52 30" fill="none">
-<g clip-path="url(#clip0_40008731_35860)">
-<path d="M25.9583 16.6797C28.8349 16.6797 30.8963 17.5361 32.3519 18.7041C33.7956 19.8626 34.5969 21.2895 35.0316 22.3701C35.2962 23.0283 35.1663 23.6997 34.7835 24.1914C34.4095 24.6717 33.8136 24.9619 33.1615 24.9619H18.7552C18.1031 24.9619 17.5072 24.6718 17.1332 24.1914C16.7504 23.6997 16.6205 23.0283 16.8851 22.3701C17.3198 21.2895 18.1211 19.8626 19.5648 18.7041C21.0204 17.5361 23.0818 16.6797 25.9583 16.6797ZM25.9583 5.16406C28.447 5.16414 30.3363 7.37572 30.3363 9.93652C30.3359 12.497 28.4467 14.7079 25.9583 14.708C23.4699 14.708 21.5808 12.497 21.5804 9.93652C21.5804 7.37568 23.4696 5.16406 25.9583 5.16406Z" fill="currentColor"/>
-</g>
-<defs>
-<clipPath id="clip0_40008731_35860">
-<rect width="52" height="30" fill="white"/>
-</clipPath>
-</defs>
-</svg><span>我的</span></div>
         </nav>
 
         <!-- ===== 侧边抽屉 side menu（我的群组）===== -->
@@ -677,13 +751,13 @@
           <div class="sm-backdrop" data-act="tplcancel"></div>
           <div class="sm-sheet">
             <div class="sm-h">启动「小本试水」</div>
-            <div class="sm-sub">启动后每期自动下注，你随时可以急停</div>
+            <div class="sm-sub">启动后每期自动执行，可随时急停</div>
             <div class="srow"><span>玩法</span><b>两面 · 跟投</b></div>
             <div class="srow"><span>每期投入</span><b>10 起 · 倍投最高 40</b></div>
             <div class="srow"><span>最坏情况</span><b class="rd">−100 自动停止</b></div>
             <div class="srow"><span>达到止盈</span><b class="gn">+100 自动停止</b></div>
             <div class="srow"><span>占用预算</span><b>100 <small>/ 余额 400</small></b></div>
-            <div class="sm-note"><i><svg class="icx" viewBox="355.8 52.9 22.2 22.2" fill="none"><circle cx="344" cy="60" r="9" stroke="currentColor" stroke-width="1.5px" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="matrix(1.0666458333333333 0 0 1.0666458333333333 0 0.008197916666639004)"></circle><path d="M344.135 65.3424C343.731 65.3517 343.398 65.0263 343.398 64.6217L343.398 59.3993C343.398 59.0011 343.721 58.6784 344.119 58.6784C344.517 58.6784 344.84 59.0012 344.84 59.3993L344.84 62.0023L344.84 64.6217C344.84 65.0133 344.527 65.3333 344.135 65.3424ZM344.119 54.9994C344.425 54.9994 344.688 55.1092 344.908 55.3288C345.128 55.5484 345.237 55.8115 345.237 56.118C345.237 56.4246 345.128 56.6877 344.908 56.9073C344.688 57.1269 344.425 57.2366 344.119 57.2366C343.812 57.2366 343.549 57.1269 343.329 56.9073C343.11 56.6877 343 56.4246 343 56.118C343 55.915 343.052 55.7286 343.155 55.5587C343.255 55.3889 343.39 55.2521 343.559 55.1486C343.725 55.0491 343.912 54.9994 344.119 54.9994Z" fill="currentColor" transform="matrix(1.0666458333333333 0 0 1.0666458333333333 0 0.008197916666639004)"></path></svg></i><span>预算从余额中预留，本轮运行结束后未用部分自动退回。</span></div>
+            <div class="sm-note"><i><svg class="icx" viewBox="355.8 52.9 22.2 22.2" fill="none"><circle cx="344" cy="60" r="9" stroke="currentColor" stroke-width="1.5px" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="matrix(1.0666458333333333 0 0 1.0666458333333333 0 0.008197916666639004)"></circle><path d="M344.135 65.3424C343.731 65.3517 343.398 65.0263 343.398 64.6217L343.398 59.3993C343.398 59.0011 343.721 58.6784 344.119 58.6784C344.517 58.6784 344.84 59.0012 344.84 59.3993L344.84 62.0023L344.84 64.6217C344.84 65.0133 344.527 65.3333 344.135 65.3424ZM344.119 54.9994C344.425 54.9994 344.688 55.1092 344.908 55.3288C345.128 55.5484 345.237 55.8115 345.237 56.118C345.237 56.4246 345.128 56.6877 344.908 56.9073C344.688 57.1269 344.425 57.2366 344.119 57.2366C343.812 57.2366 343.549 57.1269 343.329 56.9073C343.11 56.6877 343 56.4246 343 56.118C343 55.915 343.052 55.7286 343.155 55.5587C343.255 55.3889 343.39 55.2521 343.559 55.1486C343.725 55.0491 343.912 54.9994 344.119 54.9994Z" fill="currentColor" transform="matrix(1.0666458333333333 0 0 1.0666458333333333 0 0.008197916666639004)"></path></svg></i><span>预算自余额预留，本轮结束后未用部分退回。</span></div>
             <div class="sm-btns"><button class="ghost" data-act="tpladjust">调整设置</button><button class="cta" data-act="tplconfirm">确认启动</button></div>
           </div>
         </div>
@@ -707,8 +781,8 @@
             <div class="ob-page on" data-ob="1">
               <div class="ob-img"><img src="shared/auto-guide/01.png" alt="" onerror="this.remove()"></div>
               <div class="ob-body">
-                <div class="ob-title">让系统帮你盯盘看走势</div>
-                <div class="ob-copy">按设定规则自动下注，实时追踪，随时急停。</div>
+                <div class="ob-title">系统自动盯盘</div>
+                <div class="ob-copy">按设定规则自动执行，实时追踪，可随时急停。</div>
               </div>
               <div class="ob-dots"><span class="on"></span><span></span><span></span></div>
               <div class="ob-ftr"><button class="pri" data-act="obnext">下一步</button></div>
@@ -716,8 +790,8 @@
             <div class="ob-page" data-ob="2">
               <div class="ob-img"><img src="shared/auto-guide/02.png" alt="" onerror="this.remove()"></div>
               <div class="ob-body">
-                <div class="ob-title">你的策略设置</div>
-                <div class="ob-copy">玩家设定触发条件、金额、倍数、止盈止损，系统只按规则执行。</div>
+                <div class="ob-title">策略设置</div>
+                <div class="ob-copy">触发条件、金额、倍数与止盈止损由玩家设定，系统按规则执行。</div>
               </div>
               <div class="ob-dots"><span></span><span class="on"></span><span></span></div>
               <div class="ob-ftr"><button class="ghost" data-act="obprev">上一步</button><button class="pri" data-act="obnext">下一步</button></div>
@@ -726,7 +800,7 @@
               <div class="ob-img"><img src="shared/auto-guide/04.png" alt="" onerror="this.remove()"></div>
               <div class="ob-body">
                 <div class="ob-title">结果一目了然</div>
-                <div class="ob-copy">实时报告命中、盈亏，并可随时急停或修改。</div>
+                <div class="ob-copy">实时回报命中与盈亏，可急停或修改。</div>
               </div>
               <div class="ob-dots"><span></span><span></span><span class="on"></span></div>
               <div class="ob-ftr"><button class="ghost" data-act="obprev">上一步</button><button class="pri" data-act="obclose">立即体验</button></div>
@@ -745,8 +819,162 @@
       </div>
     </div>
   </div>
+<script data-admsegjs>
+/* ══ 2026-08-15 · 管理中心三段（额度 ｜ 投注 ｜ 审批）══════════════════════════════
+   ⚠ 额度段<b>不归这支管</b>：它的 dtpop/dtpick/wff/otxmore 是既有委托，一个字没动。
+     这支只负责 ① 切段 ② 投注段与审批段自己的数据与筛选。
+   ⚠ 演示数据是<b>示意稿</b>：会员名沿用额度流水里那几位，游戏与策略代号沿用 hall-bets
+     的口径（游戏 chip ＋ 代号 ＋ 期号）。上线前要接真注单接口。 */
+(function(){
+  /* 08-15 七改：首页段签已撤（只剩额度一段），segs 可能不存在 ——
+     <b>不能 return</b>：成员页的页签/投注逻辑在同一支里，连坐会全灭。 */
+  var segs=document.getElementById('admSegs');
+  var panes=[].slice.call(document.querySelectorAll('[data-admpane]'));
+
+  /* ── 演示数据 ─────────────────────────────────────────────────────────────
+     days：与额度流水同一套「距今几天」口径（0＝今天），这样两段能共用时段筛选。 */
+  var BETS=[
+    {who:'吴先生',game:'极速飞艇',g:'pk', src:'plan',  code:'C0404R5', per:'00089',t:'09:47',n:3,amt:270,pl:259.20,days:0},
+    {who:'杨姐',  game:'极速赛车',g:'pk10',src:'plan',  code:'C0506R5', per:'00089',t:'09:47',n:2,amt:30, pl:-30,   days:0},
+    {who:'孙姐',  game:'极速时时彩',g:'ssc',src:'manual',code:'',        per:'00412',t:'09:46',n:1,amt:200,pl:-200,  days:0},
+    {who:'林仔',  game:'极速飞艇',g:'pk', src:'plan',  code:'C0405R12',per:'00088',t:'09:42',n:2,amt:20, pl:17.60, days:0},
+    {who:'陈生',  game:'极速赛车',g:'pk10',src:'manual',code:'',        per:'77890',t:'09:41',n:1,amt:500,pl:-500,  days:0},
+    {who:'吴先生',game:'极速飞艇',g:'pk', src:'plan',  code:'C0404R5', per:'00087',t:'09:37',n:3,amt:90, pl:-90,   days:0},
+    {who:'杨姐',  game:'极速时时彩',g:'ssc',src:'plan',  code:'B0405R4', per:'00410',t:'09:31',n:2,amt:60, pl:57.20, days:0},
+    {who:'孙姐',  game:'极速飞艇',g:'pk', src:'manual',code:'',        per:'00085',t:'09:22',n:4,amt:400,pl:392,   days:0},
+    {who:'林仔',  game:'极速赛车',g:'pk10',src:'plan',  code:'C0506R5', per:'77885',t:'08:58',n:2,amt:10, pl:-10,   days:1},
+    {who:'李姐',  game:'极速飞艇',g:'pk', src:'plan',  code:'C0404R5', per:'00061',t:'08:12',n:3,amt:120,pl:114.40,days:1},
+    {who:'陈生',  game:'极速时时彩',g:'ssc',src:'manual',code:'',        per:'00380',t:'21:40',n:1,amt:800,pl:-800,  days:3},
+    {who:'吴先生',game:'极速飞艇',g:'pk', src:'plan',  code:'C0405R12',per:'00040',t:'19:05',n:2,amt:40, pl:38.40, days:6}
+  ];
+  /* 审批数据与渲染已随审批段退役（08-15 七改）——正主是全页 待审批（view-approvals）。 */
+  var MBSRC='all',APDIR='all';
+  function money(v){var a=Math.abs(v);return (v<0?'−':'+')+a.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  function plain(v){return v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+  /* ══ 08-15 三改 · 投注记录住进成员详情（Hector：nest under the player's page）══════
+     人＝这一页的人（抬头名字，openMemberDetail 写进去的）；
+     时段＝<b>成员页自己那个「本月▾」</b>（pl-member-hist 的选择器）——一页一个时间口径。 */
+  function mbDays(){
+    /* 08-15 六改：投注页签自己的时段（#mbPeriod），不再借额度签的 —— 两个页签各带各的 */
+    var sel=document.getElementById('mbPeriod');
+    var v=sel?sel.value:'month';
+    if(v==='7')return 7;
+    if(v==='0')return 0;
+    return 31;
+  }
+  function renderMemberBets(){
+    var card=document.getElementById('memberBetsCard');if(!card)return;
+    var nameEl=document.querySelector('.view-member .md-name b');
+    var who=nameEl?nameEl.textContent.trim():'';
+    var d=mbDays(),list=BETS.filter(function(b){
+      if(b.who!==who)return false;
+      if(b.days>d)return false;
+      if(MBSRC!=='all'&&b.src!==MBSRC)return false;
+      return true;
+    });
+    var amt=0,pl=0;list.forEach(function(b){amt+=b.amt;pl+=b.pl;});
+    document.getElementById('mbN').textContent=list.length;
+    document.getElementById('mbAmt').textContent=plain(amt);
+    var plEl=document.getElementById('mbPl');
+    plEl.textContent=money(pl);plEl.className=pl>0?'win':(pl<0?'lose':'');
+    /* 行里不再印人名 —— 这一页本身就是这个人 */
+    document.getElementById('mbList').innerHTML=list.map(function(b){
+      return '<div class="bi adm-bi"><div class="q">'+
+        '<b><span class="game-chip g-'+b.g+'">'+b.game+'</span>'+
+        (b.code?('<span class="adm-code">'+b.code+'</span>'):'<span class="adm-manual">手动</span>')+'</b>'+
+        '<span class="txtm">第'+b.per+'期 · '+b.t+' · '+b.n+' 注 · 本金 '+plain(b.amt)+'</span></div>'+
+        '<div class="r"><b class="'+(b.pl>0?'win':(b.pl<0?'lose':''))+'">'+money(b.pl)+'</b></div></div>';
+    }).join('');
+    document.getElementById('mbEmpty').style.display=list.length?'none':'';
+  }
+  function renderApprs(){}/* 退役（七改）：正主是全页 待审批 */
+
+  if(segs)segs.addEventListener('click',function(e){
+    var b=e.target.closest('[data-admseg]');if(!b)return;
+    var k=b.dataset.admseg;
+    [].forEach.call(segs.children,function(x){
+      var on=x===b;x.classList.toggle('bd-on',on);x.setAttribute('aria-selected',on?'true':'false');});
+    panes.forEach(function(p){p.hidden=p.dataset.admpane!==k;});
+    if(k==='appr')renderApprs();
+  });
+  /* 成员详情的来源筛选；打开成员页/换时段时重画 —— openMemberDetail 是 app.js 的闭包
+     碰不到，所以监听同一批入口（成员行 · mhpick 时段项），等 app.js 先写完 DOM 再画。 */
+  document.getElementById('mbSrc').addEventListener('click',function(e){
+    var c=e.target.closest('[data-mbsrc]');if(!c)return;
+    MBSRC=c.dataset.mbsrc;
+    [].forEach.call(this.children,function(x){x.classList.toggle('on',x===c);});
+    renderMemberBets();
+  });
+  /* 成员页的 额度｜投注 页签（与首页 admSegs 同一套写法） */
+  var mbSegs=document.getElementById('mbSegs');
+  function mbShow(k){
+    if(!mbSegs)return;
+    [].forEach.call(mbSegs.children,function(x){
+      var on=x.dataset.mbseg===k;x.classList.toggle('bd-on',on);x.setAttribute('aria-selected',on?'true':'false');});
+    [].forEach.call(document.querySelectorAll('[data-mbpane]'),function(p){p.hidden=p.dataset.mbpane!==k;});
+    if(k==='bet')renderMemberBets();
+  }
+  if(mbSegs)mbSegs.addEventListener('click',function(e){
+    var b=e.target.closest('[data-mbseg]');if(b)mbShow(b.dataset.mbseg);
+  });
+  document.addEventListener('click',function(e){
+    if(!e.target.closest)return;
+    /* 换人＝拨回额度签（别把上一个人停在投注签的状态带给下一个人） */
+    if(e.target.closest('.mrow[data-act="show"][data-arg="member"]'))setTimeout(function(){mbShow('tx');renderMemberBets();},0);
+  });
+  var mbPeriodSel=document.getElementById('mbPeriod');
+  if(mbPeriodSel)mbPeriodSel.addEventListener('change',renderMemberBets);
+
+
+  /* ══ 2026-08-15 二改 · 额度段：汇总格＝方向筛选 ＋ 净变化 ═══════════════════════
+     ⚠ 不重写筛选：既有的 wff 委托（app.js）监听 .fchip 的点击，这里只是把
+       汇总格的点击<b>转发</b>给对应的隐藏 chip —— 状态仍归原来那套管，永远不会两边打架。
+     ⚠ 净变化不自己算流水：#otxUp/#otxDown 是既有代码按时段汇总出来的，
+       这里 observe 那两个数做减法 —— 口径永远与上面两格一致。 */
+  (function(){
+    var sum=document.getElementById('ownerTxSummary');if(!sum)return;
+    var cells=[].slice.call(sum.querySelectorAll('[data-dir]'));
+    function chip(f){return document.querySelector('.otx-ctl .fchip[data-f="'+f+'"]');}
+    function mirror(){
+      cells.forEach(function(c){
+        var on=!!(chip(c.dataset.dir)&&chip(c.dataset.dir).classList.contains('on'));
+        c.classList.toggle('on',on);c.setAttribute('aria-pressed',on?'true':'false');
+      });
+    }
+    sum.addEventListener('click',function(e){
+      var c=e.target.closest('[data-dir]');if(!c)return;
+      var t=c.classList.contains('on')?chip('all'):chip(c.dataset.dir);
+      if(t)t.click();
+      mirror();
+    });
+    function num(id){return parseFloat((document.getElementById(id).textContent||'0').replace(/[^0-9.\-]/g,''))||0;}
+    function net(){
+      var v=num('otxDown')-num('otxUp'),el=document.getElementById('otxNet');if(!el)return;
+      el.textContent=(v<0?'−':'+')+Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+      el.className=v>0?'win':(v<0?'lose':'');
+    }
+    new MutationObserver(function(){net();mirror();}).observe(sum,{subtree:true,childList:true,characterData:true});
+    net();
+  })();
+  /* ══ 08-15 二改 · 返回＝回「来的那一页」════════════════════════════════════════
+     页内 showView 用 replaceState（app.js:325，不进栈），跨页才 location.href 进栈 ——
+     所以 history.back() 恰好就是「进管理中心之前的那一页」，频道来回频道、
+     别处来回别处，都还在游戏厅里。直接开档（无历史）兜底回频道。
+     ⚠ capture：这两颗以前挂过 data-act，别让别的委托抢先。 */
+  document.addEventListener('click',function(e){
+    if(!e.target.closest)return;
+    var b=e.target.closest('[data-admback]');if(!b)return;
+    e.preventDefault();e.stopPropagation();
+    if(history.length>1&&document.referrer)history.back();
+    else location.href='hall-plans.html';   /* 频道已撤（08-15）——兜底回游戏厅落地页 */
+  },true);
+
+  renderMemberBets();
+})();
+</script>
 <script src="shared/pagenav.js?v=20260730-split"></script>
-<script src="shared/app.js?v=20260808c"></script>
+<script src="shared/app.js?v=20260817f1"></script>
 <script src="shared/trialrun.js?v=20260730g"></script>
 </body>
 </html>

@@ -1,57 +1,86 @@
 /*
- * IM168 Design Tokens v2.1
- * Single source of truth for the member app and operator surfaces.
- * v2.1 (2026-07-25): 字号底线 12px（唯一例外：数字角标 11px）；
- *   --muted 加深到 4.5:1 达标；新增 --faint / --fill / --line-strong；
- *   删除 Micro（10px）字号层级。
+ * IM168 Design Tokens — v3.0（2026-08-12）
+ * ─────────────────────────────────────────────────────────────────────────
+ * v3.0 起，这个文件<b>不再自己定义值</b>，它只是<b>旧名字 → 新令牌</b>的转接层。
+ * 唯一的取值来源是上一层的 ../tokens.css（交付给前端的那份词汇表）。
+ * ⚠ 那个 @import <b>不写在这里</b>，写在 styles.css 第一行 —— 本文件自己是被
+ *   styles.css @import 进来的，再往下嵌一层 @import 实测<b>不会被加载</b>
+ *   （Chrome 下第三层 @import 被丢掉，styleSheets 里根本找不到那份表）。
+ *
+ * 为什么要这么改：
+ *   v2.1 把 63 个令牌写得很认真，但全项目 26 个页面里<b>只有 1 个</b>加载它，
+ *   而且 reference-theme.css 后加载、用 7 个 :root 把其中 23 个又改写了一遍。
+ *   结果是这份文件<b>描述的产品并不存在</b>：它写 --blue:#126BFF，页面渲染 #1677ee。
+ *   与其维护一份对不上的文档，不如让它退成转接层 —— 值只有一处，改一处全站跟着走。
+ *
+ * ⚠ 转接后的值＝原型<b>今天真正渲染出来的</b>那些值，所以这次改动<b>不会让任何一屏变样</b>
+ *   （唯一例外见文末 pages.html 那条）。
+ * ⚠ 旧名字<b>一个都没删</b>：全项目 5,936 处 var(--…) 继续照常工作，
+ *   不需要改任何一个页面、不需要重命名任何 class。
+ * ⚠ 新代码<b>请直接用 ../tokens.css 里的名字</b>（--primary / --foreground / …）。
+ *   下面这些旧名是为了兼容存量，不是给新代码用的。
  */
+
 :root {
   color-scheme: light;
 
-  /* Brand and semantic colors */
-  --blue: #126BFF;
-  --blue-d: #0B5ADC;
-  --blue-dark: #0B5ADC;
-  --tint: #E7F0FF;
-  --blue-tint: #E7F0FF;
-  --blue-soft: #EEF4FF;
-  --blue-line: #BBD4FF;   /* 蓝色系描边/分隔（浅蓝底上） */
-  --blue-line-2: #CFE0FF; /* 更浅一档的蓝描边 */
-  --ink: #414141;
-  --muted: #6B7280;       /* 次要文字；白底 4.8:1，达 WCAG AA */
-  --faint: #98A2B3;       /* 仅限装饰性元素（分隔符、禁用态），禁止承载信息 */
-  --line: #E8E8E8;
-  --line-strong: #D5D9DF; /* 需要更清晰边界时的重分隔线 */
-  --fill: #F4F5F7;        /* 浅灰内衬底（chip、well、输入框底） */
-  --page: #F5F5F5;
-  --surface: #FFFFFF;
-  --win: #16A34A;
-  --positive: #16A34A;
-  --positive-soft: #E6F6EE;
-  --red: #EF3939;
-  --danger: #EF3939;
-  --danger-soft: #FDECEC;
-  --warning: #9A6C00;
-  --warning-soft: #FFF8E0;
-  --gold: #C08C38;
-  --hero-grad: linear-gradient(180deg, #3D93FF, #2278F5); /* 唯一的英雄卡/选中策略卡渐变 */
+  /* ── 品牌蓝 ─────────────────────────────────────────────────────────── */
+  --blue: var(--primary);
+  --blue-d: var(--x-primary-strong);
+  --blue-dark: var(--x-primary-strong);
+  --tint: var(--secondary);
+  --blue-tint: var(--secondary);
+  --blue-soft: var(--x-primary-soft);
+  --blue-line: var(--x-primary-line);
+  --blue-line-2: var(--x-primary-line);
 
-  /* Typography — 底线 12px；数字角标可用 --fs-badge */
-  --font: "Noto Sans SC", "PingFang SC", "Microsoft YaHei",
-    -apple-system, "Segoe UI", Arial, sans-serif;
-  --mono: var(--font);
-  /* 2026-08-07（Hector：所有代号都用这个字体）—— 策略代号（C0404R5）专用等宽栈。
-     ⚠ 不能直接改 --mono：那个变量在 styles.css 里被<刻意>指回 --font，159 处在用，
-       改它等于把整个旧原型的字体换掉。代号是新的一类东西，给它自己的 token。 */
-  --font-code: 'SF Mono', Menlo, Consolas, 'Noto Sans SC', monospace;
-  --fs-badge: 11px;
-  --fs-caption: 12px;
-  --fs-body: 14px;
-  --fs-body-lg: 15px;
-  --fs-header: 17px;
-  --fs-title: 18px;
-  --fs-number: 20px;
-  --fs-display: 28px;
+  /* ── 文字与线 ───────────────────────────────────────────────────────── */
+  --ink: var(--foreground);
+  /* ⚠ <b>同名不同义，这里是全档最容易接反的一处</b>：
+       存量代码里 --muted 是<b>次要文字色</b>（5,936 处 var() 里占很大一块）；
+       新词汇表里 --muted 是<b>浅灰底色</b>、--muted-foreground 才是文字。
+     保留存量语义（文字），因此本行<b>会覆写</b>词汇表的 --muted。
+     所以下面 --fill 必须去引用 --x-surface-sunken，<b>不能</b>写 var(--muted) ——
+     那样会拿到文字色当底色（第一版就是这么写的，已修）。 */
+  --muted: var(--muted-foreground);
+  --faint: var(--x-faint);
+  --line: var(--border);
+  --line-strong: var(--input);
+  --fill: var(--x-surface-sunken);
+  --page: var(--background);
+  --surface: var(--card);
+
+  /* ── 语义色 ─────────────────────────────────────────────────────────── */
+  --win: var(--success);
+  --positive: var(--success);
+  --positive-soft: var(--x-success-soft);
+  --red: var(--destructive);
+  --danger: var(--destructive);       /* ⚠ v2.1 起 --danger 与 --red 已经裂成两个红
+                                         （#EF3939 vs #ee3d49）。这里<b>合并回一个</b> ——
+                                         肉眼几乎看不出差别，但语义从此只有一个红。 */
+  --danger-soft: var(--x-destructive-soft);
+  --red-line: var(--x-destructive-line);   /* 之前<b>从未定义</b>，靠 7 处内联兜底活着 */
+  /* --warning 两边同名同义，<b>不要在这里再写一行</b>：
+     `--warning: var(--warning)` 是自引用，CSS 会判定循环、整个变量作废
+     （第一版就是这么写的，已删）。它由 ../tokens.css 直接提供。
+     该值目前 2.74:1 不达标，见那份文件文末「待拍板 ②」。 */
+  --warning-soft: var(--x-warning-soft);
+  --gold: var(--accent);
+  --hero-grad: var(--x-hero-gradient);
+
+  /* ── 字体与字号 ─────────────────────────────────────────────────────── */
+  --font: var(--font-sans);
+  --mono: var(--font-sans);           /* 刻意指回正文栈：styles.css 里 159 处在用，
+                                         代号请改用 --font-code。 */
+  --font-code: var(--x-font-code);
+  --fs-badge: var(--font-size-xs);
+  --fs-caption: var(--font-size-sm);
+  --fs-body: var(--font-size-base);
+  --fs-body-lg: var(--x-font-size-body-lg);
+  --fs-header: var(--font-size-lg);
+  --fs-title: var(--x-font-size-title);
+  --fs-number: var(--x-font-size-number);
+  --fs-display: var(--font-size-xl);
   --lh-caption: 17px;
   --lh-body: 21px;
   --lh-body-lg: 22px;
@@ -60,7 +89,7 @@
   --lh-number: 26px;
   --lh-display: 34px;
 
-  /* Spacing */
+  /* ── 间距（4px 网格；无令牌，直接写 px —— 见 README.txt）─────────────── */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -69,22 +98,29 @@
   --space-6: 24px;
   --space-8: 32px;
 
-  /* Shape and sizing */
+  /* ── 形状与尺寸 ─────────────────────────────────────────────────────── */
   --radius-sm: 8px;
-  --radius-md: 10px;
-  --radius-pill: 999px;
-  --radius-sheet: 15px;
+  --radius-md: var(--radius);
+  /* --radius-pill 同名同义，由 ../tokens.css 提供 —— 同样不能自引用。 */
+  --radius-sheet: 18px;
   --radius-device: 36px;
-  --header-h: 54px;
-  --control-h: 40px;
-  --touch-min: 44px;
-  --content-pad: 12px;
+  --header-h: var(--x-header-h);
+  --control-h: var(--x-control-h);
+  --touch-min: var(--x-touch-min);
+  --content-pad: var(--x-content-pad);
 
-  /* Motion */
-  --ease: cubic-bezier(.22, 1, .36, 1);
-  --duration-fast: 140ms;
-  --duration-base: 200ms;
+  /* ── 运动 ───────────────────────────────────────────────────────────── */
+  --ease: var(--x-ease);
+  --duration-fast: var(--x-duration-fast);
+  --duration-base: var(--x-duration-base);
 }
+
+/*
+ * ⚠ 唯一会变样的一屏：pages.html（内部页面索引）。
+ *   它加载本文件但<b>不</b>加载 reference-theme.css，所以在 v2.1 下它渲染的是
+ *   旧值（#126BFF 那支蓝）；转接之后它跟着全站走 #1677ee。
+ *   这是<b>有意的</b>：那一屏本来就该和产品同色，之前的不同才是 bug。
+ */
 
 @media (prefers-reduced-motion: reduce) {
   *,

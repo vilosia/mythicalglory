@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>我的策略 · 首屏五案 v9</title>
+<!--
+  ══ 变更记录 ═══════════════════════════════════════════════════════════════
+  v9 · 2026-08-17
+  背景：Alex「too many plasters」。全部策略已定 B 案（三张统计卡 → 一条玻璃，已落地）。
+       Hector：「More option for 我的策略」。
+  这一屏的膏药是<b>三张横滑的策略卡</b>：每张自带圆角＋投影＋内距，横着排开像三张便利贴，
+  而且<b>只露出两张半</b>——第三张永远被切一半，那道切口本身也是一块「白边」。
+  ⚠ 这一条不只是装饰问题：横滑卡还承担着「哪一套要出事」的预警（封盘倒计时、追至 R4/5），
+    所以减膏药不能顺手把<b>预警的可见性</b>一起减掉 —— 五案都要答这一条。
+  ⚠ 五案<b>不动</b>：蓝渐隐配方、下面的策略明细卡、警报票根那一条。
+-->
+<style>
+  :root{
+    --blue:#126BFF;--blue2:#3D85FF;--blue3:#8FBAFF;--page:#EEF3F7;
+    --ink:#172033;--muted:#66738A;--faint:#9AA6B8;--line:#E6ECF2;
+    --win:#12A150;--win-l:#A9F5C9;--red:#E0454F;--red-l:#FFC3C3;--gold:#F0B23A;
+    --blue-d:#0F63CE;
+    --font:"Noto Sans SC","PingFang SC",sans-serif;
+    --data:"DIN Alternate","Arial Narrow",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#D6DCE4;font-family:var(--font);color:var(--ink);padding:26px 0 70px;}
+  h1{font-size:17px;text-align:center;}
+  .lede{font-size:12px;color:#4A5567;text-align:center;margin:6px auto 22px;max-width:800px;line-height:1.7;}
+  .lede b{color:var(--ink);}
+  .row{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;align-items:flex-start;}
+  .opt{width:340px;}
+  .opt h2{font-size:13.5px;margin:0 2px 3px;}
+  .rec{display:inline-block;font-size:10px;font-weight:800;color:#fff;background:var(--blue);
+    border-radius:6px;padding:2px 7px;vertical-align:2px;margin-left:5px;}
+  .cnt{display:inline-block;font-size:10px;font-weight:800;color:var(--blue-d);
+    background:#E8F1FF;border:1px solid #BAD9F8;border-radius:6px;padding:1px 6px;margin-left:5px;}
+  .why{font-size:11.5px;line-height:1.65;color:#4A5567;margin:0 2px 9px;}
+  .why b{color:var(--ink);}
+  .warn{font-size:11px;line-height:1.6;color:#8A5A00;background:#FFF8E8;border-left:2px solid var(--gold);
+    padding:6px 9px;margin:0 2px 10px;border-radius:0 7px 7px 0;}
+  .phone{width:340px;border-radius:16px;overflow:hidden;box-shadow:0 10px 26px rgba(23,32,51,.16);background:var(--page);}
+  .sky{background:
+      radial-gradient(78% 130px at 88% -20px,rgba(120,190,255,.30),rgba(120,190,255,0)),
+      /* ⚠ 落点用像素、并且要盖住<b>最长的那一案</b>（E 的第三行到 ~300px）——
+         第一版按 262 落地，D 的第三格与 E 的末行被晒成白底白字（实测）。 */
+      linear-gradient(180deg,var(--blue) 0,var(--blue2) 165px,var(--blue3) 310px,var(--page) 380px,var(--page) 100%);
+    padding-bottom:14px;min-height:410px;}
+  .head{display:flex;align-items:center;gap:7px;padding:12px 13px 3px;color:#fff;}
+  .head b{font-size:15px;font-weight:800;}
+  .head small{font-size:11px;opacity:.8;}
+  .head .sp{margin-left:auto;}
+  .bal{font-size:11.5px;font-weight:800;background:rgba(255,255,255,.17);border-radius:999px;padding:4px 10px;}
+  .tabs{display:flex;gap:24px;justify-content:center;padding:7px 0 0;color:rgba(255,255,255,.7);font-size:13px;}
+  .tabs b{color:#fff;font-weight:800;position:relative;}
+  .tabs b::after{content:"";position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);
+    width:34px;height:3px;border-radius:2px;background:#fff;}
+  .hero{display:flex;align-items:flex-start;padding:15px 13px 0;color:#fff;}
+  .hero .lab{font-size:11px;opacity:.82;}
+  .hero .big{font-size:25px;font-weight:800;letter-spacing:-.5px;color:var(--win-l);line-height:1.15;}
+  .hero .newbtn{margin-left:auto;font-size:12px;font-weight:700;color:#fff;
+    border:1px solid rgba(255,255,255,.5);border-radius:9px;padding:6px 11px;}
+  .alert{margin:12px 12px 0;background:#FFF6E3;border-radius:11px;padding:9px 11px;font-size:11.5px;
+    display:flex;align-items:center;gap:6px;color:#7A5410;}
+  .alert b{font-weight:800;color:#5C3E06;}
+  .alert span{margin-left:auto;color:var(--blue-d);font-weight:700;}
+  .note{font-size:11px;color:var(--muted);text-align:center;padding:9px 6px 0;line-height:1.6;}
+  .note b{color:var(--ink);}
+  .n{font-family:var(--data);font-variant-numeric:tabular-nums;}
+
+  /* ── 现状（对照组） ── */
+  .now .strip{display:flex;gap:9px;padding:13px 13px 0;overflow:hidden;}
+  .now .mc{flex:none;width:158px;background:#fff;border-radius:12px;padding:10px 11px;
+    box-shadow:0 1px 2px rgba(23,32,51,.06);}
+  .now .mc .g{font-size:10px;color:var(--muted);}
+  .now .mc .code{font-size:15px;font-weight:800;}
+  .now .mc .pl{float:right;font-size:12px;font-weight:800;color:var(--win);}
+  .now .mc .ft{font-size:10.5px;color:var(--muted);margin-top:6px;}
+  .now .mc .ft b{color:var(--blue-d);font-weight:800;}
+
+  /* ── D · 一条玻璃三格（与全部策略同手法） ── */
+  .oD .slab{margin:13px 13px 0;background:rgba(255,255,255,.16);
+    border:1px solid rgba(255,255,255,.28);border-radius:14px;display:flex;overflow:hidden;color:#fff;}
+  .oD .slab>div{flex:1;min-width:0;padding:10px 11px;}
+  .oD .slab>div+div{border-left:1px solid rgba(255,255,255,.22);}
+  .oD .slab .g{font-size:10px;opacity:.78;}
+  .oD .slab .code{font-size:13.5px;font-weight:800;letter-spacing:.3px;}
+  .oD .slab .pl{font-size:12.5px;font-weight:800;color:var(--win-l);margin-top:3px;}
+  .oD .slab .cd{font-size:10px;opacity:.8;margin-top:2px;}
+  .oD .slab .cd.hot{color:var(--red-l);opacity:1;font-weight:700;}
+
+  /* ── E · 蓝上行式清单（不装盒） ── */
+  .oE .rows{padding:11px 13px 0;color:#fff;}
+  .oE .r{display:flex;align-items:center;gap:9px;padding:9px 0;}
+  .oE .r+.r{border-top:1px solid rgba(255,255,255,.2);}
+  .oE .r .code{font-size:14.5px;font-weight:800;letter-spacing:.3px;}
+  .oE .r .g{font-size:10.5px;opacity:.78;}
+  .oE .r .mid{margin-left:auto;text-align:right;}
+  .oE .r .pl{font-size:14px;font-weight:800;color:var(--win-l);}
+  .oE .r .cd{font-size:10px;opacity:.8;}
+  .oE .r .cd.hot{color:var(--red-l);opacity:1;font-weight:700;}
+  .oE .r i.dot{width:6px;height:6px;border-radius:50%;background:var(--win-l);flex:none;}
+  .oE .r i.dot.hot{background:var(--red-l);}
+
+  /* ── F · 一张主卡 ＋ 其余收成脚注 ── */
+  .oF .main{margin:13px 12px 0;background:#fff;border-radius:14px;padding:12px 13px;
+    box-shadow:0 6px 18px -10px rgba(16,55,160,.4);}
+  .oF .main .g{font-size:10.5px;color:var(--muted);}
+  .oF .main .code{font-size:19px;font-weight:800;letter-spacing:.4px;}
+  .oF .main .pl{float:right;font-size:19px;font-weight:800;color:var(--win);}
+  .oF .main .bar{display:flex;align-items:center;gap:8px;margin-top:9px;padding-top:9px;
+    border-top:1px solid var(--line);font-size:11px;color:var(--muted);}
+  .oF .main .bar b{color:var(--ink);font-weight:800;}
+  .oF .main .bar .hot{color:var(--red);font-weight:800;}
+  .oF .rest{display:flex;gap:8px;padding:10px 13px 0;color:#fff;font-size:11px;}
+  .oF .rest>span{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.26);
+    border-radius:9px;padding:5px 9px;}
+  .oF .rest b{font-weight:800;margin-left:4px;}
+  .oF .rest .up{color:var(--win-l);}
+  .oF .rest .dn{color:var(--red-l);}
+
+  /* ── G · 数字条（一行说完三套） ── */
+  .oG .sum{display:flex;padding:14px 13px 0;color:#fff;}
+  .oG .sum>div{flex:1;min-width:0;}
+  .oG .sum>div+div{border-left:1px solid rgba(255,255,255,.25);padding-left:12px;}
+  .oG .sum i{display:block;font-style:normal;font-size:10.5px;opacity:.8;margin-bottom:2px;}
+  .oG .sum b{font-size:18px;font-weight:800;}
+  .oG .sum b.up{color:var(--win-l);}
+  .oG .sum b em{font-style:normal;font-size:10.5px;font-weight:600;opacity:.8;margin-left:2px;}
+  .oG .sheet{margin:14px 12px 0;background:#fff;border-radius:14px;overflow:hidden;
+    box-shadow:0 6px 18px -10px rgba(16,55,160,.4);}
+  .oG .sheet .hd{font-size:11.5px;color:var(--muted);padding:10px 13px 8px;}
+  .oG .sheet .hd b{color:var(--ink);font-size:13px;margin-right:5px;}
+  .oG .lrow{display:flex;align-items:center;gap:9px;padding:10px 13px;border-top:1px solid var(--line);}
+  .oG .lrow .code{font-size:14.5px;font-weight:800;}
+  .oG .lrow .g{font-size:10.5px;color:var(--muted);}
+  .oG .lrow .mid{margin-left:auto;text-align:right;}
+  .oG .lrow .pl{font-size:14px;font-weight:800;color:var(--win);}
+  .oG .lrow .cd{font-size:10.5px;color:var(--muted);}
+  .oG .lrow .cd.hot{color:var(--red);font-weight:800;}
+</style>
+</head>
+<body>
+  <h1>我的策略 · 首屏五案</h1>
+  <p class="lede">
+    全部策略已定 <b>B 案</b>（三张统计卡 → 一条玻璃，已落地）。这一屏的膏药是
+    <b>三张横滑的策略卡</b> —— 每张自带圆角＋投影＋内距，还<b>永远露出半张</b>，那道切口也是一块白边。<br>
+    ⚠ 这条横滑同时担着<b>预警</b>（封盘倒计时、追至 R4/5）—— 减膏药不能把预警一起减掉。五案都得答这一条。
+  </p>
+
+  <div class="row">
+
+    <!-- 现状 -->
+    <div class="opt now">
+      <h2>现状 · 三张横滑卡<span class="cnt">白块 3＋半</span></h2>
+      <p class="why">每套一张卡，横滑翻看。信息最全，但三块白＋一道切口全压在蓝上，
+        也就是 Alex 说的那几张「膏药」。</p>
+      <div class="phone"><div class="sky">
+        <div class="head"><b>策略投注</b><small>· 幸运组</small><span class="sp"></span><span class="bal">240,000.00</span></div>
+        <div class="tabs"><span>全部策略</span><b>我的策略</b></div>
+        <div class="hero"><div><div class="lab">总盈亏 · 3 套运行中</div><div class="big n">+12.20</div></div>
+          <span class="newbtn">＋ 创建策略</span></div>
+        <div class="strip">
+          <div class="mc"><span class="pl n">+21.20</span><div class="g">极速飞艇</div><div class="code n">C0404R5</div>
+            <div class="ft">在场 310 · 封盘 <b class="n">00:10</b></div></div>
+          <div class="mc"><span class="pl n">+8.40</span><div class="g">极速赛车</div><div class="code n">C0506R5</div>
+            <div class="ft">在场 10 · 封盘 <b class="n">00:17</b></div></div>
+          <div class="mc"><span class="pl n">−4.60</span><div class="g">极速时时彩</div><div class="code n">C0405R12</div>
+            <div class="ft">本期未进场</div></div>
+        </div>
+        <div class="alert">⚠ <b>极速飞艇 C0404R5</b> 冠军·大小 追至 <b class="n">R4/5</b><span>查看 ›</span></div>
+      </div></div>
+      <p class="note">对照组：下面四案都拿它比</p>
+    </div>
+
+    <!-- D -->
+    <div class="opt oD">
+      <h2>D · 一条玻璃三格<span class="cnt">3＋半 → 1</span></h2>
+      <p class="why">与刚落地的全部策略<b>同一手法</b>：三张卡合成一条玻璃、细线分三格。
+        两屏首屏于是长成同一个样子，切 tab 不跳。<br>
+        三套<b>全部同时在场</b>，不用横滑 —— 但每格只剩代号／盈亏／倒计时三行，
+        「在场多少」得让位。</p>
+      <p class="warn">预警：倒计时进红时那一格整格转红，横滑时代「看不到第三张」的问题反而解决了。</p>
+      <div class="phone"><div class="sky">
+        <div class="head"><b>策略投注</b><small>· 幸运组</small><span class="sp"></span><span class="bal">240,000.00</span></div>
+        <div class="tabs"><span>全部策略</span><b>我的策略</b></div>
+        <div class="hero"><div><div class="lab">总盈亏 · 3 套运行中</div><div class="big n">+12.20</div></div>
+          <span class="newbtn">＋ 创建策略</span></div>
+        <div class="slab">
+          <div><div class="g">极速飞艇</div><div class="code n">C0404R5</div><div class="pl n">+21.20</div><div class="cd hot n">封盘 00:04</div></div>
+          <div><div class="g">极速赛车</div><div class="code n">C0506R5</div><div class="pl n">+8.40</div><div class="cd n">封盘 00:17</div></div>
+          <div><div class="g">极速时时彩</div><div class="code n">C0405R12</div><div class="pl n" style="color:var(--red-l)">−4.60</div><div class="cd">未进场</div></div>
+        </div>
+        <div class="alert">⚠ <b>极速飞艇 C0404R5</b> 冠军·大小 追至 <b class="n">R4/5</b><span>查看 ›</span></div>
+      </div></div>
+      <p class="note">两个 tab <b>同一件</b> —— 切来切去不跳</p>
+    </div>
+
+    <!-- E -->
+    <div class="opt oE">
+      <h2>E · 蓝上行式清单<span class="rec">推荐</span><span class="cnt">3＋半 → 0</span></h2>
+      <p class="why">彻底不装盒：三套竖排在蓝上，只用一条细横线分行，左端一枚状态圆点。
+        <b>蓝头一块白都没有</b>，第一块白是下面的警报票根 —— 白色于是自动成了「有事要处理」的信号。<br>
+        竖排比横滑<b>更好扫</b>（代号、盈亏、倒计时三列对齐可比），套数再多也只是往下长。</p>
+      <p class="warn">预警：状态圆点＋倒计时转红，红点在纯蓝底上比在白卡里更跳。</p>
+      <div class="phone"><div class="sky">
+        <div class="head"><b>策略投注</b><small>· 幸运组</small><span class="sp"></span><span class="bal">240,000.00</span></div>
+        <div class="tabs"><span>全部策略</span><b>我的策略</b></div>
+        <div class="hero"><div><div class="lab">总盈亏 · 3 套运行中</div><div class="big n">+12.20</div></div>
+          <span class="newbtn">＋ 创建策略</span></div>
+        <div class="rows">
+          <div class="r"><i class="dot hot"></i><span><span class="code n">C0404R5</span><br><span class="g">极速飞艇 · 在场 310</span></span>
+            <span class="mid"><span class="pl n">+21.20</span><br><span class="cd hot n">封盘 00:04</span></span></div>
+          <div class="r"><i class="dot"></i><span><span class="code n">C0506R5</span><br><span class="g">极速赛车 · 在场 10</span></span>
+            <span class="mid"><span class="pl n">+8.40</span><br><span class="cd n">封盘 00:17</span></span></div>
+          <div class="r"><i class="dot" style="background:rgba(255,255,255,.5)"></i><span><span class="code n">C0405R12</span><br><span class="g">极速时时彩 · 未进场</span></span>
+            <span class="mid"><span class="pl n" style="color:var(--red-l)">−4.60</span><br><span class="cd">待触发</span></span></div>
+        </div>
+        <div class="alert">⚠ <b>极速飞艇 C0404R5</b> 冠军·大小 追至 <b class="n">R4/5</b><span>查看 ›</span></div>
+      </div></div>
+      <p class="note">白色只留给<b>要处理的事</b>；套数变多只是往下长</p>
+    </div>
+
+    <!-- F -->
+    <div class="opt oF">
+      <h2>F · 一张主卡 ＋ 其余收成脚注<span class="cnt">3＋半 → 1</span></h2>
+      <p class="why">承认一件事：<b>三套里通常只有一套在关键时刻</b>。把最紧的那套做成一张大卡
+        （代号、盈亏、在场、封盘全在），其余两套压成两枚小标签，点一下换主角。<br>
+        好处是首屏有明确的<b>主角</b>，不再是三张一样大的卡让人挑；
+        代价是另两套要多一次点击才看得全。</p>
+      <p class="warn">预警：谁最紧谁当主角 —— 排序规则就是预警本身，不必再额外标红。</p>
+      <div class="phone"><div class="sky">
+        <div class="head"><b>策略投注</b><small>· 幸运组</small><span class="sp"></span><span class="bal">240,000.00</span></div>
+        <div class="tabs"><span>全部策略</span><b>我的策略</b></div>
+        <div class="hero"><div><div class="lab">总盈亏 · 3 套运行中</div><div class="big n">+12.20</div></div>
+          <span class="newbtn">＋ 创建策略</span></div>
+        <div class="main">
+          <span class="pl n">+21.20</span>
+          <div class="g">极速飞艇 · 最紧的一套</div><div class="code n">C0404R5</div>
+          <div class="bar">在场 <b class="n">310</b> · 追至 <b class="n">R4/5</b> · 封盘 <span class="hot n">00:04</span></div>
+        </div>
+        <div class="rest">
+          <span>C0506R5<b class="up n">+8.40</b></span>
+          <span>C0405R12<b class="dn n">−4.60</b></span>
+        </div>
+        <div class="alert">⚠ <b>极速飞艇 C0404R5</b> 冠军·大小 追至 <b class="n">R4/5</b><span>查看 ›</span></div>
+      </div></div>
+      <p class="note">首屏有<b>主角</b>，不是三张一样大的卡让人自己挑</p>
+    </div>
+
+    <!-- G -->
+    <div class="opt oG">
+      <h2>G · 汇总上蓝 · 明细下沉<span class="cnt">3＋半 → 1</span></h2>
+      <p class="why">蓝头只回答「<b>整体怎么样</b>」——总盈亏、在场、最坏还要掏，三个数横排、不装盒；
+        逐套明细整块沉进下面<b>一张</b>白卡，与再往下的策略详情连成一条内容流。<br>
+        蓝白分工最清楚：蓝＝汇总，白＝逐条。代价是「哪一套快封盘」要往下看一眼。</p>
+      <p class="warn">预警：白卡第一行就是最紧的那套，倒计时转红；警报票根仍压在卡上方。</p>
+      <div class="phone"><div class="sky">
+        <div class="head"><b>策略投注</b><small>· 幸运组</small><span class="sp"></span><span class="bal">240,000.00</span></div>
+        <div class="tabs"><span>全部策略</span><b>我的策略</b></div>
+        <div class="hero"><div><div class="lab">总盈亏 · 3 套运行中</div><div class="big n">+12.20</div></div>
+          <span class="newbtn">＋ 创建策略</span></div>
+        <div class="sum">
+          <div><i>在场</i><b class="n">330</b></div>
+          <div><i>今日命中</i><b class="up n">22</b></div>
+          <div><i>最坏还要</i><b class="n">1,180</b></div>
+        </div>
+        <div class="sheet">
+          <div class="hd"><b>3 套运行中</b>按紧迫度排</div>
+          <div class="lrow"><span><span class="code n">C0404R5</span><br><span class="g">极速飞艇</span></span>
+            <span class="mid"><span class="pl n">+21.20</span><br><span class="cd hot n">封盘 00:04</span></span></div>
+          <div class="lrow"><span><span class="code n">C0506R5</span><br><span class="g">极速赛车</span></span>
+            <span class="mid"><span class="pl n">+8.40</span><br><span class="cd n">封盘 00:17</span></span></div>
+        </div>
+      </div></div>
+      <p class="note">蓝＝<b>整体怎么样</b>，白＝<b>逐套怎么样</b>，分工最干净</p>
+    </div>
+
+  </div>
+</body>
+</html>

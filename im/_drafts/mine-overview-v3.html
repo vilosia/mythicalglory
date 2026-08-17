@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>速览条重想 · 三案对比 v3</title>
+<!--
+  ══ 变更记录（draft 规矩：每稿自带账本）═══════════════════════════════════
+  v3 · 2026-08-16
+  背景：Hector —— 速览条 very messy「不只是 UI 的事，是信息量本身太多」。
+        v2（横排药丸 + 敞口行 + todo）在 Latest 4 已收过材质，仍被判过载。
+  本稿改的是【信息架构】不是皮：三案都从「砍层」入手 ——
+    现状四层：①最近游戏行 ②其他游戏药丸 ③已投入/最大追加/状态 ④todo
+    共识判断：②③是「卡片能答的事」（每张卡自带时钟与金额），砍掉不算失信息。
+  三案分野：
+    A 三件事一行     —— 只回答 赚亏/几时开/有没有事，一行 44px 收工
+    B 总盈亏领唱     —— 数字先行做视觉锚，异常票根只在有事时出现（推荐）
+    C 收纳式档案头   —— 默认一行，点开还原完整四层（信息不删只收）
+  刻意不做：把 ②药丸 或 ③敞口行 原样留下的方案 —— 那正是被判过载的部分。
+-->
+<style>
+  :root{
+    --blue:#2F6BE8;--blue-d:#1F5EDC;--ink:#172033;--muted:#66738A;--faint:#9AA6B8;
+    --line:#E6ECF2;--fill:#F1F5F9;--page:#F5F7F9;--win:#0E9F5B;--red:#E0454F;
+    --warn-bg:#FFF7E8;--warn-ink:#9A6700;--bust-bg:#FDF0F0;
+    --font:"Noto Sans SC","PingFang SC",sans-serif;
+    --data:"DIN Alternate","Arial Narrow",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#DDE3EA;font-family:var(--font);color:var(--ink);padding:26px 0 60px;}
+  h1{font-size:16px;text-align:center;margin-bottom:4px;}
+  .sub{font-size:12px;color:var(--muted);text-align:center;margin-bottom:22px;}
+  .row{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;align-items:flex-start;}
+  .opt{width:375px;}
+  .opt h2{font-size:13px;margin:0 2px 2px;}
+  .opt .why{font-size:11.5px;line-height:1.55;color:var(--muted);margin:0 2px 10px;}
+  .opt .why b{color:var(--ink);}
+  .phone{background:var(--page);border:1px solid #C9D4DF;border-radius:18px;padding:12px 12px 16px;min-height:430px;}
+  .rec{display:inline-block;font-size:10px;font-weight:800;color:#fff;background:var(--blue);border-radius:6px;padding:2px 7px;vertical-align:2px;margin-left:5px;}
+  .num{font-family:var(--data);font-variant-numeric:tabular-nums;}
+  /* 共用：底下的策略卡（示意一张，说明卡片才是细节的家） */
+  .card{background:#fff;border-radius:14px;padding:13px 14px;margin-top:10px;box-shadow:0 1px 2px rgba(23,32,51,.05);}
+  .card .g{font-size:11px;color:var(--muted);}
+  .card .code{font-size:17px;font-weight:800;margin-top:1px;}
+  .card .plr{display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--muted);}
+  .card .plr b{font-family:var(--data);font-size:14px;}
+  .up{color:var(--win);}.dn{color:var(--red);}
+  .ghost{opacity:.45;text-align:center;font-size:11px;color:var(--muted);padding:14px 0 4px;}
+
+  /* ── A · 三件事一行 ─────────────────────────── */
+  .a-bar{display:flex;align-items:center;gap:8px;background:#fff;border-radius:12px;padding:9px 11px;box-shadow:0 1px 2px rgba(23,32,51,.05);}
+  .a-pl{font-size:11px;color:var(--muted);}
+  .a-pl b{display:block;font-family:var(--data);font-size:17px;line-height:1.15;}
+  .a-chip{display:inline-flex;align-items:center;gap:5px;background:var(--fill);border-radius:999px;padding:6px 11px;font-size:11.5px;font-weight:700;color:var(--ink);}
+  .a-chip .pie{width:13px;height:13px;border-radius:50%;background:conic-gradient(var(--win) 0 62%,#E1E8EF 62% 100%);}
+  .a-chip.todo{background:var(--bust-bg);color:var(--red);margin-left:auto;}
+  .a-chip.todo i{font-style:normal;font-size:10px;background:var(--red);color:#fff;border-radius:999px;padding:1px 6px;}
+
+  /* ── B · 总盈亏领唱 + 异常票根 ─────────────────── */
+  .b-hero{display:flex;align-items:flex-end;justify-content:space-between;padding:4px 4px 10px;}
+  .b-hero .lab{font-size:11px;color:var(--muted);}
+  .b-hero .big{font-family:var(--data);font-size:30px;font-weight:800;line-height:1.05;letter-spacing:-.5px;}
+  .b-next{text-align:right;font-size:11px;color:var(--muted);}
+  .b-next b{display:block;font-family:var(--data);font-size:14px;color:var(--ink);}
+  .b-tk{display:flex;align-items:center;gap:8px;border-radius:11px;padding:9px 12px;font-size:12px;margin-top:6px;}
+  .b-tk.bust{background:var(--bust-bg);}
+  .b-tk.warn{background:var(--warn-bg);}
+  .b-tk .dot{width:7px;height:7px;border-radius:50%;flex:none;}
+  .b-tk.bust .dot{background:var(--red);}
+  .b-tk.warn .dot{background:#E8A13A;}
+  .b-tk em{font-style:normal;margin-left:auto;font-weight:800;color:var(--blue-d);white-space:nowrap;}
+  .b-tk b{font-weight:700;}
+  .b-quiet{font-size:11px;color:var(--faint);text-align:center;padding:6px 0 0;}
+
+  /* ── C · 收纳式档案头 ─────────────────────────── */
+  .c-line{display:flex;align-items:center;gap:9px;background:#fff;border-radius:12px;padding:10px 12px;box-shadow:0 1px 2px rgba(23,32,51,.05);cursor:pointer;}
+  .c-line .num{font-size:15px;font-weight:800;}
+  .c-line .cd{font-size:11.5px;color:var(--muted);margin-left:auto;display:flex;align-items:center;gap:5px;}
+  .c-line .caret{color:var(--faint);font-size:11px;}
+  .c-open{background:#fff;border-radius:12px;margin-top:8px;padding:11px 12px;box-shadow:0 1px 2px rgba(23,32,51,.05);}
+  .c-row{display:flex;gap:10px;font-size:11px;color:var(--muted);padding:5px 0;border-bottom:1px solid var(--fill);}
+  .c-row:last-child{border-bottom:0;}
+  .c-row b{font-family:var(--data);color:var(--ink);}
+  .badge{background:var(--red);color:#fff;border-radius:999px;font-size:10px;font-style:normal;padding:1px 6px;}
+</style>
+</head>
+<body>
+  <h1>速览条重想 · 三案</h1>
+  <div class="sub">判断基准：②其他游戏药丸 与 ③敞口统计 是「卡片能答的事」——三案都砍，分歧在剩下的怎么站</div>
+  <div class="row">
+
+    <!-- A -->
+    <div class="opt">
+      <h2>A · 三件事一行</h2>
+      <p class="why">速览只回答三问：<b>赚亏多少 · 几时开 · 有没有事</b>。一行 44px，
+        待处理收成一枚红 chip（点开才展开清单）。最省，但总盈亏只有 17px——
+        「数字领唱」让位给了极致压缩。</p>
+      <div class="phone">
+        <div class="a-bar">
+          <span class="a-pl">总盈亏<b class="num up">+215.80</b></span>
+          <span class="a-chip"><span class="pie"></span>极速赛车 <span class="num">0分21秒</span></span>
+          <span class="a-chip todo">待处理 <i>2</i></span>
+        </div>
+        <div class="card"><div class="g">极速飞艇 · 本期 0分7秒</div><div class="code">C0404R5 ›</div><div class="plr"><span>● 运行中 · 执行线路 6</span><b class="up num">+230.40</b></div></div>
+        <div class="card"><div class="g">极速赛车 · 本期 0分21秒</div><div class="code">C0506R5 ›</div><div class="plr"><span>● 运行中 · 追至 R4/5</span><b class="up num">+8.00</b></div></div>
+        <div class="ghost">▼ 其余卡片照旧 —— 每张卡自带时钟与金额，速览不再复述</div>
+      </div>
+    </div>
+
+    <!-- B -->
+    <div class="opt">
+      <h2>B · 总盈亏领唱 + 异常票根<span class="rec">推荐</span></h2>
+      <p class="why">数字先行：<b>总盈亏 30px 做全页锚</b>，右肩挂最近开奖倒计时。
+        下面<b>只在有事时</b>长出异常票根（爆仓若继续 / 追到末回），没事就一行「运行正常」。
+        信息随状态伸缩——平时最安静，出事最显眼。</p>
+      <div class="phone">
+        <div class="b-hero">
+          <span><span class="lab">总盈亏 · 3 套运行中</span><div class="big num up">+215.80</div></span>
+          <span class="b-next">最近开奖 极速赛车<b class="num">0分21秒</b></span>
+        </div>
+        <div class="b-tk bust"><span class="dot"></span><span>极速时时彩 <b>B0405R4</b> 已爆仓 · 若继续 <b class="up num">+38.00</b></span><em>继续 ›</em></div>
+        <div class="b-tk warn"><span class="dot"></span><span>极速赛车 <b>C0506R5</b> 第四·大小 追至 <b>R4/5</b></span><em>查看 ›</em></div>
+        <div class="card"><div class="g">极速飞艇 · 本期 0分7秒</div><div class="code">C0404R5 ›</div><div class="plr"><span>● 运行中 · 执行线路 6</span><b class="up num">+230.40</b></div></div>
+        <div class="ghost">没事的日子这里只有大数字一行 —— <br>「运行正常 · 下一开奖 0分21秒」</div>
+        <p class="b-quiet">（已投入/最大追加 → 收进各卡；多游戏时钟 → 各卡自带）</p>
+      </div>
+    </div>
+
+    <!-- C -->
+    <div class="opt">
+      <h2>C · 收纳式档案头</h2>
+      <p class="why">信息<b>不删只收</b>：默认一行（总盈亏+倒计时+红点），
+        点开还原完整账目（敞口/各游戏/待办）。适合「群主型」重度用户，
+        但多一步点击，且展开态回到今天被批评的密度——保守案。</p>
+      <div class="phone">
+        <div class="c-line">
+          <b class="num up">+215.80</b>
+          <i class="badge">2</i>
+          <span class="cd">◔ 极速赛车 <span class="num">0分21秒</span> <span class="caret">▼</span></span>
+        </div>
+        <div class="c-open">
+          <div class="c-row"><span>已投入 <b class="num">235</b></span><span>最大追加 <b class="num">3,695</b></span><span style="margin-left:auto">运行中 3 · 爆仓 1 · 未启用 1</span></div>
+          <div class="c-row"><span>极速时时彩 <b class="num">0分10秒</b> · 投入 <b class="num">10</b></span></div>
+          <div class="c-row"><span>极速飞艇 <b class="num">0分7秒</b> · 投入 <b class="num">150</b></span></div>
+          <div class="c-row"><span style="color:var(--red)">● B0405R4 已爆仓 · 若继续 +38.00</span><span style="margin-left:auto;color:var(--blue-d);font-weight:800">继续 ›</span></div>
+        </div>
+        <div class="card"><div class="g">极速飞艇 · 本期 0分7秒</div><div class="code">C0404R5 ›</div><div class="plr"><span>● 运行中</span><b class="up num">+230.40</b></div></div>
+        <div class="ghost">默认收起时与 A 一样安静</div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

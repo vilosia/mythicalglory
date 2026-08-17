@@ -1,4 +1,6 @@
-/* 大厅（index.html）的精选卡是「跑」出来的，不手抄。
+/* 大厅（hall.html）的精选卡是「跑」出来的，不手抄。
+   ⚠ 2026-08-11：目标从 index.html 改成 <b>hall.html</b> —— index.html 已经变成
+     一张转到策略页的转发页，旧大厅整屏搬去了 hall.html（导航上已退役，只留着对照）。
    ─────────────────────────────────────────────────────────────────────────
    为什么不手抄：卡上的曲线是 hall-plans.html 的 v15 引擎按固定种子模拟 1440 期算出来的
    （curvePath PTS=240 抽稀），手抄一次就死一次；跑一遍则两页永远同源同数。
@@ -8,14 +10,14 @@
      · 模板卡  （.bd-card ，来自 PLANS）→ hall-plans.html#plan=代号 → L2 试算（模板详情）
 
    用法：node gen-featured-cards.js [目录] [进行中代号,…] [模板代号,…]
-   默认：node gen-featured-cards.js .  C0404R5,C0506R5  B0404R6,C0303R6,B0505R4
-   ⚠ index.html 里 RUNNING/TEMPLATE 两对标记之间的内容会被整段覆盖，别手改。 */
+   默认：node gen-featured-cards.js .  C0404R5,C0506R5  B0404R10,C0303R12,B0505R10
+   ⚠ hall.html 里 RUNNING/TEMPLATE 两对标记之间的内容会被整段覆盖，别手改。 */
 const fs = require('fs');
 const path = require('path');
 
 const DIR = process.argv[2] || '.';
 const WANT_MINE = (process.argv[3] || 'C0404R5,C0506R5').split(',').filter(Boolean);
-const WANT_TPL = (process.argv[4] || 'B0404R6,C0303R6,B0505R4').split(',').filter(Boolean);
+const WANT_TPL = (process.argv[4] || 'B0404R10,C0303R12,B0505R10').split(',').filter(Boolean);
 const src = fs.readFileSync(path.join(DIR, 'hall-plans.html'), 'utf8');
 
 const blocks = [...src.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]);
@@ -30,7 +32,11 @@ const captured = {};
 function makeEl(id) {
   const el = {
     id, _h: '', textContent: '', className: '', value: '', hidden: false, disabled: false,
-    style: {}, dataset: {}, children: [], tabIndex: 0, offsetWidth: 100, scrollWidth: 100,
+    /* 2026-08-11：style 补上 CSSStyleDeclaration 的三个方法 —— 引擎的 syncStickyH()
+       会调 documentElement.style.setProperty('--bd-stickyh',…)，之前是个裸对象，
+       一调就抛，MINE 那两张进行中卡从此渲染不出来（本脚本已经坏了一阵子，不是这轮改坏的）。 */
+    style: { setProperty() {}, removeProperty() {}, getPropertyValue() { return ''; } },
+    dataset: {}, children: [], tabIndex: 0, offsetWidth: 100, scrollWidth: 100,
     classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
     addEventListener() {}, removeEventListener() {}, appendChild() {}, removeChild() {},
     remove() {}, setAttribute() {}, removeAttribute() {}, getAttribute() { return null; },
@@ -101,7 +107,9 @@ function indexByCode(cards, innerClass) {
   return map;
 }
 const tplCards = indexByCode(splitCards(captured['bdCards'] || '', 'bd-card"'), 'bd-code');
-const mineCards = indexByCode(splitCards(captured['bdMine'] || '', 'bd-ocard'), 'bd-ohn');
+/* 2026-08-11：代号那一枚的类名早就从 bd-ohn 改成 "bd-code bd-ocode"（bd-ohn 只剩一条死 CSS），
+   本脚本还在按旧类名找，于是两张进行中卡永远「没渲染出来」。一起修掉。 */
+const mineCards = indexByCode(splitCards(captured['bdMine'] || '', 'bd-ocard'), 'bd-code bd-ocode');
 
 const missing = [...WANT_MINE.filter(c => !mineCards[c]), ...WANT_TPL.filter(c => !tplCards[c])];
 if (missing.length) { console.error('这些代号没渲染出来：' + missing.join(',')); process.exit(4); }
@@ -123,7 +131,7 @@ function toLink(card, href) {
 /* 模板卡：只加链接，不加类型标。
    2026-08-07（Hector）：卡上那枚「可套用」蓝标撤掉 —— 区块名已经叫「热门策略」，
    每张卡再重复一次是第二遍，而且它与 PK10 chip、倍投2× 药丸挤在同一行。
-   ⚠ 这里必须一起改：否则重跑本脚本会把标签写回 index.html。
+   ⚠ 这里必须一起改：否则重跑本脚本会把标签写回 hall.html。
    要恢复：把下面这行 replace 加回来
      .replace(/(<div class="bd-cardnm">[\s\S]*?)(<\/div>)/, '$1<span class="lob-tag lob-tpl">可套用</span>$2') */
 function tplToLink(card, codeName) {
@@ -139,11 +147,11 @@ function mineToLink(card, codeName) {
 const INDENT = '              ';
 function inject(page, startTag, endTag, htmls) {
   const a = page.indexOf(startTag), b = page.indexOf(endTag);
-  if (a < 0 || b < 0) { console.error('index.html 里找不到 ' + startTag); process.exit(5); }
+  if (a < 0 || b < 0) { console.error('hall.html 里找不到 ' + startTag); process.exit(5); }
   return page.slice(0, a + startTag.length) + '\n' +
     htmls.map(h => INDENT + h).join('\n') + '\n' + INDENT.slice(2) + page.slice(b);
 }
-const target = path.join(DIR, 'index.html');
+const target = path.join(DIR, 'hall.html');
 let page = fs.readFileSync(target, 'utf8');
 page = inject(page, '<!-- RUNNING:START -->', '<!-- RUNNING:END -->',
   WANT_MINE.map(c => mineToLink(mineCards[c], c)));

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>草案 · 版本履历</title>
+<style>
+:root{--ink:#1B2330;--muted:#6B7280;--faint:#9AA3AF;--line:#E8E8E8;--line2:#D5D9DF;
+  --blue:#126BFF;--blue-d:#0B5ADC;--tint:#E7F0FF;--page:#F4F6F9;--surface:#fff;}
+*{box-sizing:border-box;}
+body{margin:0;font:14px/1.5 "Noto Sans SC",-apple-system,system-ui,sans-serif;color:var(--ink);
+  background:var(--page);display:flex;height:100vh;overflow:hidden;}
+aside{width:290px;flex:none;background:var(--surface);border-right:1px solid var(--line);
+  display:flex;flex-direction:column;}
+aside h1{margin:0;padding:15px 16px 11px;font-size:14px;border-bottom:1px solid var(--line);}
+aside h1 small{display:block;font-size:10.5px;font-weight:400;color:var(--faint);margin-top:3px;}
+#vlist{flex:none;overflow-y:auto;max-height:46%;}
+.vi{padding:9px 16px;border-bottom:1px solid #F3F6FA;cursor:pointer;}
+.vi:hover{background:#FAFBFD;}
+.vi.on{background:var(--tint);box-shadow:inset 3px 0 0 var(--blue);}
+.vi b{font-size:12.5px;}
+.vi .t{font-size:11px;color:var(--muted);margin-top:2px;}
+.vi .d{font-size:9.5px;color:var(--faint);margin-top:1px;}
+.vi .tag{font-size:9px;font-weight:700;color:var(--blue-d);background:var(--tint);
+  border-radius:99px;padding:1px 6px;margin-left:5px;}
+#note{flex:1;min-height:0;overflow-y:auto;border-top:1px solid var(--line);
+  padding:12px 16px 20px;font-size:11px;line-height:1.65;color:var(--muted);}
+#note b{color:var(--ink);}
+main{flex:1;min-width:0;display:flex;flex-direction:column;}
+.bar{flex:none;display:flex;align-items:center;gap:9px;padding:9px 14px;background:var(--surface);
+  border-bottom:1px solid var(--line);}
+.bar button{border:1px solid var(--line2);background:var(--surface);font-family:inherit;font-size:12px;
+  font-weight:700;color:var(--muted);border-radius:8px;padding:6px 12px;cursor:pointer;}
+.bar button:hover{color:var(--blue-d);border-color:var(--blue);}
+.bar .now{font-size:12.5px;font-weight:700;}
+.bar .sp{margin-left:auto;font-size:11px;color:var(--faint);}
+iframe{flex:1;width:100%;border:0;background:var(--page);}
+</style>
+</head>
+<body>
+<aside>
+  <h1>草案 · 版本履历<small>每一版都留着；点一版看它当时的样子</small></h1>
+  <div id="vlist"></div>
+  <div id="note">选一个版本，这里显示它的版本说明。</div>
+</aside>
+<main>
+  <div class="bar">
+    <button id="prev">← 上一版</button>
+    <button id="next">下一版 →</button>
+    <span class="now" id="now">—</span>
+    <span class="sp" id="path"></span>
+  </div>
+  <iframe id="frame" title="草案预览"></iframe>
+</main>
+<script>
+/* 最新在最上面；只有最新那一版带 latest:true。
+   t = 4–10 字摘要，够在列表里挑版本、不用打开。 */
+var VERSIONS=[
+  {v:'v1',f:'line-detail-draft-v1.html', t:'线路详情弹层 ＋ 只给这一条线加回合', d:'08-13', latest:true}
+];
+var i=0;
+function $(id){return document.getElementById(id);}
+function paint(){
+  $('vlist').innerHTML=VERSIONS.map(function(x,k){
+    return '<div class="vi'+(k===i?' on':'')+'" data-k="'+k+'"><b>'+x.v+'</b>'+
+      (x.latest?'<span class="tag">最新</span>':'')+
+      '<div class="t">'+x.t+'</div><div class="d">'+x.d+'</div></div>';
+  }).join('');
+  var x=VERSIONS[i];
+  $('now').textContent=x.v+' · '+x.t;
+  $('path').textContent=x.f;
+  /* 防浏览器缓存旧文件 —— 改完不刷新是这类原型最常见的假象 */
+  $('frame').src=x.f+'?t='+Date.now();
+  $('prev').disabled=(i>=VERSIONS.length-1);
+  $('next').disabled=(i<=0);
+  readNote(x.f);
+}
+/* 把草案顶部那段 <p class="*draft"> 说明抓出来显示在左栏，
+   免得看版本履历还要另外打开文件找说明。 */
+function readNote(f){
+  fetch(f).then(function(r){return r.text();}).then(function(html){
+    var m=html.match(/<p class="[^"]*draft[^"]*">([\s\S]*?)<\/p>/);
+    $('note').innerHTML=m?m[1]:'（这一版没写版本说明段落）';
+  }).catch(function(){$('note').textContent='（读不到文件，需要用本地服务器打开，不能用 file://）';});
+}
+$('vlist').addEventListener('click',function(e){
+  var el=e.target.closest('.vi');if(el){i=+el.dataset.k;paint();}
+});
+$('prev').addEventListener('click',function(){if(i<VERSIONS.length-1){i++;paint();}});
+$('next').addEventListener('click',function(){if(i>0){i--;paint();}});
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowLeft'&&i<VERSIONS.length-1){i++;paint();}
+  if(e.key==='ArrowRight'&&i>0){i--;paint();}
+});
+paint();
+</script>
+</body>
+</html>

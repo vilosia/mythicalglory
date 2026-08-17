@@ -71,10 +71,28 @@ a.lobtile{display:block;text-decoration:none;color:inherit;}
 .hall-sec-head a{margin-left:auto;font-size:12px;color:var(--blue);text-decoration:none;}
 
 /* ── 游戏标签（跨游戏的策略/注单都要标明所属游戏）── */
-.game-chip{display:inline-flex;align-items:center;font-size:12px;line-height:17px;border-radius:8px;padding:0 6px;white-space:nowrap;}
-.game-chip.g-pk{background:var(--tint);color:var(--blue-d);}
-.game-chip.g-pk10{background:var(--warning-soft);color:var(--warning);}
-.game-chip.g-ssc{background:var(--positive-soft);color:var(--win);}
+/* ══ 08-13R（Hector：Dont really like how the game name is sometimes a pill and
+   sometimes not）════════════════════════════════════════════════════════════════
+   彩种名<b>全站统一成「普通文字」</b>，不再是药丸。
+   原来两套并存：
+     · 药丸（本条 .game-chip，三种底色：飞艇蓝／赛车琥珀／时时彩绿）——
+       开奖列表、注单行、动态卡、策略页的内页顶栏与分享卡，共 5 个页面 67 处。
+     · 纯文字（策略页货架卡的 .bd-cardgame、三条计划线的 .bd-plid small）——
+       灰色小字压在代号上面。
+   选<b>文字</b>而不是选药丸的三个理由：
+     ① 策略页那张卡是这一轮定的样板（Hector 反复说「跟策略页一致」），它本来就是文字。
+     ② 这一轮的方向是<b>减少有底色的形状</b>（动态页那批「不够干净」的账正是这个）——
+        彩种是<b>身份</b>，药丸该留给<b>状态与分类</b>（快照 / 热门 / NEW）。
+     ③ 颜色在这里其实<b>没在干活</b>：开奖页按彩种分组时，那枚药丸<b>本来就是隐藏的</b>
+        （见本档 .rlist.by-game .game-chip{display:none}）—— 说明分组一旦成立，颜色就是多余的。
+   ⚠ 因此三条 g-* 的底色一并撤掉，颜色收成<b>一个</b>：--muted-foreground（白底 4.79:1 达标）。
+     原来那三个色里 --warning 做文字是 <b>2.74:1</b>（tokens.css 文末「待拍板 ②」记着这条），
+     真要保留彩种色就得先给每个彩种配一档达标的深色 —— 那是另一件事，不在这一轮。
+   ⚠ 回滚：把下面四行换回上面注释里那一版即可（类名 g-pk / g-pk10 / g-ssc 都还在 markup 上，
+     没有删，将来想恢复配色不用改 HTML）。 */
+.game-chip{display:inline-flex;align-items:center;font-size:12px;line-height:17px;
+  padding:0;border-radius:0;background:transparent;color:var(--muted-foreground);white-space:nowrap;}
+.game-chip.g-pk,.game-chip.g-pk10,.game-chip.g-ssc{background:transparent;color:var(--muted-foreground);}
 
 /* ── 游戏一条横排（大厅顶部）── */
 .game-strip{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 4px;scrollbar-width:none;}
@@ -390,6 +408,143 @@ a.lobtile{display:block;text-decoration:none;color:inherit;}
 .gx-grp+.gx-grp .gx-gh{padding-top:14px;}
 .gx-grp.gx-solo .gx-gh{display:flex;}   /* jumper 模式始终保留分区标题 */
 .gx-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+
+/* ══ 08-12I 彩票改版（Hector：别再像首页）════════════════════════════════════
+   ① 筛选行 ＝ 分类页签 ＋ 视图切换（切换停在右端，省掉一整条通栏）。
+      渐隐只盖页签那一段：整行加 mask 会把切换钮也淡掉。 */
+/* ══ 08-12I .bd-vtog —— 视图切换组件（列表⇄双列 / 走势⇄大路）══════════════════
+   ⚠ 这条<b>原来只写在 hall-plans.html 的内联 style 里</b>，彩票页因此拿不到它 ——
+     按钮没有宽高也没有内边距，整枚切换钮被挤成 12px 宽（实测）。组件只该有一份定义，
+     所以搬进 hall.css（两页都加载），hall-plans.html 里那份已删。
+   ⚠ 基础值<b>照搬 hall-plans 原来的写法</b>（药丸圆角、10px 字、3px 10px 内边距）——
+     不是照投注页那一档。理由：hall-plans 的 L2「走势／大路」一直是这个样子，
+     把基础值改成投注页那档会顺手改掉它的长相，而这一轮<b>没有人要求改那里</b>。
+     投注页那种 16px 圆角、34px 方钮的样子，只在需要的地方按语境加（见下面 .gx-filterrow）。 */
+.bd-vtog{display:inline-flex;flex:none;background:var(--fill);border:1px solid var(--line);
+  border-radius:var(--radius-pill);padding:2px;gap:2px;}
+.bd-vtog button{border:0;background:transparent;font-family:inherit;font-size:10px;font-weight:700;
+  color:var(--muted);border-radius:var(--radius-pill);padding:3px 10px;cursor:pointer;}
+.bd-vtog button.bd-on{background:var(--surface);color:var(--blue-d);box-shadow:0 1px 3px rgba(20,40,80,.14);}
+
+.gx-filterrow{display:flex;align-items:center;gap:8px;padding:0 12px;}
+.gx-filterrow .gx-tabs{flex:1;min-width:0;padding-left:0;padding-right:0;
+  -webkit-mask-image:linear-gradient(90deg,#000 86%,transparent);
+  mask-image:linear-gradient(90deg,#000 86%,transparent);}
+/* 彩票筛选行里的这一枚要「和投注页一样」（Hector）：取 reference-theme 的
+   .bd-mfoot .bd-vtog 那一档 —— 容器 16px 圆角 / #f4f7fa 底 / #e1e8f0 描边，
+   按钮 13px 圆角、34×28 的图标热区。只在这一行生效，不影响 hall-plans 的走势/大路。 */
+.gx-filterrow .bd-vtog{flex:none;background:#f4f7fa;border-color:#e1e8f0;border-radius:16px;}
+.gx-filterrow .bd-vtog button{min-height:28px;min-width:34px;padding:5px 9px;border-radius:13px;
+  color:var(--ink);display:flex;align-items:center;justify-content:center;}
+.gx-filterrow .bd-vtog button.bd-on{background:#fff;color:var(--blue-d);
+  box-shadow:0 1px 4px rgba(39,78,117,.12);}
+.gx-filterrow .bd-vtog svg{display:block;width:16px;height:16px;fill:currentColor;}
+
+/* ② 排序容器：order 由脚本给，所以这里只要是 grid/flex 就行。
+      08-12K 分区（.gx-grp）加回来了，每个分区各有一个 .gx-cards。 */
+/* ⚠ 这条只给<b>双列（grid）</b>用。原来写成 .gx-cards#gxCards —— 带 id，权重 (1,1,0)，
+   压过列表视图那条 .gx-cards.gx-view-list (0,2,0)，于是列表视图里
+   align-items:start 在 flex-column 下被理解成「横向缩到内容宽」，每行都塌成文字宽。
+   加 :not(.gx-view-list) 限定，别再用提高权重的办法去救。
+   ⚠ 08-12K <b>去掉了 #gxCards</b>：现在页面上有五个 .gx-cards（一个分区一个），
+     只挂 id 的话只有第一个分区拿得到这条，后四个分区双列会参差不齐。 */
+.gx-cards:not(.gx-view-list){align-items:start;}
+
+/* ③ 列表视图：同一批卡，<b>只换 CSS</b>，DOM 一个节点都不动。
+      卡从「56px 缩略图 ＋ 两行文字」的双列卡，变成「34px 缩略图 ＋ 名字 ＋ 右侧倒计时」的一行。
+      ⚠ 名字与倒计时都 nowrap：这一行是「文字 ＋ 数字」，压不下就裁尾巴，不许折行
+        （与三条计划线同一条规则）。 */
+/* ⚠ <b>必须是 flex/grid，不能是 block</b>：排序用的是 style.order，而 order
+   <b>只对 flex/grid 子项生效</b>。第一版写了 display:block，结果列表视图里排序被
+   静默忽略 —— 卡片按 DOM 原顺序排，双列是对的、切到列表就乱（实测 00:42 / 00:31 / 00:20，
+   正是原始顺序）。没有报错，只是不生效，这种最难发现。 */
+.gx-cards.gx-view-list{display:flex;flex-direction:column;
+  /* ⚠ 必须显式 stretch：上面给双列写的 .gx-cards#gxCards{align-items:start}
+     在 flex <b>column</b> 下含义变成「横向缩到内容宽」—— 每一行都塌成文字那么宽
+     （实测就是这样，整列参差不齐）。同一个属性在 grid 与 flex-column 下管的是
+     不同的轴，这是最容易看漏的一种冲突。 */
+  align-items:stretch;
+  /* ⚠ 行距原来是 <b>18px</b>：reference-theme 的 .gx-cards{gap:10px} 与卡上的
+     margin-bottom:8px <b>叠</b>在一起（Hector：spacing too big）。只留一处。 */
+  gap:6px;}
+/* ══ 08-12L 列表行改成<b>两行左栏 ＋ 右侧大图</b>（Hector）══════════════════════
+   上一版把倒计时放在最右、压在底图上 —— 读不清，而且药丸垫底也只是遮丑。
+   这一版按 Hector 的方向重排：
+     第一行：游戏名 ＋ 热门/推荐 角标（角标<b>紧跟名字</b>，不再落在图上）
+     第二行：倒计时（左对齐，白底上，不需要任何垫底）
+     右侧：放大的底图，左缘<b>渐隐到白</b>
+   ⚠ 用 grid 而不是 flex：DOM 顺序是 名字 → 角标 → 倒计时（角标是 JS 追加的），
+     grid 的 grid-area 可以<b>不改 DOM</b>就把倒计时放到第二行。
+   ⚠ 左栏两行都在白底上，所以倒计时的半透明白药丸<b>撤掉</b>——
+     那是上一版为了压在图上才加的，现在没有必要，去掉更干净。 */
+.gx-cards.gx-view-list .gx-card{
+  display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;
+  align-content:center;justify-items:start;column-gap:7px;row-gap:3px;
+  width:100%;min-height:64px;padding:10px 12px;border-radius:12px!important;}
+.gx-cards.gx-view-list .gx-art{display:none;}   /* 小图标不要了：底图已经在认游戏 */
+.gx-cards.gx-view-list .gx-nm{grid-area:1/1/2/2;align-self:center;
+  display:block;-webkit-line-clamp:unset;-webkit-box-orient:horizontal;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
+  font-size:14.5px;line-height:1.3;}
+.gx-cards.gx-view-list .gx-optag{grid-area:1/2/2/3;position:static;align-self:center;
+  justify-self:start;margin:0;}
+.gx-cards.gx-view-list .gx-timer{grid-area:2/1/3/3;position:relative;align-self:center;
+  justify-self:start;background:none;padding:0;border-radius:0;white-space:nowrap;
+  backdrop-filter:none;-webkit-backdrop-filter:none;}
+.gx-cards.gx-view-list .gx-tag.gx-soon{grid-area:2/1/3/3;position:static;justify-self:start;margin:0;}
+
+.gx-cards.gx-view-list .gx-card{position:relative;isolation:isolate;}
+/* 底图与白幕<b>做在同一个 ::before 的两层背景里</b>，而不是 ::before ＋ ::after：
+   reference-theme 有两条 `.gx-card::after{display:none!important;content:none!important}`,
+   所以 ::after 在这张卡上<b>根本不会生成</b>（本轮实测踩过，白幕一直不存在）。
+   两层顺序：渐变在<b>上</b>、缩略图在<b>下</b>。
+   ⚠ 淡化交给<b>渐变</b>而不是 opacity：这些缩略图是<b>白底不透明 PNG</b>
+     （实测四角 255,255,255 alpha 255）。白底压在白卡上本来就看不见，
+     真正要控制的只是右侧那个蓝色物件透出多少 —— 用渐变末端的白色浓度控制最直观，
+     而 opacity 会把渐变自己也一起削弱。 */
+.gx-cards.gx-view-list .gx-card::before{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:var(--gx-thumb);background-repeat:no-repeat;
+  /* 08-12L：图<b>放大</b>（240% → 330%）并往右压，左缘的渐隐拉得更长 ——
+     Hector：make the graphic bigger and have a fade to white effect on its left。 */
+  background-position:right -14px center;background-size:auto 330%;
+  /* ⚠ <b>mix-blend-mode:multiply</b> 是这一步的关键。缩略图是<b>白底不透明 PNG</b>
+     （实测四角 255,255,255 alpha 255）。用 opacity 淡化时，图那块纯白 #fff 会和卡片本身
+     带一点点蓝的白（linear-gradient(145deg,#fff,#fbfdff)）对不上，于是能看见一个
+     <b>矩形硬边</b>——读起来像贴错了一张图，而不是出画的底纹。
+     multiply 下白色是<b>恒等运算</b>（白×底＝底），矩形边界自然消失，
+     只有蓝色物件压暗卡面。强度改回用 opacity 控制就安全了。
+     ⚠ 卡片有 isolation:isolate（reference-theme 给的），所以混合被限制在卡内，不会溢到页面底色。 */
+  /* 文字已经全部搬到左栏，底图不再压字，所以强度可以提上来（.42 → .58）。 */
+  mix-blend-mode:multiply;opacity:.58;
+  /* ⚠ 还差最后一步：这些图<b>不是白底</b>，而是<b>淡蓝底</b>（实测四角 255,255,255，
+     但中间取样 214,242,251）。所以就算用 multiply，图的底色也会把卡面压出一个
+     <b>看得见的矩形</b>——像贴错了一张图。
+     解法：给 ::before 加一层<b>左侧渐隐遮罩</b>，让图从左往右淡入 ——
+     矩形的左边界就此溶掉；上下两边因为图放到 240% 已经出画、右边也出画，都不会留边。
+     ⚠ mask 的 0% 必须是完全透明、到 58% 才全显，否则名字后面还是会出现一条淡淡的竖界。 */
+  /* 左缘渐隐：0–26% 完全透明（纯白），到 76% 才全显 —— 图的矩形左边界因此溶掉，
+     左栏那两行字始终坐在干净的白底上。 */
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,transparent 26%,rgba(0,0,0,.45) 52%,#000 76%);
+  mask-image:linear-gradient(90deg,transparent 0%,transparent 26%,rgba(0,0,0,.45) 52%,#000 76%);}
+/* 左侧再压一层白幕护住文字 —— 用<b>独立元素</b>做不了（.gx-card::after 被
+   reference-theme 用 !important 关掉了），所以做成 ::before 的兄弟不可行；
+   这里改用「物件只在右侧」＋multiply 的自然结果：左半边本来就是白，等于无操作。
+   若某个彩种的图物件偏左、压到名字上，再单独给那张卡调 background-position。 */
+.gx-cards.gx-view-list .gx-art,
+.gx-cards.gx-view-list .gx-nm,
+.gx-cards.gx-view-list .gx-timer,
+.gx-cards.gx-view-list .gx-optag,
+.gx-cards.gx-view-list .gx-tag.gx-soon{position:relative;z-index:1;}
+/* ⚠ 上面这条为了抬到底图之上，把角标也设成了 position:relative —— 它<b>覆盖掉</b>了
+   前面给角标写的 position:static，于是 reference-theme 的 `.gx-optag{top:7px;left:7px}`
+   <b>重新生效</b>（static 时会被忽略，relative 时不会），角标因此整体往下、往右各偏 7px，
+   看起来就不跟着游戏名走（Hector 指的正是这个）。
+   这是「为了 z-index 顺手改 position」的典型副作用：position 一变，
+   原本失效的 top/left 会悄悄复活。所以这里必须把偏移显式归零。 */
+.gx-cards.gx-view-list .gx-optag{top:auto;left:auto;right:auto;bottom:auto;}
+
+
 /* 2026-08-08（Hector 追加）：卡从 flex 行改成 <两列网格> ——
    左列是缩略图（跨两行），右列上名字、下开奖倒计时。
    为什么不是加一层包裹 span：14 张卡都要改结构，网格能只动 CSS 就把第二行接进来。 */
@@ -453,3 +608,99 @@ a.lobtile{display:block;text-decoration:none;color:inherit;}
 .gx-card.soon .gx-art{background:var(--fill);}
 /* .gx-tag / .gx-nm2 / .gx-aslist 列表态：随竖轨版一起退役（方向二用 .gx-meta 里的一句话说策略） */
 /* AI 策略浮标（.gx-fab）2026-08-08 撤掉 —— 本平台没有这个产品，见 index.html 的说明 */
+
+/* ══ 2026-08-15 · 彩票页「马上开奖」时刻表（Hector：lacking point of interest）═══════
+   这一屏 14 张卡尺寸全部 169×78，一个尺寸、零层级，眼睛没有落点。
+   时刻表给它一个：跨全部分区取最快开的三款，大图 ＋ 进度环。
+   ⚠ 只有这一处允许比普通卡重 —— 别再给第二块加重量，不然又回到「都一样重」。
+   ⚠ 一屏最多一块深色，那一块已经给了长龙横幅，所以这里是白卡 ＋ 彩环，不抢。 */
+.gx-next{margin:2px 0 4px;}
+.gx-nexth{display:flex;align-items:baseline;gap:7px;padding:2px 2px 8px;}
+.gx-nexth b{font-size:12.5px;font-weight:700;color:var(--ink);}
+.gx-nexth small{font-size:11px;color:var(--faint);}
+/* ── 08-15 二改（Hector：full width with fade · avoid side scroll）──────────────────
+   横滑三卡退役（第三张永远切一半、要横滚）→ <b>三条整宽行</b>。
+   图从 56px 小方块升级成<b>整行右侧的淡出底图</b>：右锚、放大到行高的 ~170%、
+   mask 往左淡（与首屏 .bd-shelfov::before 的气泡装饰同一手法，不新造）。
+   旧横滑样式（.gx-nextstrip/.gx-nx/.gx-nxart）整段退役，回滚参考：
+   .gx-nextstrip{display:flex;gap:9px;overflow-x:auto} .gx-nx{width:122px} .gx-nxart{height:56px} */
+/* 08-15 三改（Hector：still 3 in a row，thumbnail utilize the whole button）——
+   整宽行退役（那版把图挤到右半），回到<b>一排三张</b>：三等分正好放下、零横滚。
+   图<b>铺满整卡</b>当底，底部一层白渐变把文字托住 —— 「白框里一张小图」的读法结束。
+   ⚠ 渐变用<b>白 → 透明</b>盖在图上，而不是给图加 mask：名字与倒计时压在图上，
+     必须保证它们脚下是接近实白的底（AA 是对合成后的底算的，见 08-15 那两条对比度教训）。 */
+.gx-nextrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0 0 12px;}
+.gx-nx3{position:relative;height:118px;border-radius:13px;overflow:hidden;
+  background:var(--surface);border:1px solid var(--line);box-shadow:var(--x-card-shadow);
+  text-decoration:none;color:inherit;}
+.gx-nx3:active{filter:brightness(.97);}
+/* 图：铺满整卡（图是方形透明底 PNG，cover 正好吃满卡面；重心略上移给文字留脚） */
+.gx-nx3::before{content:"";position:absolute;inset:0;z-index:0;
+  background:var(--nx-img) no-repeat center 18%/cover;}
+/* 白渐变：下 62% 从实白淡出到透明 —— 文字脚下 ≈ 实白，图的下缘自然「淡进」白里 */
+.gx-nx3::after{content:"";position:absolute;inset:0;z-index:1;
+  background:linear-gradient(to top,#fff 30%,rgba(255,255,255,.86) 46%,rgba(255,255,255,0) 62%);}
+.gx-nx3txt{position:absolute;left:9px;right:9px;bottom:8px;z-index:2;min-width:0;}
+.gx-nx3 .gx-nxnm{display:block;font-size:12.5px;font-weight:800;line-height:1.25;color:var(--ink);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gx-nxt{display:flex;align-items:center;gap:6px;margin-top:4px;}
+.gx-nxt svg{width:20px;height:20px;flex:none;transform:rotate(-90deg);}
+.gx-nxt .tk{fill:none;stroke:var(--line-strong,#e3eaf1);stroke-width:3.4;}
+.gx-nxt .pr{fill:none;stroke-width:3.4;stroke-linecap:round;}
+.gx-nxt>b{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;} /* 颜色由 JS 逐秒插值 */
+
+/* ══ 2026-08-16 · 「正在连开」机会卡（Hector：A 案取代即将开奖）════════════════
+   一排三张、与下方游戏卡同族白瓷；珠串画连开，金色期数压轴，副行带下一期倒计时。
+   回滚：.gx-nx3 那套满图缩略卡（本档上方仍在，未删）。 */
+.gx-nextrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+/* 2026-08-16 Hector：卡底与下面的游戏卡（.gx-card）同款精工白 —— 纯白 #fff/14r 换成
+   渐变白＋发丝边＋12 圆角（值照抄 craft 统一件，不新造）。 */
+.gx-op{display:block;min-width:0;padding:10px 9px 9px;border-radius:12px;text-decoration:none;
+  background:linear-gradient(168deg,rgba(255,255,255,.98),rgba(247,250,255,.94));
+  border:1px solid rgba(255,255,255,.72);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.95),0 2px 10px -2px rgba(30,60,120,.08),0 12px 28px -20px rgba(30,60,120,.28);}
+.gx-op:active{filter:brightness(.98);}
+.gx-opg{display:block;font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gx-oppl{display:block;margin-top:1px;font-size:12.5px;font-weight:800;color:var(--ink);white-space:nowrap;}
+/* 珠串收敛（截图核过：8 颗带字太密、把脚行挤换行）——最多 6 颗、无字纯色点、更小 */
+.gx-opbeads{display:flex;gap:3px;margin-top:7px;flex-wrap:wrap;}  /* 点数=连开期数，长龙时折行 */
+.gx-opbeads i{flex:none;width:7px;height:7px;border-radius:50%;background:var(--red);
+  font-size:0;color:transparent;}  /* 2026-08-16 Hector：圆点（原 3px 圆角方块） */
+.gx-opbeads i.b{background:var(--blue);}
+.gx-opfoot{display:flex;align-items:baseline;gap:4px;margin-top:8px;font-size:10px;color:var(--muted);white-space:nowrap;}
+.gx-opfoot>b{font-family:var(--data-font,inherit);font-size:14px;font-weight:800;color:#B8741A;}
+.gx-opnext{margin-left:auto;display:inline-flex;align-items:center;gap:3px;}
+.gx-opnext svg{width:13px;height:13px;transform:rotate(-90deg);}
+.gx-opnext .tk{fill:none;stroke:#E6ECF2;stroke-width:3;}
+.gx-opnext .pr{fill:none;stroke-width:3;stroke-linecap:round;}
+.gx-opnext>b{font-family:var(--data-font,inherit);font-size:10.5px;font-weight:800;}
+
+/* ══ 2026-08-16 · 蓝区自适应换色（Hector：contrast issue / change colour on different background）══
+   页顶蓝渐隐是<b>固定</b>在 .screen 上的（不随内容滚），所以同一个元素滚到上半屏＝站在蓝上、
+   滚到下半屏＝站在浅底上。靠 JS 给「此刻位于蓝区」的元素挂 .on-blue（见 ui-consistency.js），
+   这里只写两套皮。回滚：删本段 + 删那支钩子。 */
+/* 分区标题：蓝上转白（原 var(--ink) 墨色，实测 23,32,51 压蓝 ~2.4:1） */
+.gx-gh.on-blue{color:#fff;}
+.gx-gh.on-blue small,.gx-gh.on-blue span{color:rgba(255,255,255,.72);}
+/* 分类 chips：蓝上转玻璃（未选中白玻璃白字、选中满白蓝字），浅底上回原白瓷 */
+.gx-tabs.on-blue button{background:rgba(255,255,255,.16)!important;border-color:rgba(255,255,255,.3)!important;
+  color:rgba(255,255,255,.9)!important;}
+/* ⚠ 计数 <em> 不能染白：chip 本身已是白玻璃底，白字压白底＝数字消失（Hector 报过）。
+   改成跟随各自 chip 的字色、只压透明度。回滚：color:rgba(255,255,255,.7)。 */
+.gx-tabs.on-blue button b,.gx-tabs.on-blue button i,.gx-tabs.on-blue button em{
+  color:inherit!important;opacity:.72;}
+.gx-tabs.on-blue button.on{background:#fff!important;border-color:transparent!important;color:var(--blue-d)!important;}
+.gx-tabs.on-blue button.on b,.gx-tabs.on-blue button.on i,.gx-tabs.on-blue button.on em{color:var(--blue-d)!important;}
+
+/* 筛选行钉顶已搬去 reference-theme.css 末尾（hall.css 排在 theme 之前，同 !important 时输）。 */
+
+/* 滚过之后给一条极淡的下缘，把「钉住的行」与内容分开（不滚时看不出来） */
+/* 下缘白线撤：渐隐自带边界，不需要线。 */
+
+/* 钉住的筛选行里，chips 用与彩票页同一套 on-blue 皮（白玻璃/满白），
+   避免半透 chip 让下层内容透上来。 */
+.page-results .filter-row .gfchip,.page-activity .filter-row .gfchip{
+  background:rgba(255,255,255,.18)!important;border-color:rgba(255,255,255,.3)!important;
+  color:rgba(255,255,255,.92)!important;}
+.page-results .filter-row .gfchip.on,.page-activity .filter-row .gfchip.on{
+  background:#fff!important;border-color:transparent!important;color:var(--blue-d)!important;opacity:1!important;}

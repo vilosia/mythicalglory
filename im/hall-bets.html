@@ -5,10 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>注单明细 · 幸运组 · IM168 原型</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css"><!-- 唯一令牌来源，必须排在其它样式表之前 -->
 <link rel="stylesheet" href="shared/styles.css?v=20260807k">
-<link rel="stylesheet" href="shared/hall.css?v=20260811jumper1">
-<link rel="stylesheet" href="shared/reference-theme.css?v=20260812bluecanvas54">
-<script src="shared/ui-consistency.js?v=20260812auth1" defer></script>
+<link rel="stylesheet" href="shared/hall.css?v=20260816stick6">
+<link rel="stylesheet" href="shared/reference-theme.css?v=20260817f1">
+<script src="shared/ui-consistency.js?v=20260817f1" defer></script>
+<script src="shared/role.js?v=20260813role4" defer></script>
 <!--
   游戏厅 · 明细（2026-08-06 结构改版）
   ─────────────────────────────────────
@@ -19,7 +21,7 @@
   两个页签：进行中（未结）/ 已结算。切换是演示 JS（data-demo），不进交接。
 -->
 </head>
-<body class="page-bets">
+<body class="page-bets x-fade">
   <div class="stage">
     <div class="phone" data-game="pk">
       <div class="screen">
@@ -29,19 +31,46 @@
             <a class="gback" href="groups.html#groups" aria-label="返回群组"><svg class="icx" viewBox="25.0 51.0 11.0 17.0" fill="none"><path d="M34 66L27 59.5L34 53" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
             <span class="gtitle"><b>注单明细</b><small>· 幸运组</small></span>
             <span class="sp"></span>
-            <span class="bal" aria-label="钱包余额"><svg class="wic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"/><path d="M3 8V6a2 2 0 0 1 2-2h10"/><circle cx="16.5" cy="12.5" r="1.3" fill="currentColor" stroke="none"/></svg><b>240,000.00</b></span>
+            <a class="bal" href="wallet.html#wallet" aria-label="钱包余额 · 上下分"><svg class="wic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"/><path d="M3 8V6a2 2 0 0 1 2-2h10"/><circle cx="16.5" cy="12.5" r="1.3" fill="currentColor" stroke="none"/></svg><b>240,000.00</b></a>
           </div>
+        </div>
+
+        <!-- 2026-08-17 Hector：本页也照开奖/动态那套 —— 页签移出滚动容器（抬头不滚），
+             内容区顶端淡出。回滚：把 .btabs 放回 .hall-body 里第一位。 -->
+        <div class="btabs fg-btabs" id="betsTabs" data-component="BetsTabs">
+          <button type="button" class="btab on" data-tab="open">未结</button>
+          <button type="button" class="btab" data-tab="settled">已结</button>
+        </div>
+
+        <!-- ══ 2026-08-17（Hector：「明细 also need filter for games」）════════════════
+             与开奖／动态<b>同一套件</b>：.filter-row > .gfilter > .gfchip，抬头区（不滚），
+             蓝上玻璃皮那几条覆盖已在 reference-theme 里按 .page-* 点名，这里补上 .page-bets。
+             ⚠ 药丸<b>不写死</b>，落地时扫卡面 .game-chip 现生成 —— 明细只会有「你投过的游戏」，
+               照开奖页抄一份七款固定名单的话，点进去多半是空的。
+             ⚠ 与日期筛选<b>同一个出口</b>（applyFilters）：两个筛选都改 r.hidden，
+               各写各的会互相抹掉（后跑的那个把前一个筛掉的又显出来）。
+             回滚：删掉这个 div 与下面 gameFilter 那一段脚本。 -->
+        <!-- 08-17 二订（Hector：「filter only one row / compact the date filter and anchor on the right」）：
+             日期从<b>四枚药丸独占一行</b>收成<b>右端一颗下拉</b>，与游戏筛选合并成一行。
+             ⚠ 下拉件<b>不自造</b>：直接用站内既有的 .wfsel（钱包「额度明细 今天 ▾」、
+               管理页那颗都是它），连箭头背景图都是同一支。
+             为什么日期该收、游戏该摊开：游戏是<b>逛</b>的（要一眼看见有哪几款、随手来回点），
+             日期是<b>设一次</b>的（选定就不动了）—— 摊开的成本给逛的那个，收起的省给设一次的那个。
+             回滚：把上一版 .bet-days 那四枚 .bday 按钮放回来（本 div 之后另起一行）。 -->
+        <div class="filter-row" id="betsGameRow">
+          <div class="gfilter" id="betsGame" data-component="BetsGameFilter"></div>
+          <select class="wfsel bet-daysel" id="betsDays" hidden aria-label="日期区间" data-component="BetsDayFilter">
+            <option value="1" selected>今天</option>
+            <option value="3">近 3 天</option>
+            <option value="7">近 7 天</option>
+            <option value="0">全部</option>
+          </select>
         </div>
 
         <div class="hall-body" data-component="MyBets">
 
-          <div class="btabs fg-btabs" id="betsTabs" data-component="BetsTabs">
-            <button type="button" class="btab on" data-tab="open">未结</button>
-            <button type="button" class="btab" data-tab="settled">已结</button>
-          </div>
-
           <!-- 策略投注按「策略＋期号」汇总；单项只在点击后的 drawer 里展开。 -->
-          <div class="bet-list" id="betsOpen">
+          <div class="bet-list" id="betsOpen" data-mo-panel>
             <article class="strategy-bet-group" data-component="StrategyBetGroup" data-code="C0404R5" data-period="第00089期" data-time="09:47" data-bet-count="3" data-total="310" data-status="open" tabindex="0" role="button">
               <div class="sbg-head"><span class="game-chip g-pk">极速飞艇</span><b class="sbg-code">C0404R5</b><span class="sbg-per">第00089期 · <em>09:47</em></span><i class="sbg-chev" aria-hidden="true"></i></div>
               <div class="sbg-overview"><span><i>本期注数</i><b>3 注</b></span><span><i>总投入</i><b>310.00</b></span><em class="sbg-status pending">待开奖</em></div>
@@ -67,19 +96,16 @@
               <div class="br-top"><span class="game-chip g-pk10">极速赛车</span><span class="br-per">第778902期 · <em>09:38</em></span><span class="br-amt pending">¥10.00</span></div>
               <div class="br-sub"><b class="br-pick">冠军 · 龙</b><span class="sp"></span><span class="bet-res pending">待开奖</span></div>
             </div>
+            <!-- 08-17：未结这一半原来不会空（当期的注单都在），加了游戏筛选后会 —— 补空态。
+                 文案与已结那条同一句式。回滚：删掉这一行。 -->
+            <div class="bet-empty" id="betsEmptyOpen" hidden>这个游戏没有未结的注单。</div>
           </div>
 
           <!-- 已结算 -->
           <!-- 2026-08-07（Hector：今天 ＋ 期数 放一起怪；历史会跨很多天，今天会重复无数次；
              已结算需要日期区间筛选；宁可不按期数分组，时间写进每张卡）——
              分组抬头（.bet-date）整块撤掉，改成：每张卡自带 期号 · 时间，已结算多一条日期筛选。 -->
-        <div class="bet-days" id="betsDays" hidden data-component="BetsDayFilter">
-          <button type="button" class="bday on" data-d="1">今天</button>
-          <button type="button" class="bday" data-d="3">近 3 天</button>
-          <button type="button" class="bday" data-d="7">近 7 天</button>
-          <button type="button" class="bday" data-d="0">全部</button>
-        </div>
-        <div class="bet-list" id="betsSettled" hidden>
+        <div class="bet-list" id="betsSettled" data-mo-panel hidden>
             <article class="strategy-bet-group" data-component="StrategyBetGroup" data-code="C0404R5" data-period="第00088期" data-time="09:42" data-bet-count="2" data-total="100" data-pnl="-80.4" data-hit="1" data-status="settled" data-ago="0" tabindex="0" role="button">
               <div class="sbg-head"><span class="game-chip g-pk">极速飞艇</span><b class="sbg-code">C0404R5</b><span class="sbg-per">第00088期 · <em>09:42</em></span><i class="sbg-chev" aria-hidden="true"></i></div>
               <div class="sbg-overview"><span><i>本期注数</i><b>2 注</b></span><span><i>总投入</i><b>100.00</b></span><span class="sbg-pnl lose"><i>本期盈亏</i><b>−80.40</b></span></div>
@@ -135,8 +161,9 @@
         </div>
 
         <nav class="tabbar hallbar" data-component="HallNav">
-          <a class="nav" href="index.html"><svg viewBox="0 0 24 24"><path d="M12 3.2l1.8 5 5 1.8-5 1.8-1.8 5-1.8-5-5-1.8 5-1.8 1.8-5z"/><circle cx="18.2" cy="17.8" r="2.2"/></svg><span>大厅</span></a>
           <a class="nav" href="hall-plans.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12h.01"/></svg><span>策略</span></a>
+          <a class="nav" href="hall-activity.html"><svg viewBox="0 0 24 24"><path d="M3.6 10.1v3.8a1.6 1.6 0 0 0 1.6 1.6h2.3L18 20V4L7.5 8.5H5.2a1.6 1.6 0 0 0-1.6 1.6z"/><path d="M7.5 15.5v3.3a1.3 1.3 0 0 0 1.3 1.3h.9a1.3 1.3 0 0 0 1.3-1.3v-2.3"/><path d="M20.8 9.8v4.4"/></svg><span>动态</span></a>
+          <a class="nav" href="hall-lottery.html"><svg viewBox="0 0 24 24"><rect x="3.4" y="3.4" width="7.4" height="7.4" rx="2.2"/><rect x="13.2" y="3.4" width="7.4" height="7.4" rx="2.2"/><rect x="3.4" y="13.2" width="7.4" height="7.4" rx="2.2"/><rect x="13.2" y="13.2" width="7.4" height="7.4" rx="2.2"/></svg><span>彩票</span></a>
           <a class="nav" href="hall-results.html"><svg viewBox="0 0 24 24"><circle cx="7.5" cy="9" r="3.4"/><circle cx="16.5" cy="9" r="3.4"/><circle cx="12" cy="16.5" r="3.4"/></svg><span>开奖</span></a>
           <a class="nav on" href="hall-bets.html"><svg viewBox="0 0 24 24"><path d="M6.5 3.5h11V21l-2.2-1.6L13 21l-1-0.8L11 21l-2.3-1.6L6.5 21V3.5z"/><path d="M9.5 8.5h5M9.5 12h5"/></svg><span>明细</span></a>
         </nav>
@@ -193,6 +220,8 @@
     tabs.querySelectorAll('.btab').forEach(function(x){x.classList.toggle('on',x===t);});
     var isOpen=t.getAttribute('data-tab')==='open';
     open.hidden=!isOpen;settled.hidden=isOpen;
+    /* 08-13C：这两个容器上挂了 data-mo-panel —— shared/ui-consistency.js 认这个属性，
+       hidden 被摘掉的那一刻给里面的注单加一次「往上浮」。这里不需要写动画代码。 */
     days.hidden=isOpen; /* 日期筛选只属于已结算 —— 进行中都是当期的，没有区间可筛 */
     renderSum();
   });
@@ -215,7 +244,10 @@
   function renderSum(){
     var box=document.getElementById('betsSum'),isOpen=!open.hidden,html;
     if(isOpen){
-      var rows=items(open),count=rows.reduce(function(s,r){return s+betCount(r);},0),
+      /* 08-17：加了游戏筛选之后未结这一半也会被筛，所以这里改成<b>只数看得见的</b>——
+         否则筛到「极速赛车」时列表只剩一张卡，底下却仍报 7 注（与眼前的卡自相矛盾）。 */
+      var rows=items(open).filter(function(r){return !r.hidden;}),
+          count=rows.reduce(function(s,r){return s+betCount(r);},0),
           amt=rows.reduce(function(s,r){return s+stakeOf(r);},0);
       html=cell('未结注数',count+' 注')+
            cell('未结金额',yuan(amt))+
@@ -225,7 +257,7 @@
           count=vis.reduce(function(s,r){return s+betCount(r);},0),
           pl=vis.reduce(function(s,r){return s+pnlOf(r);},0),
           hit=vis.reduce(function(s,r){return s+hitOf(r);},0),
-          lab=(days.querySelector('.bday.on')||{}).textContent||'这段';
+          lab=dayLabel();   /* 08-17 二订：日期改下拉，标签读选中项文字 */
       html=cell(lab+'盈亏',yuan(pl),pl>0?'win':(pl<0?'lose':''))+
            cell('已结注数',count+' 注')+
            /* ⚠ 用 span 不用 b：外层已经是 <b>，套第二个 b 会被浏览器拆行（实测「3 / 6 注」折成两行） */
@@ -233,25 +265,55 @@
     }
     box.innerHTML=html;
   }
-  /* 日期区间筛选：卡上 data-ago＝几天前（0＝今天）。0 档＝全部。 */
-  var days=document.getElementById('betsDays');
-  function applyDays(b){
-    days.querySelectorAll('.bday').forEach(function(x){x.classList.toggle('on',x===b);});
-    var n=+b.getAttribute('data-d');
-    items(settled).forEach(function(r){
-      r.hidden=n>0&&(+r.getAttribute('data-ago')>=n);
-    });
-    var vis=items(settled).filter(function(r){return !r.hidden;}).length;
-    document.getElementById('betsEmpty').hidden=vis>0;
-    renderSum(); /* 筛掉几天，底下那条「这段盈亏」要跟着变 */
+  /* ══ 2026-08-17 · 游戏筛选（Hector：明细 also need filter for games）════════════
+     ⓐ 名单<b>现扫现生成</b>：读每张卡上那枚 .game-chip 的 g-xx 与文字。
+        写死一份名单会出现「点进去是空的」那种药丸 —— 明细里只可能有你投过的游戏。
+     ⓑ 与日期筛选合并成<b>一个</b> applyFilters：两个筛选都在改 r.hidden，
+        各写各的话后跑的会把前一个筛掉的又显出来（实测：选了游戏再点日期，游戏筛选失效）。
+     ⓒ 未结那一半原来<b>不需要</b>空态与「只数可见项」——现在能被筛空了，两样都补上。 */
+  var gameRow=document.getElementById('betsGame'),GSEL='all';
+  function gameOf(r){
+    var c=r.querySelector('.game-chip');if(!c)return '';
+    var m=/\bg-([a-z0-9]+)\b/.exec(c.className);return m?m[1]:'';
   }
-  days.addEventListener('click',function(e){
-    var b=e.target.closest('.bday');if(b)applyDays(b);
+  (function buildGameChips(){
+    var seen={},list=[];
+    items(open).concat(items(settled)).forEach(function(r){
+      var g=gameOf(r),c=r.querySelector('.game-chip');
+      if(!g||seen[g])return;seen[g]=1;list.push({g:g,nm:c.textContent.trim()});
+    });
+    gameRow.innerHTML='<button type="button" class="gfchip on" data-g="all">全部</button>'+
+      list.map(function(x){return '<button type="button" class="gfchip" data-g="'+x.g+'">'+x.nm+'</button>';}).join('');
+  })();
+  gameRow.addEventListener('click',function(e){
+    var b=e.target.closest('.gfchip');if(!b)return;
+    gameRow.querySelectorAll('.gfchip').forEach(function(x){x.classList.toggle('on',x===b);});
+    GSEL=b.getAttribute('data-g');
+    applyFilters();
   });
+
+  /* 日期区间筛选：卡上 data-ago＝几天前（0＝今天）。0 档＝全部。 */
+  /* 08-17 二订：日期从四枚 .bday 药丸换成一颗 <select.wfsel> —— 读法从「找 .on」
+     变成读 .value，标签从 chip 文字变成选中项文字。回滚：见上面 markup 那段。 */
+  var days=document.getElementById('betsDays');
+  function dayLabel(){var o=days.options[days.selectedIndex];return o?o.text:'这段';}
+  function applyFilters(){
+    var n=+days.value||0;
+    function offGame(r){return GSEL!=='all'&&gameOf(r)!==GSEL;}
+    items(open).forEach(function(r){r.hidden=offGame(r);});
+    items(settled).forEach(function(r){
+      r.hidden=(n>0&&(+r.getAttribute('data-ago')>=n))||offGame(r);
+    });
+    document.getElementById('betsEmpty').hidden=
+      items(settled).filter(function(r){return !r.hidden;}).length>0;
+    document.getElementById('betsEmptyOpen').hidden=
+      items(open).filter(function(r){return !r.hidden;}).length>0;
+    renderSum(); /* 筛掉几天／筛掉别的游戏，底下那条统计都要跟着变 */
+  }
+  days.addEventListener('change',applyFilters);
   /* ⚠ 落地就要跑一次：默认选中的是「今天」，不先筛一遍的话，
      页面初始会把昨天/更早那几张也摆出来，与高亮的那颗 chip 自相矛盾。 */
-  applyDays(days.querySelector('.bday.on'));
-  renderSum();
+  applyFilters();
 
   /* ── 注单详情：2026-08-08（Hector：每张卡都要能点开看详情）────────────────
      内容<b>全部读自那张卡自己</b>（游戏 · 代号 · 期号 · 时间 · 投注项 · 进程 · 金额 · 结果）——

@@ -1,0 +1,477 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>动态 · 三个更干净的放法 · IM168</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens.css">
+<!--
+  ══ 2026-08-13 · activity-simplify.html · v1 ══════════════════════════════════
+  Hector：「This kind of look is not clean enough and doesnt match the simple style.
+  Suggest other UI for this page.」
+
+  ① 诊断 —— 「不够干净」是<b>数得出来的</b>，不是感觉
+     把现在这一条分享动态（08-13O 那一版）拆开数：
+       容器（有底色或描边的盒子）：留言框 ＋ 白卡 ＋ 卡内动作行（上边框）＝ <b>3</b>
+       药丸／角标：彩种 · 方向 · 快照 · 点赞计数 ＝ <b>4</b>
+       卡内分隔线 ＝ <b>2</b>　按钮 ＝ <b>3</b>
+       整档 CSS 里在用的圆角规格 ＝ <b>9 种</b>（7 / 13 / 14 / 17 / 999 / --radius-md …）
+     而它要对齐的<b>策略页那张卡</b>是：容器 <b>1</b> · 角标 <b>1</b> · 分隔线 <b>1</b> · 按钮 <b>2</b>。
+     所以问题不是配色，是<b>盒子套盒子</b>：一条动态里有三层封闭形状，每层都有自己的底、
+     自己的圆角、自己的边。眼睛要先解析「这是几个东西」，才轮到读内容 —— 那就是「不干净」。
+     ⚠ 而且这三层是我自己一层层加上去的：留言框（08-13M）＋ 卡（D 栏）＋ 动作行分隔线（08-13O）。
+       每一步都有当时的理由，合起来就成了套娃。这一档是<b>减法</b>。
+
+  ② 三个变体＝三种「减到哪一层」，不是三种配色
+       A · 一条一卡   —— 减到<b>一个盒子</b>：说的话与策略同处一张白卡，留言框整个退役。
+       B · 引用式     —— 减到<b>零个额外盒子</b>：抬头与那句话不要框（一条竖线当引用），
+                        底下是<b>策略页那张卡原样</b>。全站最一致的一个。
+       C · 时间轴     —— 用<b>一条轴</b>代替所有分隔：播报是轴上一点＋一行字（无框），
+                        分享是轴上一点＋一张白卡。节奏由轴给，卡与卡之间不再需要线。
+     三个都遵守同一套硬规矩（就是「简单」的操作定义）：
+       · 每条动态<b>最多一个</b>有底色的容器
+       · <b>一种</b>圆角（--radius）＋ 药丸只用于人数这类计数
+       · 卡内分隔线<b>最多一条</b>
+       · 主动作<b>一颗</b>；点赞与「不看 TA」是图标，不占按钮位
+       · 图标一律描边 svg，<b>没有 emoji</b>（现在那颗 🔥／👍 是唯一的 emoji 类元素）
+       · 官方身份用<b>一道边</b>或<b>一枚标</b>，不再整块换底色
+
+  ③ 与 activity-feed-vibe.html 的关系
+     那一档定的是<b>信息该有哪些</b>（A 战报流 / B 榜单 / C 分享卡＝策略卡 / D 精简版，D 已落地）。
+     这一档不动信息，只动<b>怎么装</b>：D 的字段一个没删（快照证据、期号轴、爆仓／已稳／人在跟都在）。
+     所以这一档可以直接叠在 D 上，不用回头重选内容。
+
+  ④ 数字与「量过没量过」——<b>老实说</b>
+     本档的卡高<b>是设计意图，不是量出来的</b>。前几档（plans-hero / feed-vibe）的高度都是在浏览器里
+     getBoundingClientRect 量的；这一轮预览面板整天不可用（它把本地档转成 data: URL 打开，
+     相对路径的 CSS/JS 全取不到），<b>没有渲染过一次</b>。所以每栏写的是「目标高度」，
+     真机上要复量一次再定稿。曲线是 mulberry32 seeded 现算的，不是手绘路径。
+-->
+<style>
+/* ═══ 对比台（不是产品的一部分）═══════════════════════════════════════════ */
+*{box-sizing:border-box}
+body{margin:0;padding:32px 24px 64px;font-family:var(--font-sans);background:var(--background);color:var(--foreground)}
+.pg{max-width:1720px;margin:0 auto 24px}
+.pg h1{margin:0 0 8px;font-size:20px}
+.pg p{margin:0;max-width:960px;font-size:var(--font-size-base);line-height:1.7;color:var(--muted-foreground)}
+.pg p b{color:var(--foreground)}
+.rack{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.col{width:375px}
+.col h2{margin:0 0 4px;font-size:var(--x-font-size-title)}
+.col .why{margin:0 0 10px;min-height:132px;font-size:var(--font-size-sm);line-height:1.65;color:var(--muted-foreground)}
+.col .why b{color:var(--foreground)}
+.count{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.count i{font-style:normal;padding:2px 7px;border-radius:var(--radius-pill);background:var(--x-surface-sunken);
+  color:var(--x-muted-on-sky);font-size:var(--font-size-xs);font-weight:700}
+.count i.good{background:var(--x-success-soft);color:var(--x-success-ink)}
+.count i.bad{background:var(--x-destructive-soft);color:var(--destructive)}
+
+/* ═══ 手机壳（四栏共用，与 feed-vibe 同一套，好并排比）═══════════════════════ */
+.ph{position:relative;width:375px;height:780px;overflow:hidden;border:1px solid var(--input);
+  border-radius:28px;background:var(--card);box-shadow:var(--shadow)}
+.scr{position:relative;height:100%;overflow-y:auto;overflow-x:hidden;
+  background:linear-gradient(180deg,var(--x-page-top) 0%,var(--x-page-mid) 34%,var(--x-page-bottom) 100%)}
+.scr::-webkit-scrollbar{width:0}
+.top{position:relative;z-index:3;display:flex;align-items:center;gap:8px;height:var(--x-header-h);
+  padding:0 var(--x-content-pad)}
+.top .bk{width:28px;height:28px;display:grid;place-items:center;color:var(--foreground);font-size:18px}
+.top .ttl{font-size:var(--font-size-lg);font-weight:700}
+.top .sp{flex:1}
+.top .bal{display:flex;align-items:center;height:30px;padding:0 12px;border:1px solid var(--x-primary-line);
+  border-radius:var(--radius-pill);color:var(--secondary-foreground);font-size:var(--font-size-sm);font-weight:700}
+.fil{display:flex;gap:7px;padding:2px var(--x-content-pad) 10px;overflow-x:auto}
+.fil::-webkit-scrollbar{height:0}
+.fil button{flex:none;min-height:32px;padding:6px 14px;border:1px solid transparent;border-radius:9px;
+  background:var(--card);color:var(--muted-foreground);font:400 12.5px var(--font-sans);cursor:pointer}
+.fil button.on{background:var(--x-primary-soft);color:var(--x-primary-strong);font-weight:700}
+.list{padding:0 var(--x-content-pad) 24px}
+
+/* 共用零件：头像、角标、迷你曲线、图标钮 */
+.av{flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;
+  background:var(--secondary);color:var(--secondary-foreground);font-size:11px;font-weight:700}
+.av.gold{background:var(--x-warning-soft);color:var(--warning)}
+.badge{flex:none;padding:1px 6px;border-radius:5px;background:var(--x-warning-soft);color:var(--warning);
+  font-size:10px;font-weight:800;font-style:normal}
+.spk{display:block;width:100%;height:44px}
+.iconbtn{flex:none;display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 8px;border:0;
+  border-radius:8px;background:transparent;color:var(--muted-foreground);font:700 12px var(--font-sans);cursor:pointer}
+.iconbtn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.iconbtn.on{color:var(--x-primary-strong)}
+.iconbtn:focus-visible{outline:2px solid var(--ring);outline-offset:1px}
+.num{font-family:var(--x-font-code);font-weight:700}
+.up{color:var(--x-success-ink)}
+.dn{color:var(--x-destructive-ink)}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   现状（08-13O 那一版）—— 只画出「三层盒子」的骨架，用来对照
+   ═════════════════════════════════════════════════════════════════════════ */
+.vNow .post{margin-bottom:12px}
+.vNow .msg{padding:10px 12px;border:1px solid var(--x-primary-line);border-radius:14px 14px 14px 4px;
+  background:var(--x-primary-soft)}
+.vNow .msg.official{background:var(--x-warning-soft);border-color:var(--x-warning-line);border-left:3px solid var(--accent)}
+.vNow .who{display:flex;align-items:center;gap:8px;font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vNow .who b{color:var(--foreground);font-size:var(--font-size-base)}
+.vNow .who .sp{flex:1}
+.vNow .say{margin:6px 0 0;font-size:var(--font-size-base);line-height:1.55}
+.vNow .card{margin-top:8px;padding:12px;border-radius:17px;background:var(--card);box-shadow:var(--shadow)}
+.vNow .idrow{display:flex;align-items:center;gap:6px}
+.vNow .chip{padding:2px 7px;border-radius:7px;background:var(--secondary);color:var(--secondary-foreground);font-size:10.5px;font-weight:700}
+.vNow .chip.dir{background:var(--x-primary-soft);color:var(--x-primary-strong)}
+.vNow .snap{margin-left:auto;padding:2px 6px;border-radius:7px;background:var(--x-surface-sunken);
+  color:var(--x-muted-on-sky);font-size:10px;font-weight:800}
+.vNow .big{display:flex;align-items:baseline;gap:8px;margin-top:10px}
+.vNow .big b{font-size:26px}
+.vNow .big small{font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vNow .axis{display:flex;margin-top:6px;font-size:11px;color:var(--x-faint)}
+.vNow .axis .sp{flex:1}
+.vNow .meta{display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);
+  font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vNow .meta .sp{flex:1}
+.vNow .acts{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.vNow .go{flex:1;min-height:40px;display:grid;place-items:center;border-radius:12px;background:var(--primary);
+  color:var(--primary-foreground);font-size:var(--font-size-base);font-weight:700}
+.vNow .pill{min-height:36px;padding:0 12px;display:inline-flex;align-items:center;gap:5px;border:1px solid var(--x-primary-line);
+  border-radius:var(--radius-pill);background:var(--x-primary-soft);color:var(--x-primary-strong);font-size:12px;font-weight:700}
+.vNow .more{width:40px;min-height:36px;display:grid;place-items:center;border:1px solid var(--input);
+  border-radius:12px;background:var(--card);color:var(--muted-foreground)}
+.vNow .cast{display:flex;align-items:center;gap:8px;padding:11px 2px;border-top:1px solid var(--border);
+  font-size:var(--font-size-sm)}
+.vNow .cast .sp{flex:1}
+.vNow .cast time{color:var(--x-faint);font-size:11px}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   A · 一条一卡 —— 减到<b>一个盒子</b>
+   ═════════════════════════════════════════════════════════════════════════ */
+.vA .post{position:relative;margin-bottom:10px;padding:12px 0 10px 14px;border-radius:var(--radius);
+  background:var(--card);box-shadow:var(--shadow);overflow:hidden}
+.vA .post.official::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent)}
+.vA .who{display:flex;align-items:center;gap:8px;padding-right:12px;font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vA .who b{color:var(--foreground);font-size:var(--font-size-base)}
+.vA .who .sp{flex:1}
+.vA .say{margin:7px 12px 0 0;font-size:var(--font-size-base);line-height:1.5;color:var(--foreground)}
+/* 数据带：代号一行 ＋ 大字 ＋ 曲线<b>出血到卡右缘</b>（签名做法：数据不被盒子关住） */
+.vA .data{margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.vA .id{display:flex;align-items:baseline;gap:8px;padding-right:12px;font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vA .id b{font-family:var(--x-font-code);font-size:var(--x-font-size-body-lg);font-weight:700;color:var(--foreground)}
+.vA .id .sp{flex:1}
+.vA .id .snap{color:var(--x-faint);font-size:10.5px}
+.vA .row{display:flex;align-items:flex-end;gap:10px;margin-top:6px}
+.vA .row .pl{flex:none}
+.vA .row .pl b{display:block;font-size:25px;line-height:1.05}
+.vA .row .pl small{font-size:11px;color:var(--muted-foreground)}
+.vA .row .g{flex:1;min-width:0;margin-right:-1px}
+.vA .foot{display:flex;align-items:center;gap:6px;margin:8px 12px 0 0;font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vA .foot .sp{flex:1}
+.vA .acts{display:flex;align-items:center;gap:2px;margin:6px 12px 0 -6px}
+.vA .acts .go{flex:none;min-height:36px;padding:0 14px;display:inline-flex;align-items:center;border-radius:9px;
+  background:var(--primary);color:var(--primary-foreground);font-size:var(--font-size-sm);font-weight:700;text-decoration:none}
+.vA .acts .sp{flex:1}
+.vA .cast{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:0 2px;font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vA .cast b{color:var(--foreground)}
+.vA .cast .sp{flex:1}
+.vA .cast time{font-size:11px;color:var(--x-faint)}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   B · 引用式 —— 抬头与那句话<b>不要框</b>，底下是策略页那张卡原样
+   ═════════════════════════════════════════════════════════════════════════ */
+.vB .post{margin-bottom:14px}
+.vB .who{display:flex;align-items:center;gap:7px;font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vB .who b{color:var(--foreground);font-size:var(--font-size-base)}
+.vB .who .av{width:20px;height:20px;font-size:10px}
+.vB .who .sp{flex:1}
+/* 引用：一条 2px 竖线 ＋ 缩进，缩进量＝卡的内距，抬头与卡左缘对在同一条光学线上（签名做法） */
+.vB .say{margin:6px 0 8px;padding-left:10px;border-left:2px solid var(--x-primary-line);
+  font-size:var(--font-size-base);line-height:1.5;color:var(--muted-foreground)}
+.vB .post.official .say{border-left-color:var(--accent)}
+.vB .card{padding:12px;border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow)}
+.vB .id{display:flex;align-items:center;gap:8px}
+.vB .id b{font-family:var(--x-font-code);font-size:var(--x-font-size-body-lg);font-weight:700}
+.vB .id span{font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vB .id .snap{margin-left:auto;padding:2px 6px;border-radius:7px;background:var(--x-surface-sunken);
+  color:var(--x-muted-on-sky);font-size:10px;font-weight:800}
+.vB .row{display:flex;align-items:flex-end;gap:12px;margin-top:10px}
+.vB .row .pl{flex:none}
+.vB .row .pl b{display:block;font-size:25px;line-height:1.05}
+.vB .row .pl small{font-size:11px;color:var(--muted-foreground)}
+.vB .row .g{flex:1;min-width:0}
+.vB .foot{display:flex;align-items:center;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);
+  font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vB .foot .sp{flex:1}
+.vB .acts{display:flex;align-items:center;gap:2px;margin:8px 0 0 -6px}
+.vB .acts .go{flex:none;min-height:36px;padding:0 14px;display:inline-flex;align-items:center;border-radius:9px;
+  background:var(--primary);color:var(--primary-foreground);font-size:var(--font-size-sm);font-weight:700;text-decoration:none}
+.vB .acts .sp{flex:1}
+.vB .cast{display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vB .cast b{color:var(--foreground)}
+.vB .cast .sp{flex:1}
+.vB .cast time{font-size:11px;color:var(--x-faint)}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   C · 时间轴 —— 一条轴代替所有分隔线
+   ═════════════════════════════════════════════════════════════════════════ */
+.vC .list{position:relative;padding-left:30px}
+.vC .list::before{content:"";position:absolute;left:9px;top:6px;bottom:10px;width:1px;background:var(--border)}
+.vC .ev{position:relative;margin-bottom:14px}
+.vC .ev::before{content:"";position:absolute;left:-25px;top:5px;width:9px;height:9px;border-radius:50%;
+  background:var(--card);box-shadow:0 0 0 1.5px var(--input)}
+.vC .ev.share::before{background:var(--primary);box-shadow:0 0 0 3px var(--x-primary-soft)}
+.vC .ev.official::before{background:var(--accent);box-shadow:0 0 0 3px var(--x-warning-soft)}
+.vC .who{display:flex;align-items:center;gap:7px;font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vC .who b{color:var(--foreground);font-size:var(--font-size-base)}
+.vC .who .av{width:20px;height:20px;font-size:10px}
+.vC .who .sp{flex:1}
+.vC .say{margin:5px 0 8px;font-size:var(--font-size-base);line-height:1.5}
+.vC .card{padding:11px 12px;border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow)}
+.vC .id{display:flex;align-items:center;gap:8px}
+.vC .id b{font-family:var(--x-font-code);font-size:var(--x-font-size-body-lg);font-weight:700}
+.vC .id span{font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vC .id .snap{margin-left:auto;color:var(--x-faint);font-size:10.5px}
+.vC .row{display:flex;align-items:flex-end;gap:10px;margin-top:8px}
+.vC .row .pl{flex:none}
+.vC .row .pl b{display:block;font-size:24px;line-height:1.05}
+.vC .row .pl small{font-size:11px;color:var(--muted-foreground)}
+.vC .row .g{flex:1;min-width:0}
+.vC .foot{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vC .foot .sp{flex:1}
+.vC .acts{display:flex;align-items:center;gap:2px;margin:8px 0 0 -6px}
+.vC .acts .go{flex:none;min-height:36px;padding:0 14px;display:inline-flex;align-items:center;border-radius:9px;
+  background:var(--primary);color:var(--primary-foreground);font-size:var(--font-size-sm);font-weight:700;text-decoration:none}
+.vC .acts .sp{flex:1}
+.vC .ev.cast{font-size:var(--font-size-sm);color:var(--muted-foreground)}
+.vC .ev.cast b{color:var(--foreground)}
+.vC .ev.cast .line{display:flex;align-items:center;gap:8px}
+.vC .ev.cast .sp{flex:1}
+.vC .ev.cast time{font-size:11px;color:var(--x-faint)}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="pg">
+  <h1>动态 · 三个更干净的放法</h1>
+  <p>「不够干净」是数得出来的：现在一条分享动态里有 <b>3 个容器</b>（留言框 ＋ 白卡 ＋ 卡内动作行）、
+  <b>4 枚药丸／角标</b>、<b>2 条卡内分隔线</b>、<b>3 颗按钮</b>，整档 CSS 在用 <b>9 种圆角</b>；
+  而它要对齐的策略页那张卡是 <b>1 个容器 · 1 枚角标 · 1 条分隔线 · 2 颗按钮</b>。
+  三个变体是<b>三种减法</b>，共同守一套硬规矩：每条最多一个有底色的容器 · 一种圆角 · 卡内最多一条分隔线 ·
+  主动作只一颗（点赞与「不看 TA」降为图标）· 图标一律描边 svg、<b>不用 emoji</b> ·
+  官方身份只用一道边或一枚标。信息<b>一个字段没删</b>（D 栏那套：快照证据、期号轴、爆仓／已稳／人在跟都在）。
+  <b>本档卡高是设计意图，不是量出来的</b>——这一轮预览面板不可用，没能渲染复量，真机上要再量一次。</p>
+</header>
+
+<div class="rack">
+
+  <!-- ═══ 现状 ═══ -->
+  <section class="col">
+    <h2>现状（08-13O）</h2>
+    <p class="why">三层封闭形状：淡蓝／琥珀留言框 → 白卡 → 卡内还有一条描边的动作行。
+    每层各有底、各有圆角。眼睛得先分清「这是几个东西」，才轮到读数字。
+    <b>这三层是一步步加上去的</b>：留言框（要把人和策略分开）＋ 策略卡（要与策略页一致）＋
+    动作行分隔线（要把「看」和「做」分开）—— 每一步都有理由，合起来成了套娃。</p>
+    <div class="count"><i class="bad">容器 3</i><i class="bad">药丸 4</i><i class="bad">分隔线 2</i><i class="bad">按钮 3</i></div>
+    <div class="ph vNow"><div class="scr">
+      <div class="top" data-component="HallHeader"><span class="bk">‹</span><span class="ttl">动态</span><span class="sp"></span><span class="bal">240,000.00</span></div>
+      <div class="fil" data-component="ActivityFilter"><button class="on">全部</button><button>专家</button><button>策略分享</button><button>播报</button></div>
+      <div class="list" data-component="ActivityFeed">
+        <div class="post" data-component="ActivityShareCard">
+          <div class="msg official">
+            <div class="who"><span class="av gold">策</span><b>策略王</b><em class="badge">官方专家</em><span class="sp"></span><time>14:32</time></div>
+            <p class="say">追 8 回的版本，今天只爆两次、收正的 —— 跟我脚步走。</p>
+          </div>
+          <div class="card" data-component="PlanSnapshotCard">
+            <div class="idrow"><span class="chip">极速飞艇</span><b class="num">C0404R8</b><span class="chip dir">跟投</span><span class="snap">快照</span></div>
+            <div class="big"><b class="num up">+¥413.28</b><small>今日收益</small></div>
+            <div class="axis"><span>第00001–00109 期</span><span class="sp"></span><span>14:32 定格</span></div>
+            <div class="meta"><span>今日爆 2 次</span><span>·</span><span>已稳 768 期</span><span class="sp"></span><span>644 人在跟</span></div>
+            <div class="acts"><span class="go">跟这一套</span><span class="pill">128</span><span class="more">···</span></div>
+          </div>
+        </div>
+        <div class="cast" data-component="ActivityCast"><b>极速快乐十分 · 第九名</b> 连开 8 期 <span class="up">大</span><span class="sp"></span><time>14:29</time></div>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- ═══ A · 一条一卡 ═══ -->
+  <section class="col">
+    <h2>A · 一条一卡</h2>
+    <p class="why">减到<b>一个盒子</b>：留言框整个退役，说的话与策略数据同处一张白卡，中间一条分隔线
+    ——上半是「谁说的」，下半是「它是什么」。官方身份＝卡左缘一道 3px 琥珀边（不再整块换底）。
+    <b>签名做法</b>：曲线<b>出血到卡的右缘</b>（右侧没有内距），数据看起来是连续的，不被盒子关住。
+    <b>代价</b>：人与策略同处一张卡，「谁说的」与「策略本身」的分离比现状弱 ——
+    那正是 08-13M 加留言框想解决的事，这一栏是反向取舍。目标卡高 ≈250px（首屏 2 条 ＋ 一条播报）。</p>
+    <div class="count"><i class="good">容器 1</i><i class="good">药标 1</i><i class="good">分隔线 1</i><i class="good">按钮 1＋2 图标</i></div>
+    <div class="ph vA"><div class="scr">
+      <div class="top" data-component="HallHeader"><span class="bk">‹</span><span class="ttl">动态</span><span class="sp"></span><span class="bal">240,000.00</span></div>
+      <div class="fil" data-component="ActivityFilter"><button class="on">全部</button><button>专家</button><button>策略分享</button><button>播报</button></div>
+      <div class="list" data-component="ActivityFeed">
+        <article class="post official" data-component="ActivityShareCard">
+          <div class="who"><span class="av gold">策</span><b>策略王</b><em class="badge">官方专家</em><span class="sp"></span><time>3 分钟前</time></div>
+          <p class="say">追 8 回的版本，今天只爆两次、收正的 —— 跟我脚步走。</p>
+          <div class="data" data-component="PlanSnapshotCard">
+            <div class="id"><b>C0404R8</b><span>极速飞艇 · 跟投</span><span class="sp"></span><span class="snap">快照 · 14:32 定格</span></div>
+            <div class="row">
+              <span class="pl"><b class="num up">+¥413.28</b><small>今日收益 · 第00001–00109 期</small></span>
+              <span class="g"><svg class="spk" data-seed="7" data-dir="up" viewBox="0 0 200 44" preserveAspectRatio="none" aria-hidden="true"></svg></span>
+            </div>
+            <div class="foot"><span>今日爆 <b class="dn">2</b> 次</span><span>·</span><span>已稳 768 期</span><span class="sp"></span><span>644 人在跟</span></div>
+            <div class="acts">
+              <a class="go" href="#">跟这一套</a><span class="sp"></span>
+              <button class="iconbtn on" type="button" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M7 21V10l4.6-7a2 2 0 0 1 3.4 2l-1.4 5H19a2 2 0 0 1 2 2.4l-1.6 7A2 2 0 0 1 17.4 21z"/><path d="M7 10H4v11h3"/></svg>128</button>
+              <button class="iconbtn" type="button" aria-label="更多：不看 TA"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg></button>
+            </div>
+          </div>
+        </article>
+        <div class="cast" data-component="ActivityCast"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></svg><b>极速快乐十分 · 第九名</b> 连开 8 期 <span class="up">大</span><span class="sp"></span><time>6 分钟前</time></div>
+        <article class="post" data-component="ActivityShareCard">
+          <div class="who"><span class="av">泰</span><b>阿泰</b><span class="sp"></span><time>24 分钟前</time></div>
+          <p class="say">这条我自己跑了三天了，反着打、追 10 回，今天只爆一次。</p>
+          <div class="data" data-component="PlanSnapshotCard">
+            <div class="id"><b>B0404R10</b><span>极速赛车 · 反投</span><span class="sp"></span><span class="snap">快照 · 14:11 定格</span></div>
+            <div class="row">
+              <span class="pl"><b class="num dn">−¥33.84</b><small>今日收益 · 第00001–00072 期</small></span>
+              <span class="g"><svg class="spk" data-seed="3" data-dir="dn" viewBox="0 0 200 44" preserveAspectRatio="none" aria-hidden="true"></svg></span>
+            </div>
+            <div class="foot"><span>今日爆 <b class="dn">1</b> 次</span><span>·</span><span>已稳 329 期</span><span class="sp"></span><span>218 人在跟</span></div>
+            <div class="acts">
+              <a class="go" href="#">跟这一套</a><span class="sp"></span>
+              <button class="iconbtn" type="button"><svg viewBox="0 0 24 24"><path d="M7 21V10l4.6-7a2 2 0 0 1 3.4 2l-1.4 5H19a2 2 0 0 1 2 2.4l-1.6 7A2 2 0 0 1 17.4 21z"/><path d="M7 10H4v11h3"/></svg>9</button>
+              <button class="iconbtn" type="button" aria-label="更多：不看 TA"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg></button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- ═══ B · 引用式 ═══ -->
+  <section class="col">
+    <h2>B · 引用式</h2>
+    <p class="why">减到<b>零个额外盒子</b>：抬头（头像 ＋ 名字 ＋ 标 ＋ 相对时间）与那句话<b>都不加框</b>，
+    只用一条 2px 竖线把话标成引用；底下是<b>策略页那张卡原样</b>（同组件、同圆角、同角标位置）。
+    全站一致性最高的一个 —— 动态与策略页看起来是同一套东西，只是多了一句「谁分享的」。
+    <b>签名做法</b>：引用线的缩进量＝卡的内距，抬头、引用、卡内文字<b>对在同一条光学线</b>上。
+    <b>代价</b>：官方身份只剩「一枚标 ＋ 一条琥珀引用线」，没有色块，Alex 那句「官方的 frame 要不一样」
+    的力度最弱。目标卡高 ≈290px（首屏 2 条）。</p>
+    <div class="count"><i class="good">容器 1</i><i class="good">药标 1</i><i class="good">分隔线 1</i><i class="good">按钮 1＋2 图标</i></div>
+    <div class="ph vB"><div class="scr">
+      <div class="top" data-component="HallHeader"><span class="bk">‹</span><span class="ttl">动态</span><span class="sp"></span><span class="bal">240,000.00</span></div>
+      <div class="fil" data-component="ActivityFilter"><button class="on">全部</button><button>专家</button><button>策略分享</button><button>播报</button></div>
+      <div class="list" data-component="ActivityFeed">
+        <article class="post official" data-component="ActivityShareCard">
+          <div class="who"><span class="av gold">策</span><b>策略王</b><em class="badge">官方专家</em><span class="sp"></span><time>3 分钟前</time></div>
+          <p class="say">追 8 回的版本，今天只爆两次、收正的 —— 跟我脚步走。</p>
+          <div class="card" data-component="PlanSnapshotCard">
+            <div class="id"><b class="num">C0404R8</b><span>极速飞艇 · 跟投</span><span class="snap">快照</span></div>
+            <div class="row">
+              <span class="pl"><b class="num up">+¥413.28</b><small>今日收益</small></span>
+              <span class="g"><svg class="spk" data-seed="7" data-dir="up" viewBox="0 0 200 44" preserveAspectRatio="none" aria-hidden="true"></svg></span>
+            </div>
+            <div class="foot"><span>第00001–00109 期 · 14:32 定格</span><span class="sp"></span><span>644 人在跟</span></div>
+            <div class="acts">
+              <a class="go" href="#">跟这一套</a><span class="sp"></span>
+              <button class="iconbtn on" type="button" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M7 21V10l4.6-7a2 2 0 0 1 3.4 2l-1.4 5H19a2 2 0 0 1 2 2.4l-1.6 7A2 2 0 0 1 17.4 21z"/><path d="M7 10H4v11h3"/></svg>128</button>
+              <button class="iconbtn" type="button" aria-label="更多：不看 TA"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg></button>
+            </div>
+          </div>
+        </article>
+        <div class="cast" data-component="ActivityCast"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></svg><b>极速快乐十分 · 第九名</b> 连开 8 期 <span class="up">大</span><span class="sp"></span><time>6 分钟前</time></div>
+        <article class="post" data-component="ActivityShareCard">
+          <div class="who"><span class="av">泰</span><b>阿泰</b><span class="sp"></span><time>24 分钟前</time></div>
+          <p class="say">这条我自己跑了三天了，反着打、追 10 回，今天只爆一次。</p>
+          <div class="card" data-component="PlanSnapshotCard">
+            <div class="id"><b class="num">B0404R10</b><span>极速赛车 · 反投</span><span class="snap">快照</span></div>
+            <div class="row">
+              <span class="pl"><b class="num dn">−¥33.84</b><small>今日收益</small></span>
+              <span class="g"><svg class="spk" data-seed="3" data-dir="dn" viewBox="0 0 200 44" preserveAspectRatio="none" aria-hidden="true"></svg></span>
+            </div>
+            <div class="foot"><span>第00001–00072 期 · 14:11 定格</span><span class="sp"></span><span>218 人在跟</span></div>
+            <div class="acts">
+              <a class="go" href="#">跟这一套</a><span class="sp"></span>
+              <button class="iconbtn" type="button"><svg viewBox="0 0 24 24"><path d="M7 21V10l4.6-7a2 2 0 0 1 3.4 2l-1.4 5H19a2 2 0 0 1 2 2.4l-1.6 7A2 2 0 0 1 17.4 21z"/><path d="M7 10H4v11h3"/></svg>9</button>
+              <button class="iconbtn" type="button" aria-label="更多：不看 TA"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg></button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- ═══ C · 时间轴 ═══ -->
+  <section class="col">
+    <h2>C · 时间轴</h2>
+    <p class="why">用<b>一条轴</b>代替所有分隔：播报是轴上一枚空心点 ＋ 一行字（<b>完全无框</b>），
+    分享是轴上一枚实心点 ＋ 一张白卡。节奏由轴给，所以卡与卡、条与条之间<b>不再需要任何线</b>。
+    这也是唯一一栏把「播报」和「分享」读成<b>同一条流</b>的做法。
+    <b>签名做法</b>：轴上的点<b>按类型换形</b>——空心＝播报、实心蓝＝玩家分享、琥珀＝官方，
+    身份不必再靠底色说。<b>代价</b>：左侧让出 30px 给轴，卡内可用宽度少 30px（长代号那行要复量）；
+    而且时间轴是全站<b>新组件</b>，别处没有。目标卡高 ≈275px。</p>
+    <div class="count"><i class="good">容器 1</i><i class="good">药标 0</i><i class="good">分隔线 0</i><i class="good">按钮 1＋2 图标</i></div>
+    <div class="ph vC"><div class="scr" data-component="ActivityTimeline">
+      <div class="top" data-component="HallHeader"><span class="bk">‹</span><span class="ttl">动态</span><span class="sp"></span><span class="bal">240,000.00</span></div>
+      <div class="fil" data-component="ActivityFilter"><button class="on">全部</button><button>专家</button><button>策略分享</button><button>播报</button></div>
+      <div class="list" data-component="ActivityFeed">
+        <article class="ev share official" data-component="ActivityShareCard">
+          <div class="who"><span class="av gold">策</span><b>策略王</b><em class="badge">官方专家</em><span class="sp"></span><time>3 分钟前</time></div>
+          <p class="say">追 8 回的版本，今天只爆两次、收正的 —— 跟我脚步走。</p>
+          <div class="card" data-component="PlanSnapshotCard">
+            <div class="id"><b class="num">C0404R8</b><span>极速飞艇 · 跟投</span><span class="snap">14:32 定格</span></div>
+            <div class="row">
+              <span class="pl"><b class="num up">+¥413.28</b><small>今日收益 · 第00001–00109 期</small></span>
+              <span class="g"><svg class="spk" data-seed="7" data-dir="up" viewBox="0 0 200 44" preserveAspectRatio="none" aria-hidden="true"></svg></span>
+            </div>
+            <div class="foot"><span>今日爆 <b class="dn">2</b> 次 · 已稳 768 期</span><span class="sp"></span><span>644 人在跟</span></div>
+            <div class="acts">
+              <a class="go" href="#">跟这一套</a><span class="sp"></span>
+              <button class="iconbtn on" type="button" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M7 21V10l4.6-7a2 2 0 0 1 3.4 2l-1.4 5H19a2 2 0 0 1 2 2.4l-1.6 7A2 2 0 0 1 17.4 21z"/><path d="M7 10H4v11h3"/></svg>128</button>
+              <button class="iconbtn" type="button" aria-label="更多：不看 TA"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg></button>
+            </div>
+          </div>
+        </article>
+        <div class="ev cast" data-component="ActivityCast"><div class="line"><b>极速快乐十分 · 第九名</b> 连开 8 期 <span class="up">大</span><span class="sp"></span><time>6 分钟前</time></div></div>
+        <article class="ev share" data-component="ActivityShareCard">
+          <div class="who"><span class="av">泰</span><b>阿泰</b><span class="sp"></span><time>24 分钟前</time></div>
+          <p class="say">这条我自己跑了三天了，反着打、追 10 回，今天只爆一次。</p>
+          <div class="card" data-component="PlanSnapshotCard">
+            <div class="id"><b class="num">B0404R10</b><span>极速赛车 · 反投</span><span class="snap">14:11 定格</span></div>
+            <div class="row">
+              <span class="pl"><b class="num dn">−¥33.84</b><small>今日收益 · 第00001–00072 期</small></span>
+              <span class="g"><svg class="spk" data-seed="3" data-dir="dn" viewBox="0 0 200 44" preserveAspectRatio="none" aria-hidden="true"></svg></span>
+            </div>
+            <div class="foot"><span>今日爆 <b class="dn">1</b> 次 · 已稳 329 期</span><span class="sp"></span><span>218 人在跟</span></div>
+            <div class="acts">
+              <a class="go" href="#">跟这一套</a><span class="sp"></span>
+              <button class="iconbtn" type="button"><svg viewBox="0 0 24 24"><path d="M7 21V10l4.6-7a2 2 0 0 1 3.4 2l-1.4 5H19a2 2 0 0 1 2 2.4l-1.6 7A2 2 0 0 1 17.4 21z"/><path d="M7 10H4v11h3"/></svg>9</button>
+              <button class="iconbtn" type="button" aria-label="更多：不看 TA"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg></button>
+            </div>
+          </div>
+        </article>
+        <div class="ev cast" data-component="ActivityCast"><div class="line"><b>阿泰</b> 跟着 <b>B0404R10</b> 赢了 <span class="up">+¥1,240</span><span class="sp"></span><time>34 分钟前</time></div></div>
+      </div>
+    </div></div>
+  </section>
+
+</div>
+
+<script data-demo>
+/* ── 演示用，永不移植 ────────────────────────────────────────────────────
+   曲线：mulberry32 seeded RNG → 随机游走 → 折线 ＋ 一层淡填充。
+   seeded 是为了每次打开长得一样（并排比对与截图才有意义）。 */
+(function(){
+  function rng(s){return function(){s|=0;s=s+0x6D2B79F5|0;var t=Math.imul(s^s>>>15,1|s);
+    t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};}
+  [].forEach.call(document.querySelectorAll('.spk'),function(svg){
+    var dn=svg.getAttribute('data-dir')==='dn',r=rng(+svg.getAttribute('data-seed')||1),v=0,pts=[],i;
+    for(i=0;i<90;i++){v+=(r()-.5)*2+(dn?-.14:.13);pts.push(v);}
+    var lo=Math.min.apply(null,pts),hi=Math.max.apply(null,pts),rg=(hi-lo)||1,d='';
+    pts.forEach(function(p,k){var x=k/(pts.length-1)*200,y=40-((p-lo)/rg)*34;
+      d+=(k?'L':'M')+x.toFixed(1)+' '+y.toFixed(1);});
+    var col=dn?'var(--x-destructive-ink)':'var(--x-success-ink)';
+    /* 左端淡出＝与全站那批走势图同一条规矩（曲线左端不是事件，只是取样窗口的边界）*/
+    svg.innerHTML='<defs><linearGradient id="m'+svg.getAttribute('data-seed')+dn+'" x1="0" x2="1">'+
+        '<stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset=".14" stop-color="#000"/></linearGradient>'+
+      '<mask id="k'+svg.getAttribute('data-seed')+dn+'"><rect width="200" height="44" fill="url(#m'+svg.getAttribute('data-seed')+dn+')"/></mask></defs>'+
+      '<g mask="url(#k'+svg.getAttribute('data-seed')+dn+')">'+
+      '<path d="'+d+' L200 44 L0 44 Z" fill="'+col+'" opacity=".10"/>'+
+      '<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="1.6" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></g>';
+  });
+})();
+</script>
+</body></html>

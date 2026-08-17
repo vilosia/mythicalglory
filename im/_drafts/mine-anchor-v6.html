@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>顶区锚再砍层 · 三案 v6</title>
+<!--
+  ══ 变更记录 ═══════════════════════════════════════════════════════════
+  v6 · 2026-08-16
+  背景：v5 四层面板被判 still too many layers；并重申铁律——代号必带游戏名
+        （同代号可跨游戏）。本稿全部选项遵守。
+  砍层的刀法：v5 的层来自「一种信息一个区＋区标题」。三案各自的取舍：
+    A 指挥牌 —— 区全部合并成「一套一行」，异常就地写在那一行里（2 层，推荐）
+    B 跑马灯 —— 大数字＋一条自动轮播的现场线（1.5 层，最薄，信息串行是代价）
+    C 卡即锚 —— 顶区只剩大数字，「现在怎么样」由对局卡自己说（1 层＋卡，
+                与「顶区要有锚」的 brief 有张力，列出供比较）
+-->
+<style>
+  :root{
+    --blue:#2F6BE8;--blue-d:#1D4FD8;--ink:#172033;--muted:#66738A;--faint:#9AA6B8;
+    --line:#E6ECF2;--fill:#F1F5F9;--page:#F5F7F9;--win:#0E9F5B;--red:#E0454F;
+    --font:"Noto Sans SC","PingFang SC",sans-serif;--data:"DIN Alternate","Arial Narrow",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#D8DEE6;font-family:var(--font);color:var(--ink);padding:26px 0 60px;}
+  h1{font-size:16px;text-align:center;margin-bottom:4px;}
+  .sub{font-size:12px;color:var(--muted);text-align:center;margin:0 auto 22px;max-width:720px;}
+  .row{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;align-items:flex-start;}
+  .opt{width:375px;}
+  .opt h2{font-size:13px;margin:0 2px 2px;}
+  .opt .why{font-size:11.5px;line-height:1.55;color:var(--muted);margin:0 2px 10px;}
+  .opt .why b{color:var(--ink);}
+  .rec{display:inline-block;font-size:10px;font-weight:800;color:#fff;background:var(--blue);border-radius:6px;padding:2px 7px;vertical-align:2px;margin-left:5px;}
+  .num{font-family:var(--data);font-variant-numeric:tabular-nums;}
+  .up{color:var(--win);}.dn{color:var(--red);}
+  .phone{border:1px solid #B9C6D3;border-radius:18px;overflow:hidden;
+    background:linear-gradient(180deg,#4372E9 0%,#5F8AEF 30%,#A3BEF5 52%,var(--page) 66%);
+    padding:14px 12px 16px;min-height:540px;}
+  .hero-lab{font-size:11px;color:rgba(255,255,255,.75);display:flex;align-items:center;gap:6px;}
+  .hero-lab i{width:6px;height:6px;border-radius:50%;background:#7CF5B4;}
+  .hero-num{font-family:var(--data);font-size:31px;font-weight:800;color:#CBF7DD;line-height:1.08;letter-spacing:-.5px;}
+  .card{background:linear-gradient(168deg,rgba(255,255,255,.98),rgba(247,250,255,.94));
+    border:1px solid rgba(255,255,255,.72);border-radius:14px;margin-top:12px;
+    box-shadow:inset 0 1.5px 0 rgba(255,255,255,.95),0 2px 10px -2px rgba(30,60,120,.08),0 12px 28px -20px rgba(30,60,120,.28);}
+  .note{opacity:.55;text-align:center;font-size:11px;color:var(--muted);padding:10px 0 2px;}
+
+  /* A 指挥牌：一套一行 */
+  .a-board{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);border-radius:14px;
+    margin-top:10px;overflow:hidden;backdrop-filter:blur(2px);}
+  .a-r{display:flex;align-items:center;gap:8px;padding:10px 12px;font-size:12px;color:#fff;
+    border-bottom:1px solid rgba(255,255,255,.16);}
+  .a-r:last-child{border-bottom:0;}
+  .a-r .g{font-size:10.5px;color:rgba(255,255,255,.66);}
+  .a-r b{font-weight:800;}
+  .a-r .st{margin-left:auto;text-align:right;font-size:11px;color:rgba(255,255,255,.85);white-space:nowrap;}
+  .a-r .st .cd{color:#9FE8FF;font-family:var(--data);font-weight:800;}
+  .a-r.warn{background:rgba(255,120,120,.16);}
+  .a-r.warn .st{color:#FFD9D9;}
+  .a-r.warn .st em{font-style:normal;color:#fff;font-weight:800;}
+  .a-r.idle{opacity:.6;}
+  .a-r .go{flex:none;color:rgba(255,255,255,.6);}
+
+  /* B 跑马灯 */
+  .b-tick{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.28);border-radius:999px;margin-top:10px;padding:9px 13px;
+    font-size:12px;color:#fff;}
+  .b-tick i{width:6px;height:6px;border-radius:50%;background:#7CF5B4;flex:none;}
+  .b-tick b{font-weight:800;}
+  .b-tick .n{margin-left:auto;flex:none;display:flex;gap:3px;}
+  .b-tick .n s{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.35);text-decoration:none;}
+  .b-tick .n s.on{background:#fff;}
+
+  /* C 卡即锚（对局卡） */
+  .b-h{display:flex;align-items:center;gap:8px;padding:11px 14px 0;}
+  .b-h .g{font-size:11px;color:var(--muted);}
+  .b-h .code{font-size:16px;font-weight:800;}
+  .b-cd{margin-left:auto;display:inline-flex;align-items:center;gap:5px;background:#173C99;color:#fff;
+    border-radius:999px;padding:4px 11px;font-size:11px;font-weight:700;}
+  .b-cd .num{color:#9FE8FF;}
+  .b-live{display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px 2px;}
+  .b-bet{display:inline-flex;align-items:center;gap:6px;background:#EFF5FF;border:1px solid #D8E6FF;
+    border-radius:999px;padding:5px 10px;font-size:11px;font-weight:700;}
+  .b-bet .side{width:16px;height:16px;border-radius:50%;background:var(--blue);color:#fff;font-size:9.5px;
+    display:grid;place-items:center;font-style:normal;}
+  .b-f{display:flex;align-items:center;padding:9px 14px 12px;font-size:11px;color:var(--muted);gap:12px;}
+  .b-f .pl{margin-left:auto;font-size:13px;font-weight:800;font-family:var(--data);}
+  .c-tkrow{display:flex;gap:7px;margin-top:10px;}
+  .c-tk{flex:1;display:flex;align-items:center;gap:6px;background:#FDF0F0;border-radius:10px;
+    padding:7px 10px;font-size:11px;}
+  .c-tk.gray{background:rgba(255,255,255,.92);}
+</style>
+</head>
+<body>
+  <h1>顶区锚再砍层 · 三案</h1>
+  <div class="sub">v5 的层来自「一种信息一个区＋区标题」。这次的刀法是<b>合并与串行</b>——
+    三案层数 2 / 1.5 / 1。所有代号一律带游戏名（同代号可跨游戏）。</div>
+  <div class="row">
+
+    <!-- A -->
+    <div class="opt">
+      <h2>A · 指挥牌 —— 一套一行<span class="rec">推荐</span></h2>
+      <p class="why"><b>区标题全撤，异常并进行里</b>：一张玻璃牌，我的每一套占一行——
+        「游戏+代号 ｜ 这一期的动静」。在场的报钱和封盘、爆仓的整行泛红就地给「继续」、
+        没进场的淡掉。<b>2 层</b>（大数字+一张牌）就是全部盘面，行点下去滚到对应卡。
+        「刚刚」不再单独占层——结算瞬间由那一行自己闪一下并换字。</p>
+      <div class="phone">
+        <div class="hero-lab"><i></i>总盈亏 · 3 套运行中</div>
+        <div class="hero-num num">+767.00</div>
+        <div class="a-board">
+          <div class="a-r"><span><span class="g">极速飞艇</span> <b>C0404R5</b></span><span class="st">在场 <b class="num">150</b> · 封盘 <span class="cd num">0:07</span></span><span class="go">›</span></div>
+          <div class="a-r"><span><span class="g">极速赛车</span> <b>C0506R5</b></span><span class="st">刚命中 <b class="up num" style="color:#CBF7DD">+41.40</b> · 下期 <span class="cd num">0:19</span></span><span class="go">›</span></div>
+          <div class="a-r warn"><span><span class="g">极速时时彩</span> <b>B0405R4</b></span><span class="st">已爆仓 · 若继续 +35.20 <em>继续 ›</em></span></div>
+          <div class="a-r idle"><span><span class="g">极速飞艇</span> <b>C0304R6</b></span><span class="st">未启用 · 启用 ›</span></div>
+        </div>
+        <div class="card"><div class="b-h"><span><span class="g">极速飞艇</span><div class="code">C0404R5 ›</div></span><span class="b-cd">封盘 <span class="num">0:07</span></span></div><div class="b-f"><span>3 注在场 · 待触发 3</span><span class="pl up num">+726.00</span></div></div>
+        <div class="note">牌上一行 = 卡片一张的现在时；行是电梯，卡是详情</div>
+      </div>
+    </div>
+
+    <!-- B -->
+    <div class="opt">
+      <h2>B · 跑马灯 —— 一条现场线</h2>
+      <p class="why">最薄：大数字＋<b>一条自动轮播的线</b>，10 秒一换轮流报每套的现在
+        （在场→刚结算→异常），右侧圆点指示第几条。<b>1.5 层</b>。
+        代价是<b>信息串行</b>——想看第三套要等它转到；异常置顶常驻可救急但会破「一条」的纯度。
+        适合「扫一眼就走」的用户，不适合盯盘的。</p>
+      <div class="phone">
+        <div class="hero-lab"><i></i>总盈亏 · 3 套运行中</div>
+        <div class="hero-num num">+767.00</div>
+        <div class="b-tick"><i></i><span><b>极速飞艇 C0404R5</b> · 在场 150 · 封盘 <b class="num" style="color:#9FE8FF">0:07</b></span><span class="n"><s class="on"></s><s></s><s></s><s></s></span></div>
+        <div class="b-tick" style="opacity:.5"><i style="background:#FF9D9D"></i><span><b>极速时时彩 B0405R4</b> 已爆仓 · 若继续 +35.20 · 继续 ›</span><span class="n"><s></s><s></s><s class="on"></s><s></s></span></div>
+        <div class="note">↑ 第二条是示意「转到异常时」的样子——实际同一时刻只有一条</div>
+        <div class="card"><div class="b-h"><span><span class="g">极速飞艇</span><div class="code">C0404R5 ›</div></span><span class="b-cd">封盘 <span class="num">0:07</span></span></div><div class="b-f"><span>3 注在场 · 待触发 3</span><span class="pl up num">+726.00</span></div></div>
+      </div>
+    </div>
+
+    <!-- C -->
+    <div class="opt">
+      <h2>C · 卡即锚 —— 顶区只剩数字</h2>
+      <p class="why">承认「锚区的每一行都是卡片的复述」，干脆<b>不复述</b>：顶区只剩大数字（1 层），
+        对局卡自己讲现在（封盘药丸+在场椭牌+结算闪色），<b>按封盘先后排序</b>、
+        异常票根缩成两枚小牌横排。最省，但「顶区要有锚」的 brief 只剩一个数字——
+        要说服客户「卡片群就是锚」。</p>
+      <div class="phone">
+        <div class="hero-lab"><i></i>总盈亏 · 3 套运行中</div>
+        <div class="hero-num num">+767.00</div>
+        <div class="c-tkrow">
+          <span class="c-tk">● B0405R4 爆仓 · 继续 ›</span>
+          <span class="c-tk gray">C0304R6 未启用 ›</span>
+        </div>
+        <div class="card">
+          <div class="b-h"><span><span class="g">极速飞艇</span><div class="code">C0404R5 ›</div></span><span class="b-cd">封盘 <span class="num">0:07</span></span></div>
+          <div class="b-live">
+            <span class="b-bet"><i class="side">双</i>亚军·单双 <span class="num" style="color:var(--muted)">90</span></span>
+            <span class="b-bet"><i class="side">龙</i>龙虎·冠十 <span class="num" style="color:var(--muted)">30</span></span>
+          </div>
+          <div class="b-f"><span>3 注在场 · 待触发 3</span><span class="pl up num">+726.00</span></div>
+        </div>
+        <div class="card" style="opacity:.8"><div class="b-h"><span><span class="g">极速赛车</span><div class="code">C0506R5 ›</div></span><span class="b-cd">封盘 <span class="num">0:19</span></span></div><div class="b-f"><span>1 注在场</span><span class="pl up num">+41.40</span></div></div>
+        <div class="note">排序即叙事：越先封盘越靠上</div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

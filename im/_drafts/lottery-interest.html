@@ -1,0 +1,292 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>彩票页 · 三个提神方向 · IM168</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens.css">
+<!--
+  ══ 2026-08-15 · lottery-interest.html · v1 ═══════════════════════════════════
+  Hector：「Suggest improvements for this page. Lacking point of interest and
+  whole page looks quite dull now.」（hall-lottery.html）
+
+  ① <b>先把「闷」量出来</b>，不然只是配色偏好
+     实测（375 下打开这一屏）：
+       · <b>14 张卡，尺寸全部是 169×78 —— 一个尺寸，零层级</b>。
+         眼睛没有落点，因为每一处都在争同样的重量。
+       · 全页只有<b>两处</b>有颜色：45px 的长龙横幅、三枚运营小角标（热门/NEW/经典）。
+         其余 14 张卡是白底 ＋ 蓝白缩略图，56px 下彼此像同一团东西。
+       · <b>最该被看到的数字被做成了最小的字</b>：倒计时 11px 灰，14 张卡上一模一样，
+         而且只在<b>各自分区内</b>排序 —— 「哪一场马上开」这个答案页面里有，却没有被端出来。
+       · 分区标题是纯文字（PK10 4 款），五个分区长得一样，滚起来分不出走到哪了。
+     结论：闷的成因是<b>没有层级</b>与<b>没有身份</b>，不是「不够花哨」。
+     加动效、加渐变都治不了 —— 那只会让 14 个等重的东西一起动。
+
+  ② <b>三个方向</b>（可叠加，不是三选一）
+     A · <b>开奖时刻表</b>　　给页面一个焦点：最快开的三款提到最上面，大图 ＋ 倒计时环。
+                          治的是「没有落点」。
+     B · <b>系列色</b>　　　　每个分区一个色系，卡面上底色、分区标题带色条。
+                          治的是「没有身份」。⚠ Alex 08-11 就提过「卡太白、要系列色」，
+                          当时按 R4 挂起（等运营正式清单）—— 这一版可以先用五个色占位。
+     C · <b>盘面上卡</b>　　　每张卡带最近 5 期珠子 ＋ 长龙 ⚡ 标。
+                          治的是「像应用商店而不像彩票厅」。这是本产品独有的信息。
+
+  ③ <b>我的取舍：B 打底 ＋ A 给焦点，C 先别做</b>
+     · B 最直接命中「dull」，而且<b>不加任何一条新信息</b>，是纯视觉，风险最低。
+     · A 花约 120px，换来一个会动、点了就能下注的开场，也把倒计时从灰字扶正。
+     · C 最「活」，但要求<b>每个彩种都有可展示的近期盘面</b>——现在只有极速赛车/飞艇
+       接了真引擎，其余 12 款会是编的。<b>数据没到位之前不做</b>，做了就是假盘面。
+
+  ④ <b>共同规矩</b>
+     · 一屏<b>最多一块深色</b>（现在给了长龙横幅；A 的时刻表用白卡＋色环，不抢）
+     · 系列色只用在<b>底色/描边/标题条</b>，不给大面积实心块
+     · 倒计时最后 15 秒转红这条<b>照旧</b>（页面已有，别重做一套）
+     · 缩略图是运营给的真图（shared/game-icons/），三个方向都没换图
+
+  ⑤ 数字全部取自 08-15 实测：14 款 / 五个分区 / 倒计时相位与长龙四条都照抄。
+-->
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eef2f6;font-family:var(--font-sans);color:var(--foreground);-webkit-font-smoothing:antialiased}
+.pg{max-width:1320px;margin:0 auto;padding:26px 20px 70px}
+h1{margin:0 0 4px;font-size:21px;font-weight:900}
+.sub{margin:0 0 22px;font-size:12.5px;line-height:1.65;color:var(--muted-foreground);max-width:820px}
+.sub b{color:var(--foreground)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.colhd{display:flex;align-items:baseline;gap:8px;margin-bottom:9px}
+.colhd b{font-size:14.5px;font-weight:900}
+.colhd em{font-style:normal;font-size:11.5px;color:var(--muted-foreground)}
+.tag{font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;background:#e5e9ef;color:#5b6a80}
+.tag.pick{background:var(--x-success-soft);color:var(--x-success-ink)}
+.tag.later{background:var(--x-tag-high-bg);color:var(--x-tag-high-ink)}
+.ph{width:375px;max-width:100%;margin:0 auto;border-radius:16px;overflow:hidden;background:#f4f7fa;
+  box-shadow:0 8px 26px rgba(31,58,84,.10)}
+.note{margin:10px 2px 0;font-size:11.5px;line-height:1.7;color:#4d5b70}
+.note b{color:var(--foreground)}
+.note .k{display:inline-block;margin-right:5px;font-size:10px;font-weight:800;color:#7a889b}
+
+/* ══ 共用：顶栏 · 长龙 · 页签 ═══════════════════════════════════════════════ */
+.gtop{display:flex;align-items:center;gap:8px;padding:11px 13px;background:#fff;border-bottom:1px solid #e6ecf2}
+.gtop .bk{font-size:17px;color:#54637a}
+.gtop b{font-size:15px;font-weight:900}
+.gtop small{font-size:11px;color:#8593a6}
+.gtop .bal{margin-left:auto;font-size:11.5px;font-weight:800;color:var(--secondary-foreground);
+  border:1px solid #cfe3f8;border-radius:999px;padding:4px 10px;font-variant-numeric:tabular-nums}
+.streak{display:flex;align-items:center;gap:7px;margin:9px 12px;padding:9px 11px;border-radius:11px;
+  background:#fff;border:1px solid #e3eaf1;font-size:12px}
+.streak .g{font-weight:800;color:var(--secondary-foreground)}
+.streak .n{color:#7d8ca1}
+.streak .r{margin-left:auto;font-weight:800;color:#c62f3a}
+.streak .s{width:22px;height:22px;display:grid;place-items:center;border-radius:7px;background:#e6464f;color:#fff;font-size:11px;font-weight:800}
+.tabs{display:flex;gap:6px;padding:0 12px 9px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:none;border:1px solid #dde5ed;background:#fff;border-radius:999px;padding:5px 12px;
+  font-family:inherit;font-size:11.5px;font-weight:750;color:#5f6f86;cursor:pointer}
+.tabs button.on{border-color:var(--primary);background:var(--secondary);color:var(--secondary-foreground)}
+.gh{display:flex;align-items:baseline;gap:7px;padding:2px 12px 7px}
+.gh b{font-size:13px;font-weight:900}
+.gh small{font-size:11px;color:#8593a6}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 12px 12px}
+.card{display:grid;grid-template-columns:52px 1fr;gap:9px;align-items:center;padding:9px 10px;
+  border-radius:12px;background:#fff;border:1px solid #e6ecf2;text-decoration:none;color:inherit}
+.card img{width:52px;height:52px;object-fit:contain;display:block}
+.card .nm{font-size:13px;font-weight:800;line-height:1.25;color:#222e42}
+.card .tm{display:flex;align-items:center;gap:4px;margin-top:4px;font-size:11.5px;font-weight:750;
+  color:#5b8fd6;font-variant-numeric:tabular-nums}
+.card .tm i{width:10px;height:10px;border:1.8px solid currentColor;border-radius:50%;display:block}
+.op{position:absolute;left:7px;top:6px;font-size:9.5px;font-weight:800;padding:1px 6px;border-radius:6px}
+.op-hot{background:var(--x-tag-hot-bg);color:var(--x-tag-hot-ink)}
+.op-new{background:var(--x-tag-new-bg);color:var(--x-tag-new-ink)}
+.card{position:relative}
+
+/* ══ A · 开奖时刻表 ═══════════════════════════════════════════════════════ */
+.va-hd{display:flex;align-items:baseline;gap:7px;padding:2px 12px 7px}
+.va-hd b{font-size:13px;font-weight:900}
+.va-hd small{font-size:11px;color:#8593a6}
+.va-hd em{margin-left:auto;font-style:normal;font-size:11px;font-weight:750;color:var(--secondary-foreground)}
+.va-strip{display:flex;gap:9px;padding:0 12px 12px;overflow-x:auto;scrollbar-width:none}
+.va-strip::-webkit-scrollbar{display:none}
+.va-s{flex:none;width:122px;padding:10px;border-radius:13px;background:#fff;border:1px solid #e0e8f0;
+  text-decoration:none;color:inherit;box-shadow:0 4px 14px rgba(37,70,102,.05)}
+.va-s img{width:100%;height:56px;object-fit:contain;display:block}
+.va-s .nm{margin-top:5px;font-size:12.5px;font-weight:800;line-height:1.25;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.va-ring{display:flex;align-items:center;gap:6px;margin-top:6px}
+.va-ring svg{width:20px;height:20px;transform:rotate(-90deg);flex:none}
+.va-ring .tk{fill:none;stroke:#e3eaf1;stroke-width:3.4}
+.va-ring .pr{fill:none;stroke-width:3.4;stroke-linecap:round}
+.va-ring b{font-size:13px;font-weight:850;font-variant-numeric:tabular-nums}
+
+/* ══ B · 系列色 ═══════════════════════════════════════════════════════════ */
+.vb-gh{display:flex;align-items:baseline;gap:7px;padding:2px 12px 7px}
+.vb-gh .bar{width:3px;height:13px;border-radius:2px;align-self:center}
+.vb-gh b{font-size:13px;font-weight:900}
+.vb-gh small{font-size:11px;color:#8593a6}
+.vb-card .plate{display:grid;place-items:center;width:52px;height:52px;border-radius:12px}
+.vb-card .plate img{width:42px;height:42px}
+.vb-card .tm{font-weight:800}
+/* 五个系列色：只用在底板／标题条／时间，不给大面积实心 */
+.s-race .bar,.s-race .tm{color:#1677ee}.s-race .bar{background:#1677ee}.s-race .plate{background:#eaf3ff}
+.s-ssc  .bar,.s-ssc  .tm{color:#0e8f9e}.s-ssc  .bar{background:#0e8f9e}.s-ssc  .plate{background:#e6f7f8}
+.s-pc28 .bar,.s-pc28 .tm{color:#6b53c9}.s-pc28 .bar{background:#6b53c9}.s-pc28 .plate{background:#efecfd}
+.s-kl8  .bar,.s-kl8  .tm{color:#b3660a}.s-kl8  .bar{background:#b3660a}.s-kl8  .plate{background:#fff4e3}
+.s-lhc  .bar,.s-lhc  .tm{color:#b8365f}.s-lhc  .bar{background:#b8365f}.s-lhc  .plate{background:#fdecf1}
+
+/* ══ C · 盘面上卡 ═════════════════════════════════════════════════════════ */
+.vc-card{grid-template-columns:46px 1fr}
+.vc-card img{width:46px;height:46px}
+.vc-beads{display:flex;gap:3px;margin-top:5px}
+.vc-beads i{width:11px;height:11px;border-radius:50%;display:block}
+.vc-beads i.b{background:#3d7fe0}.vc-beads i.r{background:#e04a52}
+.vc-beads i.dim{opacity:.32}
+.vc-flag{display:inline-flex;align-items:center;gap:2px;margin-left:5px;font-size:10px;font-weight:800;
+  color:#c62f3a;font-style:normal}
+</style>
+</head>
+<body>
+<div class="pg">
+  <h1>彩票页 · 三个提神方向</h1>
+  <p class="sub">实测这一屏：<b>14 张卡尺寸全部是 169×78</b>，一个尺寸、零层级；全页只有两处有颜色；
+     最该被看到的倒计时是 11px 灰字、还只在各分区内排序。
+     <b>闷的成因是没有层级与没有身份，不是不够花哨</b> —— 加动效只会让 14 个等重的东西一起动。
+     三个方向可叠加，不是三选一。</p>
+
+  <div class="grid">
+
+    <!-- 現狀 -->
+    <div>
+      <div class="colhd"><b>現狀</b><span class="tag">14 张卡 · 一个尺寸</span></div>
+      <div class="ph">
+        <div class="gtop"><span class="bk">‹</span><b>彩票游戏</b><small>· 幸运组</small><span class="bal">240,000.00</span></div>
+        <div class="streak"><span class="g">极速赛车</span><span class="n">· 龙虎</span><span class="r">连开 6 期</span><span class="s">龙</span></div>
+        <div class="tabs"><button class="on">PK10 4</button><button>时时彩 4</button><button>PC28 2</button><button>快开 2</button><button>六合 2</button></div>
+        <div class="gh"><b>PK10</b><small>4 款</small></div>
+        <div class="cards">
+          <a class="card"><img src="../shared/game-icons/pk10-race-alt-object.png" alt=""><span><span class="nm">极速赛车<br>（自选）</span><span class="tm"><i></i>00:49</span></span></a>
+          <a class="card"><img src="../shared/game-icons/pk10-airship-object.png" alt=""><span><span class="nm">极速飞艇</span><span class="tm"><i></i>01:00</span></span></a>
+          <a class="card"><span class="op op-hot">热门</span><img src="../shared/game-icons/pk10-race-object.png" alt=""><span><span class="nm">极速赛车</span><span class="tm"><i></i>01:11</span></span></a>
+          <a class="card"><span class="op op-new">NEW</span><img src="../shared/game-icons/pk10-lucky10-object.png" alt=""><span><span class="nm">澳洲幸运10</span><span class="tm"><i></i>04:23</span></span></a>
+        </div>
+        <div class="gh"><b>时时彩</b><small>4 款</small></div>
+        <div class="cards">
+          <a class="card"><img src="../shared/game-icons/ssc-clock-object.png" alt=""><span><span class="nm">极速时时彩</span><span class="tm"><i></i>00:27</span></span></a>
+          <a class="card"><img src="../shared/game-icons/pk10-airship-object.png" alt=""><span><span class="nm">幸运飞艇</span><span class="tm"><i></i>04:01</span></span></a>
+        </div>
+      </div>
+      <p class="note"><span class="k">问题</span>五个分区、14 张卡，<b>没有一处比别处重</b>。
+        眼睛落不下来，就只能从左上角一张一张扫 —— 扫完还是不知道该点哪个。
+        <br><span class="k">还有</span>「哪一场马上开」是这一屏唯一在变的信息，
+        却被做成最小的灰字，而且<b>只在分区内排序</b>：00:27 那张在第二区，
+        第一区最快的是 00:49，页面没有把最快的那张端出来。</p>
+    </div>
+
+    <!-- A -->
+    <div>
+      <div class="colhd"><b>A · 开奖时刻表</b><span class="tag pick">建议</span><em>给页面一个落点</em></div>
+      <div class="ph">
+        <div class="gtop"><span class="bk">‹</span><b>彩票游戏</b><small>· 幸运组</small><span class="bal">240,000.00</span></div>
+        <div class="streak"><span class="g">极速赛车</span><span class="n">· 龙虎</span><span class="r">连开 6 期</span><span class="s">龙</span></div>
+        <div class="va-hd"><b>马上开奖</b><small>全部 14 款里最快的</small><em>全部 ›</em></div>
+        <div class="va-strip">
+          <a class="va-s"><img src="../shared/game-icons/ssc-clock-object.png" alt="">
+            <span class="nm">极速时时彩</span>
+            <span class="va-ring"><svg viewBox="0 0 20 20"><circle class="tk" cx="10" cy="10" r="8"/><circle class="pr" cx="10" cy="10" r="8" stroke="#e0454f" stroke-dasharray="50.3" stroke-dashoffset="32"/></svg><b style="color:#c62f3a">00:27</b></span></a>
+          <a class="va-s"><img src="../shared/game-icons/pk10-race-alt-object.png" alt="">
+            <span class="nm">极速赛车（自选）</span>
+            <span class="va-ring"><svg viewBox="0 0 20 20"><circle class="tk" cx="10" cy="10" r="8"/><circle class="pr" cx="10" cy="10" r="8" stroke="#d68a1e" stroke-dasharray="50.3" stroke-dashoffset="17"/></svg><b style="color:#a4660c">00:49</b></span></a>
+          <a class="va-s"><img src="../shared/game-icons/pk10-airship-object.png" alt="">
+            <span class="nm">极速飞艇</span>
+            <span class="va-ring"><svg viewBox="0 0 20 20"><circle class="tk" cx="10" cy="10" r="8"/><circle class="pr" cx="10" cy="10" r="8" stroke="#12a150" stroke-dasharray="50.3" stroke-dashoffset="10"/></svg><b style="color:#0f8a3d">01:00</b></span></a>
+        </div>
+        <div class="tabs"><button class="on">PK10 4</button><button>时时彩 4</button><button>PC28 2</button><button>快开 2</button><button>六合 2</button></div>
+        <div class="gh"><b>PK10</b><small>4 款</small></div>
+        <div class="cards">
+          <a class="card"><img src="../shared/game-icons/pk10-race-alt-object.png" alt=""><span><span class="nm">极速赛车（自选）</span><span class="tm"><i></i>00:49</span></span></a>
+          <a class="card"><img src="../shared/game-icons/pk10-airship-object.png" alt=""><span><span class="nm">极速飞艇</span><span class="tm"><i></i>01:00</span></span></a>
+        </div>
+      </div>
+      <p class="note"><span class="k">治的是什么</span>「没有落点」。整页第一个视觉重量给<b>跨分区最快开的三款</b> ——
+        选游戏时真正在比的就是这个，原来它藏在 11px 灰字里。
+        <br><span class="k">为什么是横滑不是大 banner</span>banner 只能推<b>一款</b>，
+        而「马上开」天然是<b>一串</b>，且每分钟都在换人。横滑既表达顺序，也不占死一屏。
+        <br><span class="k">代价</span>约 <b>120px</b>，分区网格整体下移一屏的 1/6。
+        <br><span class="k">要注意</span>这一条与下面分区里的卡是<b>同一批游戏</b>，会出现两次 ——
+        可接受（推荐位本来就是「从下面挑出来的」），但别再加第三处重复。</p>
+    </div>
+
+    <!-- B -->
+    <div>
+      <div class="colhd"><b>B · 系列色</b><span class="tag pick">建议打底</span><em>Alex 08-11 就提过</em></div>
+      <div class="ph">
+        <div class="gtop"><span class="bk">‹</span><b>彩票游戏</b><small>· 幸运组</small><span class="bal">240,000.00</span></div>
+        <div class="streak"><span class="g">极速赛车</span><span class="n">· 龙虎</span><span class="r">连开 6 期</span><span class="s">龙</span></div>
+        <div class="tabs"><button class="on">PK10 4</button><button>时时彩 4</button><button>PC28 2</button><button>快开 2</button><button>六合 2</button></div>
+        <div class="vb-gh s-race"><span class="bar"></span><b>PK10</b><small>4 款</small></div>
+        <div class="cards">
+          <a class="card vb-card s-race"><span class="plate"><img src="../shared/game-icons/pk10-race-alt-object.png" alt=""></span><span><span class="nm">极速赛车（自选）</span><span class="tm"><i></i>00:49</span></span></a>
+          <a class="card vb-card s-race"><span class="plate"><img src="../shared/game-icons/pk10-airship-object.png" alt=""></span><span><span class="nm">极速飞艇</span><span class="tm"><i></i>01:00</span></span></a>
+        </div>
+        <div class="vb-gh s-ssc"><span class="bar"></span><b>时时彩</b><small>4 款</small></div>
+        <div class="cards">
+          <a class="card vb-card s-ssc"><span class="plate"><img src="../shared/game-icons/ssc-clock-object.png" alt=""></span><span><span class="nm">极速时时彩</span><span class="tm"><i></i>00:27</span></span></a>
+          <a class="card vb-card s-ssc"><span class="plate"><img src="../shared/game-icons/pk10-airship-object.png" alt=""></span><span><span class="nm">幸运飞艇</span><span class="tm"><i></i>04:01</span></span></a>
+        </div>
+        <div class="vb-gh s-pc28"><span class="bar"></span><b>PC28</b><small>2 款</small></div>
+        <div class="cards">
+          <a class="card vb-card s-pc28"><span class="plate"><img src="../shared/game-icons/pc28-fast-object.png" alt=""></span><span><span class="nm">PC28</span><span class="tm"><i></i>01:58</span></span></a>
+          <a class="card vb-card s-pc28"><span class="plate"><img src="../shared/game-icons/pc28-canada-object.png" alt=""></span><span><span class="nm">加拿大PC28</span><span class="tm"><i></i>01:47</span></span></a>
+        </div>
+        <div class="vb-gh s-kl8"><span class="bar"></span><b>快开</b><small>2 款</small></div>
+        <div class="cards">
+          <a class="card vb-card s-kl8"><span class="plate"><img src="../shared/game-icons/kl8-happy10-object.png" alt=""></span><span><span class="nm">极速快乐十分</span><span class="tm"><i></i>01:22</span></span></a>
+          <a class="card vb-card s-kl8"><span class="plate"><img src="../shared/game-icons/kl8-k3-object.png" alt=""></span><span><span class="nm">极速快3</span><span class="tm"><i></i>00:58</span></span></a>
+        </div>
+      </div>
+      <p class="note"><span class="k">治的是什么</span>「没有身份」。五个分区各一色，色只落在
+        <b>缩略图底板 · 标题色条 · 倒计时</b>三处 —— 卡还是白的，页面不会花。
+        滚动时余光就知道走到哪一区了，这是纯文字标题给不了的。
+        <br><span class="k">不加任何新信息</span>纯视觉改动，风险最低，也最直接回答「dull」。
+        <br><span class="k">Alex 提过</span>08-11 会上「卡太白、要系列色」被记成 R4（等运营正式清单）——
+        但<b>色不必等清单</b>，五个分类是已经定下来的，先用五个色占位即可。
+        <br><span class="k">要注意</span>色板得和运营的彩种品牌色对得上，否则上线要返工；
+        这里五个色是从 tokens 现有的 tag 色系里挑的，不新造。</p>
+    </div>
+
+    <!-- C -->
+    <div>
+      <div class="colhd"><b>C · 盘面上卡</b><span class="tag later">先别做</span><em>数据没到位</em></div>
+      <div class="ph">
+        <div class="gtop"><span class="bk">‹</span><b>彩票游戏</b><small>· 幸运组</small><span class="bal">240,000.00</span></div>
+        <div class="streak"><span class="g">极速赛车</span><span class="n">· 龙虎</span><span class="r">连开 6 期</span><span class="s">龙</span></div>
+        <div class="tabs"><button class="on">PK10 4</button><button>时时彩 4</button><button>PC28 2</button><button>快开 2</button><button>六合 2</button></div>
+        <div class="gh"><b>PK10</b><small>4 款</small></div>
+        <div class="cards">
+          <a class="card vc-card"><img src="../shared/game-icons/pk10-race-object.png" alt=""><span>
+            <span class="nm">极速赛车<em class="vc-flag">⚡6</em></span>
+            <span class="vc-beads"><i class="r dim"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i></span>
+            <span class="tm"><i></i>01:11</span></span></a>
+          <a class="card vc-card"><img src="../shared/game-icons/pk10-airship-object.png" alt=""><span>
+            <span class="nm">极速飞艇</span>
+            <span class="vc-beads"><i class="b dim"></i><i class="r"></i><i class="b"></i><i class="b"></i><i class="r"></i></span>
+            <span class="tm"><i></i>01:00</span></span></a>
+          <a class="card vc-card"><img src="../shared/game-icons/pk10-race-alt-object.png" alt=""><span>
+            <span class="nm">极速赛车（自选）</span>
+            <span class="vc-beads"><i class="b dim"></i><i class="b"></i><i class="r"></i><i class="b"></i><i class="b"></i></span>
+            <span class="tm"><i></i>00:49</span></span></a>
+          <a class="card vc-card"><img src="../shared/game-icons/pk10-lucky10-object.png" alt=""><span>
+            <span class="nm">澳洲幸运10<em class="vc-flag">⚡5</em></span>
+            <span class="vc-beads"><i class="b dim"></i><i class="b"></i><i class="b"></i><i class="b"></i><i class="b"></i></span>
+            <span class="tm"><i></i>04:23</span></span></a>
+        </div>
+      </div>
+      <p class="note"><span class="k">治的是什么</span>「像应用商店，不像彩票厅」。
+        珠子一上卡，页面立刻是<b>活的盘面</b>而不是一格格图标，而且这是<b>本产品独有</b>的信息 ——
+        长龙那条横幅说的事，在卡上直接看得见（⚡6 ＝ 连开 6 期）。
+        <br><span class="k">为什么先别做</span>要求<b>每个彩种都有可展示的近期盘面</b>。
+        现在只有极速赛车／飞艇接了真引擎，其余 12 款画出来的珠子<b>是编的</b> ——
+        而这一屏的珠子会被玩家当成真结果去追。<b>假盘面比没盘面糟。</b>
+        <br><span class="k">什么时候做</span>运营给齐彩种清单、后端能吐最近 N 期两面之后。
+        到那时它值得做，而且能顺手把长龙横幅并进来（现在那条只能轮播一款）。</p>
+    </div>
+
+  </div>
+</div>
+</body></html>

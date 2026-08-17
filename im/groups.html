@@ -5,20 +5,64 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>群组 · 消息 · IM168 原型</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css"><!-- 唯一令牌来源，必须排在其它样式表之前 -->
 <link rel="stylesheet" href="shared/styles.css?v=20260730g">
 <!-- 样式已迁至 shared/styles.css（2026-07-09 拆分）；新增样式请直接写入该文件 -->
 <!-- 历史试跑「工作台」（V3 · 2026-07-30 移植）的样式单独一档，不混进 530KB 的 styles.css -->
 <link rel="stylesheet" href="shared/trialrun.css?v=20260730g">
-<link rel="stylesheet" href="shared/reference-theme.css?v=20260812bluecanvas54">
-<script src="shared/ui-consistency.js?v=20260812auth1" defer></script>
+<link rel="stylesheet" href="shared/reference-theme.css?v=20260817f1">
+<script src="shared/ui-consistency.js?v=20260817f1" defer></script>
+<!-- 2026-08-11：08-06 那块临时 <style>（藏掉底部四 Tab 与管理面板入口）已整段删除 ——
+     Alex 08-11：「群组的呢？这个还没有拎回去…下 100% 把这些全部加回来」。
+     配套的另一半在 shared/pagenav.js（HIDDEN 块同步删掉）。 -->
 <style>
-/* ── 临时 · 演示范围收窄（2026-08-06）：仅开放 聊天 → 游戏厅 动线。
-   底部四 Tab（资讯/群组/好友/我的）与 管理面板 入口先藏起来；
-   客户验收 Lobby/投注/策略投注 后把这块 <style> 整段删掉即可恢复。 */
-.tabbar[data-navviews]{display:none!important;} /* app.js 会按 view 用行内样式开关这条 bar，必须 !important 压过 */
-[data-act="show"][data-arg="owner"]{display:none!important;}
+/* ══ 08-13U · 群组屏：导航图标统一 ＋ 演示锁 ＋ 游戏厅那一行的版式 ═══════════ */
+/* 24px 描线导航，与 .hallbar 同源：只换颜色，不换图形 */
+.tabbar-line .nav svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round;filter:none!important;transform:none!important;}
+.tabbar-line .nav{color:var(--muted-foreground);}
+.tabbar-line .nav.on{color:var(--primary);}
+/* ⚠ 好友那一枚<b>不是</b>用页面里的 svg 画的：styles.css 有一条
+   .tabbar .friend-nav>svg{display:none!important} ＋ ::before 用 mask 贴图标
+   （class 是运行时加的，所以看 HTML 看不出来）。它默认 28px，比另外三枚大一档，
+   这里按 24 对齐；图形本身与另外三枚同为描线，不用换。 */
+.page-groups .tabbar .friend-nav::before{width:24px;height:24px;}
+
+/* 演示锁：这一屏<b>只有</b>「幸运组 · 游戏厅」可点。
+   ⚠ 第一版把锁写在 .im-lock（列表容器）里 —— 搜索框与筛选 chip <b>不在这个容器内</b>，
+     实测它们仍然可点。所以锁按<b>页面</b>写，再把游戏厅那一行单独解锁回来。 */
+.page-groups .imrow,
+.page-groups .imchip,
+.page-groups .imchips,
+.page-groups .imsearch,
+.page-groups .imsearch input,
+.page-groups .imtabs,
+.page-groups .chsub,
+.page-groups .tabbar .nav,
+.page-groups .gback,
+.page-groups .bal{pointer-events:none;}
+.page-groups .imrow{cursor:default;}
+.page-groups .imrow.imrow-hall{pointer-events:auto;cursor:pointer;}
+
+/* 游戏厅那一行：撤掉未读角标之后，「进入 ›」自己竖直居中 */
+.rmeta-enter{display:flex;align-items:center;}
+.rmeta-enter .hall-enter{margin:0;}
+
+/* ══ 08-16F · 照 Figma 还原后新增的两件也要进演示锁 ═══════════════════════════
+   .imsearchrow 是搜索行的新外壳、.imppl 是它右端那枚群组图标（Figma 里有，本来没做）。
+   锁的口径不变：这一屏只有 .imrow-hall 可点。
+   回滚：连同 reference-theme.css 末尾「聊天页照 Figma 还原」整段一起删。 */
+.page-groups .imsearchrow,
+.page-groups .imppl{pointer-events:none;}
 </style>
 </head>
+<!-- ══ 08-16F（Hector：Follow the colour and style exactly like the figma · 游戏厅是另一回事）══
+     这一页退出全站淡蓝渐隐体系：<body> 上的 x-fade 拿掉（原值 class="page-groups x-fade"）。
+     x-fade 只是「这一页戴不戴那张蓝头」的开关（见 reference-theme.css ② 段），
+     摘掉即回浅色；游戏厅五页 / admin / wallet / game-* 的 x-fade 一个都没动。
+     摘掉后仍有一批 .page-groups（不带 x-fade）作用域的反白/玻璃残留，
+     由 reference-theme.css 末尾「聊天页照 Figma 还原」整段逐条覆盖回浅色。
+     回滚：把 x-fade 加回本行 ＋ 删掉那一整段。 -->
 <body class="page-groups" data-im168-default="groups">
   <div class="stage">
     <div class="phone" data-game="pk">
@@ -28,8 +72,7 @@
           <div class="gtop">
             <span class="gback" data-act="show" data-arg="groups"><svg class="icx" viewBox="25.0 51.0 11.0 17.0" fill="none"><path d="M34 66L27 59.5L34 53" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
             <span class="gtitle" data-act="gameheadmenu" role="button" aria-label="切换游戏" aria-haspopup="menu" aria-expanded="false" tabindex="0">
-              <b class="gname gname-pk">SG飞艇</b><b class="gname gname-pk10">PK10</b><b class="gname gname-ssc">极速时时彩</b><b class="gname gname-soon">游戏厅</b><i class="tcaret"><svg class="icx" viewBox="371.3 56.9 12.6 7.4" fill="none"><path d="M321.5 47.5L326 52L321.5 56.5" stroke="currentColor" stroke-width="1.8px" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="rotate(90 377.57 60.64) matrix(1.1661579810495626 0 0 1.1661579810495626 0 0.00044415087462888964)"/></svg></i>
-
+              <b class="gname gname-pk">SG飞艇</b><b class="gname gname-pk10">PK10</b><b class="gname gname-ssc">极速时时彩</b><b class="gname gname-soon">游戏厅</b><!-- 2026-08-13（Hector）：顶栏统一成「标题 · 群组」两段式，与彩票那一屏一致 --><small>· 幸运组</small><i class="tcaret"><svg class="icx" viewBox="371.3 56.9 12.6 7.4" fill="none"><path d="M321.5 47.5L326 52L321.5 56.5" stroke="currentColor" stroke-width="1.8px" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="rotate(90 377.57 60.64) matrix(1.1661579810495626 0 0 1.1661579810495626 0 0.00044415087462888964)"/></svg></i>
             </span>
             <span class="sp"></span>
             <span class="bal" data-act="show" data-arg="wallet"><svg class="wic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"/><path d="M3 8V6a2 2 0 0 1 2-2h10"/><circle cx="16.5" cy="12.5" r="1.3" fill="currentColor" stroke="none"/></svg><b>240,000.00</b></span>
@@ -43,8 +86,8 @@
             <div class="ri-line1">
               <span class="rper"><b>00089期</b></span>
               <span class="sealgrp">
-                <svg class="sealpie" viewBox="0 0 20 20" aria-hidden="true"><circle class="track" cx="10" cy="10" r="8"/><circle class="prog" cx="10" cy="10" r="8"/></svg>
-                <span class="rseal-lab">投注时间还剩</span><span class="rseal">0分48秒</span>
+                <svg class="sealpie tclock" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.2V12l3.2 2"/></svg>
+                <span class="rseal-lab">投注时间还剩</span><span class="rseal">00:48</span>
               </span>
             </div>
             <div class="ri-line2" data-act="results">
@@ -94,7 +137,17 @@
 
           <!-- ===== 聊天 / 群组（风格 B）===== -->
           <div class="view view-groups">
-            <div class="imsearch"><input placeholder="搜索"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></div>
+            <!-- ══ 08-16F · 搜索行照 Figma 重排 ═══════════════════════════════════
+                 Figma 的 Top Section 是一整行：h48 · px16 · gap10 · 底 #F9FAFA，
+                 里面是「胶囊搜索框（flex-1 · 底 #F5F5F5 · r8）＋ 右端一枚群组图标（带红点）」。
+                 原来这里只有裸 .imsearch 一件，底色只能靠页面兜 —— 加一层 .imsearchrow
+                 才能把「行底 #F9FAFA / 框底 #F5F5F5」两档分开（Figma 就是两档）。
+                 右端那枚 .imppl 是 Figma 上有、原型缺的一件；纯装饰，已进演示锁（页内 <style>）。
+                 回滚：删掉 .imsearchrow 与 .imppl 两个标签，.imsearch 放回 .view-groups 直属。 -->
+            <div class="imsearchrow">
+              <div class="imsearch"><input placeholder="搜索"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></div>
+              <span class="imppl" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 18.5c0-3 2.5-4.8 5.5-4.8s5.5 1.8 5.5 4.8"/><path d="M16.2 6.2a3 3 0 0 1 0 5.6"/><path d="M17.6 13.9c2 .5 3.4 2 3.4 4.1"/></svg><i class="imppl-dot"></i></span>
+            </div>
             <div class="siterow">
               <span class="sitem" data-act="drawer" aria-label="打开侧边栏"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span>
               <span class="sitem on" data-act="sgrp"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>最近</span>
@@ -108,14 +161,23 @@
               <span class="imchip">已加入</span>
               <span class="imchip">未加入</span>
             </div>
-            <div class="imlist" style="flex:1;overflow:auto;">
+            <!-- ══ 08-13U（Hector：make all buttons unclickable except 游戏厅）════════
+                 这一屏在演示里只承担一件事：<b>从聊天走进游戏厅</b>。
+                 其余的行、页签、筛选、搜索、底部导航都还没有对应的成品屏，
+                 点下去只会跳到半成品或原地不动 —— 演示时那一下就要花一句话解释。
+                 所以整屏加 .im-lock：除 .imrow-hall 之外一律 pointer-events:none。
+                 ⚠ 这是<b>演示锁</b>，不是设计决定：把 .im-lock 从这一层去掉即可全部解锁。 -->
+            <div class="imlist im-lock" style="flex:1;overflow:auto;">
               <div class="chsub">频道内群组</div>
-              <div class="imrow im-pin" data-act="show" data-arg="owner">
-                <div class="sq sq-admin">管</div>
-                <div class="gx"><b>幸运组 · 管理面板</b><span><em id="pinApTxt">4</em> 个待审核申请</span></div>
-                <div class="rmeta"><span class="badge" id="pinApCnt">4</span></div>
-              </div>
-              <div class="imrow imrow-hall" data-act="show" data-arg="hall"><div class="sq sq-game"><img src="shared/group-assets/game-hall-3d.png" alt="" aria-hidden="true"></div><div class="gx"><b>幸运组 · 游戏厅</b><span>14 款游戏 · 策略投注</span></div><div class="rmeta"><span class="badge">12</span><span class="hall-enter">进入 ›</span></div></div>
+              <!-- ══ 08-13S（Hector：Remove this from outside）════════════════════════
+                   原来这里钉着一行「幸运组 · 管理面板 · 4 个待审核申请」——
+                   群列表是<b>玩家的聊天入口</b>，把后台钉在最上面，等于让每个人
+                   （包括没有权限的成员）天天看见一个自己进不去的东西。
+                   管理中心 08-13 已经搬进游戏厅：顶栏钱包<b>右边</b>那枚齿轮，
+                   只在群主视角出现（见 shared/role.js）。这一行因此整段撤掉。
+                   ⚠ 与它成对的 #pinApTxt / #pinApCnt 也一起没了 —— 全项目没有别处引用（已 grep）。
+                   回滚：把这一段注释换回原来的 .imrow.im-pin 即可（data-act="show" data-arg="owner"）。 -->
+              <div class="imrow imrow-hall" data-act="show" data-arg="hall"><div class="sq sq-game"><img src="shared/group-assets/game-hall-3d.png" alt="" aria-hidden="true"></div><div class="gx"><b>幸运组 · 游戏厅</b><span>14 款游戏 · 策略投注</span></div><div class="rmeta rmeta-enter"><span class="hall-enter">进入 ›</span></div></div>
               <div class="imrow"><div class="sq sq-notice"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l7 4V5L8 9H4z"/><path d="M18 9a4 4 0 0 1 0 6"/></svg></div><div class="gx"><b>公告</b><span>群主：今晚 8 点开盘</span></div><span class="arr">›</span></div>
               <div class="imrow"><div class="sq sq-chat"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-4 4v-4H4z"/></svg></div><div class="gx"><b>极速专区·闲聊</b><span>王哥：今天手气不错</span></div><div class="rmeta"><span class="badge">3</span></div></div>
               <div class="imrow"><div class="sq sq-red"><svg viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="11" rx="2"/><path d="M4 9V6h16v3M12 9v11"/><path d="M9 6a3 3 0 0 1 3-2 3 3 0 0 1 3 2"/></svg></div><div class="gx"><b>VIP大厅·优惠群</b><span>李姐 发了一个红包</span></div><span class="arr">›</span></div>
@@ -126,7 +188,7 @@
 
           <!-- ===== 外层消息搜索（首页 🔍）===== -->
           <div class="view view-search">
-            <div class="subhead"><span class="bk" data-act="show" data-arg="home"><svg class="icx" viewBox="25.0 51.0 11.0 17.0" fill="none"><path d="M34 66L27 59.5L34 53" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>搜索</b><span class="rt"></span></div>
+            <div class="subhead"><span class="bk" data-act="show" data-arg="groups"><svg class="icx" viewBox="25.0 51.0 11.0 17.0" fill="none"><path d="M34 66L27 59.5L34 53" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>搜索</b><span class="rt"></span></div>
             <div class="searchbar"><svg class="icx" viewBox="349.3 59.1 19.0 19.0" fill="none"><path d="M340.176 66.123C340.044 66.3319 340.064 66.5981 340.215 66.7842L340.287 66.8584L343.445 69.5654C343.965 70.0848 343.964 70.9269 343.445 71.4463C342.961 71.931 342.194 71.964 341.672 71.5439L341.564 71.4463L338.799 68.2861C338.625 68.0873 338.332 68.0446 338.108 68.1855L338.087 68.1982C338.937 67.6764 339.655 66.9609 340.181 66.1133L340.176 66.123ZM338.042 68.2266C338.036 68.2299 338.03 68.232 338.024 68.2354C338.034 68.2294 338.045 68.2247 338.055 68.2188L338.042 68.2266ZM340.35 65.8271L340.319 65.8779C340.331 65.8567 340.344 65.8358 340.355 65.8145C340.353 65.8184 340.352 65.8232 340.35 65.8271Z" fill="currentColor" transform="matrix(1.0666458333333333 0 0 1.0666458333333333 0 0.008197916666639004)"></path><circle cx="334.835" cy="62.8357" r="5.99972" stroke="currentColor" stroke-width="1.5px" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="matrix(1.0666458333333333 0 0 1.0666458333333333 0 0.008197916666639004)"></circle></svg> 搜索消息 / 注单 / 成员 / 策略…</div>
             <div class="scroll2" style="flex:1;">
               <div class="chsub">最近搜索</div>
@@ -223,78 +285,21 @@
         </div>
 
         <!-- ===== 底部导航（外壳级：资讯 · 聊天 · 消息 · 我的）===== -->
-        <nav class="tabbar" data-navviews="news groups home me">
-          <div class="nav" data-act="show" data-arg="news"><svg class="icx ic-off" viewBox="0 0 52 30" fill="none">
-<g clip-path="url(#clip0_40008731_35691)">
-<path d="M24.202 4.91874C25.2344 4.02709 26.7652 4.02709 27.7977 4.91874L37.4901 13.2898C37.8032 13.5606 37.8378 14.0341 37.5672 14.3474C37.2965 14.6607 36.823 14.6951 36.5096 14.4246L34.7498 12.9041V22.0574C34.7497 24.1283 33.0708 25.8073 30.9998 25.8074H20.9998C18.9288 25.8074 17.2499 24.1284 17.2498 22.0574V12.9041L15.4901 14.4246C15.1767 14.6952 14.7032 14.6606 14.4324 14.3474C14.1617 14.034 14.1962 13.5606 14.5096 13.2898L24.202 4.91874ZM26.8172 6.0535C26.3479 5.64821 25.6517 5.64821 25.1824 6.0535L18.7498 11.6092V22.0574C18.7499 23.3 19.7572 24.3074 20.9998 24.3074H23.9998V19.0574C23.9998 18.5051 24.4475 18.0574 24.9998 18.0574H26.9998C27.552 18.0575 27.9998 18.5052 27.9998 19.0574V24.3074H30.9998C32.2423 24.3073 33.2497 23.2999 33.2498 22.0574V11.6092L26.8172 6.0535Z" fill="currentColor"/>
-<path d="M24.202 4.91874C25.2344 4.02709 26.7652 4.02709 27.7977 4.91874L37.4901 13.2898C37.8032 13.5606 37.8378 14.0341 37.5672 14.3474C37.2965 14.6607 36.823 14.6951 36.5096 14.4246L34.7498 12.9041V22.0574C34.7497 24.1283 33.0708 25.8073 30.9998 25.8074H20.9998C18.9288 25.8074 17.2499 24.1284 17.2498 22.0574V12.9041L15.4901 14.4246C15.1767 14.6952 14.7032 14.6606 14.4324 14.3474C14.1617 14.034 14.1962 13.5606 14.5096 13.2898L24.202 4.91874ZM26.8172 6.0535C26.3479 5.64821 25.6517 5.64821 25.1824 6.0535L18.7498 11.6092V22.0574C18.7499 23.3 19.7572 24.3074 20.9998 24.3074H23.9998V19.0574C23.9998 18.5051 24.4475 18.0574 24.9998 18.0574H26.9998C27.552 18.0575 27.9998 18.5052 27.9998 19.0574V24.3074H30.9998C32.2423 24.3073 33.2497 23.2999 33.2498 22.0574V11.6092L26.8172 6.0535Z" fill="black" fill-opacity="0.2"/>
-</g>
-<defs>
-<clipPath id="clip0_40008731_35691">
-<rect width="52" height="30" fill="white"/>
-</clipPath>
-</defs>
-</svg><svg class="icx ic-on" viewBox="0 0 52 30" fill="none">
-<path d="M24.202 4.91874C25.2344 4.02709 26.7652 4.02709 27.7977 4.91874L37.4901 13.2898C37.8032 13.5606 37.8378 14.0341 37.5672 14.3474C37.2965 14.6607 36.823 14.6951 36.5096 14.4246L34.7498 12.9041V22.0574C34.7497 24.1283 33.0708 25.8073 30.9998 25.8074H20.9998C18.9288 25.8074 17.2499 24.1284 17.2498 22.0574V12.9041L15.4901 14.4246C15.1767 14.6952 14.7032 14.6606 14.4324 14.3474C14.1617 14.034 14.1962 13.5606 14.5096 13.2898L24.202 4.91874ZM24.9998 18.0574C24.4475 18.0574 23.9998 18.5051 23.9998 19.0574V24.3074H27.9998V19.0574C27.9998 18.5052 27.552 18.0575 26.9998 18.0574H24.9998Z" fill="currentColor"/>
-</svg><span>资讯</span></div>
-          <div class="nav" data-act="show" data-arg="groups"><svg class="icx ic-off" viewBox="0 0 52 30" fill="none">
-<g clip-path="url(#clip0_40008731_35855)">
-<mask id="path-1-inside-1_40008731_35855" fill="white">
-<path d="M26.2482 4.93164C31.667 4.93164 36.0596 9.3244 36.0597 14.7432C36.0597 20.162 31.667 24.5547 26.2482 24.5547C24.387 24.5547 22.6469 24.0368 21.1642 23.1367L17.6007 24.8213C16.7024 25.2457 15.7374 24.3763 16.0656 23.4385L17.5324 19.2471C16.8338 17.898 16.4367 16.3672 16.4367 14.7432C16.4368 9.32443 20.8294 4.93169 26.2482 4.93164Z"/>
-</mask>
-<path d="M26.2482 4.93164V3.43164H26.2482L26.2482 4.93164ZM36.0597 14.7432H37.5597V14.7431L36.0597 14.7432ZM26.2482 24.5547L26.2482 26.0547H26.2482V24.5547ZM21.1642 23.1367L21.9426 21.8545C21.5118 21.593 20.9786 21.5653 20.5231 21.7806L21.1642 23.1367ZM17.6007 24.8213L18.2414 26.1776L18.2418 26.1774L17.6007 24.8213ZM16.0656 23.4385L14.6498 22.943L14.6497 22.943L16.0656 23.4385ZM17.5324 19.2471L18.9482 19.7425C19.0846 19.3528 19.0543 18.9241 18.8644 18.5574L17.5324 19.2471ZM16.4367 14.7432L14.9367 14.7431V14.7432H16.4367ZM26.2482 4.93164V6.43164C30.8385 6.43164 34.5596 10.1528 34.5597 14.7432L36.0597 14.7432L37.5597 14.7431C37.5596 8.49599 32.4954 3.43164 26.2482 3.43164V4.93164ZM36.0597 14.7432H34.5597C34.5597 19.3336 30.8386 23.0547 26.2482 23.0547V24.5547V26.0547C32.4955 26.0547 37.5597 20.9905 37.5597 14.7432H36.0597ZM26.2482 24.5547L26.2482 23.0547C24.669 23.0547 23.1971 22.616 21.9426 21.8545L21.1642 23.1367L20.3858 24.419C22.0967 25.4575 24.105 26.0547 26.2482 26.0547L26.2482 24.5547ZM21.1642 23.1367L20.5231 21.7806L16.9596 23.4652L17.6007 24.8213L18.2418 26.1774L21.8053 24.4928L21.1642 23.1367ZM17.6007 24.8213L16.96 23.465C17.2662 23.3204 17.5925 23.6165 17.4814 23.9339L16.0656 23.4385L14.6497 22.943C13.8823 25.136 16.1387 27.1709 18.2414 26.1776L17.6007 24.8213ZM16.0656 23.4385L17.4814 23.9339L18.9482 19.7425L17.5324 19.2471L16.1165 18.7516L14.6498 22.943L16.0656 23.4385ZM17.5324 19.2471L18.8644 18.5574C18.2728 17.4147 17.9367 16.1198 17.9367 14.7432H16.4367H14.9367C14.9367 16.6147 15.3949 18.3812 16.2003 19.9368L17.5324 19.2471ZM16.4367 14.7432L17.9367 14.7432C17.9367 10.1528 21.6579 6.43168 26.2482 6.43164L26.2482 4.93164L26.2482 3.43164C20.001 3.4317 14.9368 8.49601 14.9367 14.7431L16.4367 14.7432Z" fill="currentColor" mask="url(#path-1-inside-1_40008731_35855)"/>
-<path d="M26.2482 4.93164V3.43164H26.2482L26.2482 4.93164ZM36.0597 14.7432H37.5597V14.7431L36.0597 14.7432ZM26.2482 24.5547L26.2482 26.0547H26.2482V24.5547ZM21.1642 23.1367L21.9426 21.8545C21.5118 21.593 20.9786 21.5653 20.5231 21.7806L21.1642 23.1367ZM17.6007 24.8213L18.2414 26.1776L18.2418 26.1774L17.6007 24.8213ZM16.0656 23.4385L14.6498 22.943L14.6497 22.943L16.0656 23.4385ZM17.5324 19.2471L18.9482 19.7425C19.0846 19.3528 19.0543 18.9241 18.8644 18.5574L17.5324 19.2471ZM16.4367 14.7432L14.9367 14.7431V14.7432H16.4367ZM26.2482 4.93164V6.43164C30.8385 6.43164 34.5596 10.1528 34.5597 14.7432L36.0597 14.7432L37.5597 14.7431C37.5596 8.49599 32.4954 3.43164 26.2482 3.43164V4.93164ZM36.0597 14.7432H34.5597C34.5597 19.3336 30.8386 23.0547 26.2482 23.0547V24.5547V26.0547C32.4955 26.0547 37.5597 20.9905 37.5597 14.7432H36.0597ZM26.2482 24.5547L26.2482 23.0547C24.669 23.0547 23.1971 22.616 21.9426 21.8545L21.1642 23.1367L20.3858 24.419C22.0967 25.4575 24.105 26.0547 26.2482 26.0547L26.2482 24.5547ZM21.1642 23.1367L20.5231 21.7806L16.9596 23.4652L17.6007 24.8213L18.2418 26.1774L21.8053 24.4928L21.1642 23.1367ZM17.6007 24.8213L16.96 23.465C17.2662 23.3204 17.5925 23.6165 17.4814 23.9339L16.0656 23.4385L14.6497 22.943C13.8823 25.136 16.1387 27.1709 18.2414 26.1776L17.6007 24.8213ZM16.0656 23.4385L17.4814 23.9339L18.9482 19.7425L17.5324 19.2471L16.1165 18.7516L14.6498 22.943L16.0656 23.4385ZM17.5324 19.2471L18.8644 18.5574C18.2728 17.4147 17.9367 16.1198 17.9367 14.7432H16.4367H14.9367C14.9367 16.6147 15.3949 18.3812 16.2003 19.9368L17.5324 19.2471ZM16.4367 14.7432L17.9367 14.7432C17.9367 10.1528 21.6579 6.43168 26.2482 6.43164L26.2482 4.93164L26.2482 3.43164C20.001 3.4317 14.9368 8.49601 14.9367 14.7431L16.4367 14.7432Z" fill="black" fill-opacity="0.2" mask="url(#path-1-inside-1_40008731_35855)"/>
-<circle cx="21.8438" cy="14.75" r="1.25" fill="currentColor"/>
-<circle cx="21.8438" cy="14.75" r="1.25" fill="black" fill-opacity="0.2"/>
-<circle cx="26.5088" cy="14.75" r="1.25" fill="currentColor"/>
-<circle cx="26.5088" cy="14.75" r="1.25" fill="black" fill-opacity="0.2"/>
-<circle cx="31.1748" cy="14.75" r="0.900097" fill="currentColor"/>
-<circle cx="31.1748" cy="14.75" r="0.900097" fill="black" fill-opacity="0.2"/>
-<circle cx="31.1748" cy="14.75" r="0.900097" stroke="currentColor" stroke-width="0.699805"/>
-<circle cx="31.1748" cy="14.75" r="0.900097" stroke="black" stroke-opacity="0.2" stroke-width="0.699805"/>
-</g>
-<defs>
-<clipPath id="clip0_40008731_35855">
-<rect width="52" height="30" fill="white"/>
-</clipPath>
-</defs>
-</svg><svg class="icx ic-on" viewBox="0 0 52 30" fill="none">
-<path d="M26.2482 4.93164C31.667 4.93164 36.0596 9.3244 36.0597 14.7432C36.0597 20.162 31.667 24.5547 26.2482 24.5547C24.387 24.5547 22.6469 24.0367 21.1642 23.1367L17.6007 24.8213C16.7024 25.2456 15.7374 24.3762 16.0656 23.4385L17.5324 19.2471C16.8338 17.898 16.4366 16.3672 16.4366 14.7432C16.4368 9.32444 20.8294 4.9317 26.2482 4.93164ZM21.8439 13.501C21.1537 13.5012 20.5939 14.0607 20.5939 14.751C20.5941 15.441 21.1538 16.0008 21.8439 16.001C22.5341 16.001 23.0936 15.4411 23.0939 14.751C23.0939 14.0606 22.5342 13.501 21.8439 13.501ZM26.5099 13.501C25.8195 13.501 25.2599 14.0606 25.2599 14.751C25.2602 15.4411 25.8197 16.001 26.5099 16.001C27.1999 16.0008 27.7596 15.441 27.7599 14.751C27.7599 14.0607 27.2001 13.5011 26.5099 13.501ZM31.1749 13.501C30.4846 13.501 29.9249 14.0606 29.9249 14.751C29.9252 15.4411 30.4848 16.001 31.1749 16.001C31.8651 16.001 32.4247 15.4411 32.4249 14.751C32.4249 14.0606 31.8653 13.501 31.1749 13.501Z" fill="currentColor"/>
-</svg><span>聊天</span></div>
-          <div class="nav on" data-act="show" data-arg="home"><svg class="icx ic-off ic-stroke" viewBox="0 0 52 30" fill="none">
-<g clip-path="url(#clip0_40008731_35857)">
-<path d="M29.9523 21.7692V22.6154C29.9523 23.513 29.5886 24.3739 28.9413 25.0087C28.294 25.6434 27.4161 26 26.5006 26C25.5852 26 24.7073 25.6434 24.06 25.0087C23.4127 24.3739 23.049 23.513 23.049 22.6154V21.7692M35.7596 20.0468C34.3746 18.3846 33.3969 17.5385 33.3969 12.956C33.3969 8.75962 31.2116 7.26457 29.4129 6.53846C29.174 6.44221 28.9491 6.22115 28.8763 5.98053C28.5608 4.9276 27.6764 4 26.5006 4C25.3249 4 24.4399 4.92813 24.1277 5.98159C24.0548 6.22486 23.83 6.44221 23.591 6.53846C21.7903 7.26562 19.6071 8.75538 19.6071 12.956C19.6044 17.5385 18.6266 18.3846 17.2417 20.0468C16.6678 20.7353 17.1705 21.7692 18.1742 21.7692H34.8325C35.8308 21.7692 36.3302 20.7322 35.7596 20.0468Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M29.9523 21.7692V22.6154C29.9523 23.513 29.5886 24.3739 28.9413 25.0087C28.294 25.6434 27.4161 26 26.5006 26C25.5852 26 24.7073 25.6434 24.06 25.0087C23.4127 24.3739 23.049 23.513 23.049 22.6154V21.7692M35.7596 20.0468C34.3746 18.3846 33.3969 17.5385 33.3969 12.956C33.3969 8.75962 31.2116 7.26457 29.4129 6.53846C29.174 6.44221 28.9491 6.22115 28.8763 5.98053C28.5608 4.9276 27.6764 4 26.5006 4C25.3249 4 24.4399 4.92813 24.1277 5.98159C24.0548 6.22486 23.83 6.44221 23.591 6.53846C21.7903 7.26562 19.6071 8.75538 19.6071 12.956C19.6044 17.5385 18.6266 18.3846 17.2417 20.0468C16.6678 20.7353 17.1705 21.7692 18.1742 21.7692H34.8325C35.8308 21.7692 36.3302 20.7322 35.7596 20.0468Z" stroke="black" stroke-opacity="0.2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
-<defs>
-<clipPath id="clip0_40008731_35857">
-<rect width="52" height="30" fill="white"/>
-</clipPath>
-</defs>
-</svg><svg class="icx ic-on" viewBox="0 0 52 30" fill="none">
-<g clip-path="url(#clip0_40008731_35858)">
-<path d="M35.7596 20.0468C34.3746 18.3846 33.3969 17.5385 33.3969 12.956C33.3969 8.75962 31.2116 7.26457 29.4129 6.53846C29.174 6.44221 28.9491 6.22115 28.8763 5.98053C28.5608 4.9276 27.6764 4 26.5006 4C25.3249 4 24.4399 4.92813 24.1277 5.98159C24.0548 6.22486 23.83 6.44221 23.591 6.53846C21.7903 7.26562 19.6071 8.75538 19.6071 12.956C19.6044 17.5385 18.6266 18.3846 17.2417 20.0468C16.6678 20.7353 17.1705 21.7692 18.1742 21.7692H34.8325C35.8308 21.7692 36.3302 20.7322 35.7596 20.0468ZM29.9523 21.7692V22.6154C29.9523 23.513 29.5886 24.3739 28.9413 25.0087C28.294 25.6434 27.4161 26 26.5006 26C25.5852 26 24.7073 25.6434 24.06 25.0087C23.4127 24.3739 23.049 23.513 23.049 22.6154V21.7692" fill="currentColor"/>
-<path d="M29.9523 21.7692V22.6154C29.9523 23.513 29.5886 24.3739 28.9413 25.0087C28.294 25.6434 27.4161 26 26.5006 26C25.5852 26 24.7073 25.6434 24.06 25.0087C23.4127 24.3739 23.049 23.513 23.049 22.6154V21.7692M35.7596 20.0468C34.3746 18.3846 33.3969 17.5385 33.3969 12.956C33.3969 8.75962 31.2116 7.26457 29.4129 6.53846C29.174 6.44221 28.9491 6.22115 28.8763 5.98053C28.5608 4.9276 27.6764 4 26.5006 4C25.3249 4 24.4399 4.92813 24.1277 5.98159C24.0548 6.22486 23.83 6.44221 23.591 6.53846C21.7903 7.26562 19.6071 8.75538 19.6071 12.956C19.6044 17.5385 18.6266 18.3846 17.2417 20.0468C16.6678 20.7353 17.1705 21.7692 18.1742 21.7692H34.8325C35.8308 21.7692 36.3302 20.7322 35.7596 20.0468Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
-<defs>
-<clipPath id="clip0_40008731_35858">
-<rect width="52" height="30" fill="white"/>
-</clipPath>
-</defs>
-</svg><i class="nav-alert" aria-label="有未读消息"></i><span>消息</span></div>
-          <div class="nav" data-act="show" data-arg="me"><svg class="icx ic-off" viewBox="0 0 52 30" fill="none">
-<path d="M25.9583 16.6797C28.8349 16.6797 30.8963 17.5361 32.3519 18.7041C33.7956 19.8626 34.5969 21.2895 35.0316 22.3701C35.2962 23.0283 35.1663 23.6997 34.7835 24.1914C34.4095 24.6717 33.8136 24.9619 33.1615 24.9619H18.7552C18.1031 24.9619 17.5072 24.6718 17.1332 24.1914C16.7504 23.6997 16.6205 23.0283 16.8851 22.3701C17.3198 21.2895 18.1211 19.8626 19.5648 18.7041C21.0204 17.5361 23.0818 16.6797 25.9583 16.6797ZM25.9583 18.1797C23.4026 18.1797 21.6778 18.9324 20.5042 19.874C19.3192 20.825 18.6475 22.0087 18.2767 22.9307C18.2203 23.0712 18.2474 23.1814 18.3167 23.2705C18.395 23.3707 18.5467 23.4619 18.7552 23.4619H33.1615C33.37 23.4619 33.5217 23.3707 33.5999 23.2705C33.6693 23.1814 33.6964 23.0713 33.64 22.9307C33.2692 22.0087 32.5976 20.825 31.4124 19.874C30.2388 18.9324 28.5141 18.1797 25.9583 18.1797ZM25.9583 5.16406C28.447 5.16414 30.3363 7.37572 30.3363 9.93652C30.3359 12.497 28.4467 14.7079 25.9583 14.708C23.4699 14.708 21.5808 12.497 21.5804 9.93652C21.5804 7.37568 23.4696 5.16406 25.9583 5.16406ZM25.9583 6.66406C24.4399 6.66406 23.0804 8.05482 23.0804 9.93652C23.0808 11.8178 24.4401 13.208 25.9583 13.208C27.4765 13.2079 28.8359 11.8177 28.8363 9.93652C28.8363 8.05487 27.4768 6.66415 25.9583 6.66406Z" fill="currentColor"/>
-<path d="M25.9583 16.6797C28.8349 16.6797 30.8963 17.5361 32.3519 18.7041C33.7956 19.8626 34.5969 21.2895 35.0316 22.3701C35.2962 23.0283 35.1663 23.6997 34.7835 24.1914C34.4095 24.6717 33.8136 24.9619 33.1615 24.9619H18.7552C18.1031 24.9619 17.5072 24.6718 17.1332 24.1914C16.7504 23.6997 16.6205 23.0283 16.8851 22.3701C17.3198 21.2895 18.1211 19.8626 19.5648 18.7041C21.0204 17.5361 23.0818 16.6797 25.9583 16.6797ZM25.9583 18.1797C23.4026 18.1797 21.6778 18.9324 20.5042 19.874C19.3192 20.825 18.6475 22.0087 18.2767 22.9307C18.2203 23.0712 18.2474 23.1814 18.3167 23.2705C18.395 23.3707 18.5467 23.4619 18.7552 23.4619H33.1615C33.37 23.4619 33.5217 23.3707 33.5999 23.2705C33.6693 23.1814 33.6964 23.0713 33.64 22.9307C33.2692 22.0087 32.5976 20.825 31.4124 19.874C30.2388 18.9324 28.5141 18.1797 25.9583 18.1797ZM25.9583 5.16406C28.447 5.16414 30.3363 7.37572 30.3363 9.93652C30.3359 12.497 28.4467 14.7079 25.9583 14.708C23.4699 14.708 21.5808 12.497 21.5804 9.93652C21.5804 7.37568 23.4696 5.16406 25.9583 5.16406ZM25.9583 6.66406C24.4399 6.66406 23.0804 8.05482 23.0804 9.93652C23.0808 11.8178 24.4401 13.208 25.9583 13.208C27.4765 13.2079 28.8359 11.8177 28.8363 9.93652C28.8363 8.05487 27.4768 6.66415 25.9583 6.66406Z" fill="black" fill-opacity="0.2"/>
-</svg><svg class="icx ic-on" viewBox="0 0 52 30" fill="none">
-<g clip-path="url(#clip0_40008731_35860)">
-<path d="M25.9583 16.6797C28.8349 16.6797 30.8963 17.5361 32.3519 18.7041C33.7956 19.8626 34.5969 21.2895 35.0316 22.3701C35.2962 23.0283 35.1663 23.6997 34.7835 24.1914C34.4095 24.6717 33.8136 24.9619 33.1615 24.9619H18.7552C18.1031 24.9619 17.5072 24.6718 17.1332 24.1914C16.7504 23.6997 16.6205 23.0283 16.8851 22.3701C17.3198 21.2895 18.1211 19.8626 19.5648 18.7041C21.0204 17.5361 23.0818 16.6797 25.9583 16.6797ZM25.9583 5.16406C28.447 5.16414 30.3363 7.37572 30.3363 9.93652C30.3359 12.497 28.4467 14.7079 25.9583 14.708C23.4699 14.708 21.5808 12.497 21.5804 9.93652C21.5804 7.37568 23.4696 5.16406 25.9583 5.16406Z" fill="currentColor"/>
-</g>
-<defs>
-<clipPath id="clip0_40008731_35860">
-<rect width="52" height="30" fill="white"/>
-</clipPath>
-</defs>
-</svg><span>我的</span></div>
+        <!-- ══ 08-13U（Hector：Fix the nav icons）════════════════════════════════════
+             原来这四枚是 52×30 的<b>成对填充图标</b>（ic-off / ic-on 两份 SVG 来回换），
+             与游戏厅那条 24px 描线导航<b>不是同一套语言</b>：一半实心一半描线，
+             轻重不一（截图里 聊天／好友 明显比 资讯／我的 重）。
+             现在四枚统一成<b>24px 描线</b>，与 .hallbar 完全同源：
+             选中态只换颜色（不换图形、不加投影），红点仍挂在 好友 上。 -->
+        <nav class="tabbar tabbar-line" data-navviews="groups" data-component="ImNav">
+          <!-- 2026-08-16 Hector（底栏没照 Figma）：Figma 是四项（资讯/聊天/好友/我的），
+               只留一项会空成一张浮卡。四项补齐做形，但 home/me/news 三页 08-16 已从原型删除 ——
+               它们做成 .nav-off（无 data-act、点不动、淡化），演示不会走进死页。
+               回滚：删掉三个 .nav-off，回到只有「聊天」那一项。 -->
+          <div class="nav nav-off" aria-disabled="true"><svg viewBox="0 0 24 24"><rect x="3.2" y="4.6" width="17.6" height="14.8" rx="2.4"/><path d="M6.8 8.6h6.4M6.8 12h10.4M6.8 15.4h10.4"/></svg><span>资讯</span></div>
+          <div class="nav on" data-act="show" data-arg="groups"><svg viewBox="0 0 24 24"><path d="M4 5.4h16v10.2H9.4L5.4 19v-3.4H4z"/><path d="M8 9.2h8M8 12.2h5"/></svg><span>聊天</span></div>
+          <div class="nav nav-off" aria-disabled="true"><svg viewBox="0 0 24 24"><circle cx="9.2" cy="8.4" r="3.2"/><path d="M3.6 19c.6-3.3 2.5-5 5.6-5s5 1.7 5.6 5"/><circle cx="17.4" cy="9.6" r="2.4"/><path d="M16 14.2c2.6 0 4 1.5 4.5 4.2"/></svg><span>好友</span></div>
+          <div class="nav nav-off" aria-disabled="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c1-4.6 3.3-6.6 7-6.6s6 2 7 6.6"/></svg><span>我的</span></div>
         </nav>
 
         <!-- ===== 侧边抽屉 side menu（我的群组）===== -->
@@ -329,13 +334,13 @@
           <div class="sm-backdrop" data-act="tplcancel"></div>
           <div class="sm-sheet">
             <div class="sm-h">启动「小本试水」</div>
-            <div class="sm-sub">启动后每期自动下注，你随时可以急停</div>
+            <div class="sm-sub">启动后每期自动执行，可随时急停</div>
             <div class="srow"><span>玩法</span><b>两面 · 跟投</b></div>
             <div class="srow"><span>每期投入</span><b>10 起 · 倍投最高 40</b></div>
             <div class="srow"><span>最坏情况</span><b class="rd">−100 自动停止</b></div>
             <div class="srow"><span>达到止盈</span><b class="gn">+100 自动停止</b></div>
             <div class="srow"><span>占用预算</span><b>100 <small>/ 余额 400</small></b></div>
-            <div class="sm-note"><i><svg class="icx" viewBox="355.8 52.9 22.2 22.2" fill="none"><circle cx="344" cy="60" r="9" stroke="currentColor" stroke-width="1.5px" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="matrix(1.0666458333333333 0 0 1.0666458333333333 0 0.008197916666639004)"></circle><path d="M344.135 65.3424C343.731 65.3517 343.398 65.0263 343.398 64.6217L343.398 59.3993C343.398 59.0011 343.721 58.6784 344.119 58.6784C344.517 58.6784 344.84 59.0012 344.84 59.3993L344.84 62.0023L344.84 64.6217C344.84 65.0133 344.527 65.3333 344.135 65.3424ZM344.119 54.9994C344.425 54.9994 344.688 55.1092 344.908 55.3288C345.128 55.5484 345.237 55.8115 345.237 56.118C345.237 56.4246 345.128 56.6877 344.908 56.9073C344.688 57.1269 344.425 57.2366 344.119 57.2366C343.812 57.2366 343.549 57.1269 343.329 56.9073C343.11 56.6877 343 56.4246 343 56.118C343 55.915 343.052 55.7286 343.155 55.5587C343.255 55.3889 343.39 55.2521 343.559 55.1486C343.725 55.0491 343.912 54.9994 344.119 54.9994Z" fill="currentColor" transform="matrix(1.0666458333333333 0 0 1.0666458333333333 0 0.008197916666639004)"></path></svg></i><span>预算从余额中预留，本轮运行结束后未用部分自动退回。</span></div>
+            <div class="sm-note"><i><svg class="icx" viewBox="355.8 52.9 22.2 22.2" fill="none"><circle cx="344" cy="60" r="9" stroke="currentColor" stroke-width="1.5px" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="matrix(1.0666458333333333 0 0 1.0666458333333333 0 0.008197916666639004)"></circle><path d="M344.135 65.3424C343.731 65.3517 343.398 65.0263 343.398 64.6217L343.398 59.3993C343.398 59.0011 343.721 58.6784 344.119 58.6784C344.517 58.6784 344.84 59.0012 344.84 59.3993L344.84 62.0023L344.84 64.6217C344.84 65.0133 344.527 65.3333 344.135 65.3424ZM344.119 54.9994C344.425 54.9994 344.688 55.1092 344.908 55.3288C345.128 55.5484 345.237 55.8115 345.237 56.118C345.237 56.4246 345.128 56.6877 344.908 56.9073C344.688 57.1269 344.425 57.2366 344.119 57.2366C343.812 57.2366 343.549 57.1269 343.329 56.9073C343.11 56.6877 343 56.4246 343 56.118C343 55.915 343.052 55.7286 343.155 55.5587C343.255 55.3889 343.39 55.2521 343.559 55.1486C343.725 55.0491 343.912 54.9994 344.119 54.9994Z" fill="currentColor" transform="matrix(1.0666458333333333 0 0 1.0666458333333333 0 0.008197916666639004)"></path></svg></i><span>预算自余额预留，本轮结束后未用部分退回。</span></div>
             <div class="sm-btns"><button class="ghost" data-act="tpladjust">调整设置</button><button class="cta" data-act="tplconfirm">确认启动</button></div>
           </div>
         </div>
@@ -359,8 +364,8 @@
             <div class="ob-page on" data-ob="1">
               <div class="ob-img"><img src="shared/auto-guide/01.png" alt="" onerror="this.remove()"></div>
               <div class="ob-body">
-                <div class="ob-title">让系统帮你盯盘看走势</div>
-                <div class="ob-copy">按设定规则自动下注，实时追踪，随时急停。</div>
+                <div class="ob-title">系统自动盯盘</div>
+                <div class="ob-copy">按设定规则自动执行，实时追踪，可随时急停。</div>
               </div>
               <div class="ob-dots"><span class="on"></span><span></span><span></span></div>
               <div class="ob-ftr"><button class="pri" data-act="obnext">下一步</button></div>
@@ -368,8 +373,8 @@
             <div class="ob-page" data-ob="2">
               <div class="ob-img"><img src="shared/auto-guide/02.png" alt="" onerror="this.remove()"></div>
               <div class="ob-body">
-                <div class="ob-title">你的策略设置</div>
-                <div class="ob-copy">玩家设定触发条件、金额、倍数、止盈止损，系统只按规则执行。</div>
+                <div class="ob-title">策略设置</div>
+                <div class="ob-copy">触发条件、金额、倍数与止盈止损由玩家设定，系统按规则执行。</div>
               </div>
               <div class="ob-dots"><span></span><span class="on"></span><span></span></div>
               <div class="ob-ftr"><button class="ghost" data-act="obprev">上一步</button><button class="pri" data-act="obnext">下一步</button></div>
@@ -378,7 +383,7 @@
               <div class="ob-img"><img src="shared/auto-guide/04.png" alt="" onerror="this.remove()"></div>
               <div class="ob-body">
                 <div class="ob-title">结果一目了然</div>
-                <div class="ob-copy">实时报告命中、盈亏，并可随时急停或修改。</div>
+                <div class="ob-copy">实时回报命中与盈亏，可急停或修改。</div>
               </div>
               <div class="ob-dots"><span></span><span></span><span class="on"></span></div>
               <div class="ob-ftr"><button class="ghost" data-act="obprev">上一步</button><button class="pri" data-act="obclose">立即体验</button></div>
@@ -398,7 +403,7 @@
     </div>
   </div>
 <script src="shared/pagenav.js?v=20260730-split"></script>
-<script src="shared/app.js?v=20260808c"></script>
+<script src="shared/app.js?v=20260817f1"></script>
 <script src="shared/trialrun.js?v=20260730g"></script>
 </body>
 </html>

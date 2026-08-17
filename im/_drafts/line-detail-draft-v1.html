@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>线路详情 · 单线加回合 · draft v1 · IM168</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!--
+════════════════════════════════════════════════════════════════════════════════
+ 线路详情 ＋ 单线加回合 · draft v1 · 2026-08-13
+════════════════════════════════════════════════════════════════════════════════
+
+① Hector：「When tap on a running line. show line detail run and option to extend
+   round just for that round. Draft first」
+
+   做了什么 —— 策略卡里那几条线路（.bd-oline）原来只是<b>展示</b>，点不动。
+   现在<b>在追的线</b>（chase／stuck）可点，弹出这一条线自己的底部弹层：
+     · 抬头：投注项（冠军·大小）＋ 当前状态（在追 R4/5）＋ 本期方向（大）
+     · 三格数：已投入 ¥130 ／ 本期投注 ¥270 ／ 本期可赢 ¥259
+     · 梯子表：R1…R5 每一回合的 本期金额 / 累计投入 / 命中净收，当前回合高亮，
+       走过的回合压灰
+     · 加回合：只给这一条线加，不动同策略的其它线，也不动策略设置
+
+   为什么 —— 卡片上一条线只给了 8 个字（R4/5 · 累计投入 15 · 本期 5 · 小），
+   而玩家在这一刻真正要决定的是「这一条要不要再追一回」。原来要看清楚得先进
+   执行动态、再在整策略的梯子里找这一条；加回合更是只能改<b>整个策略</b>的 R，
+   等于为了一条线动了另外五条。
+
+   刻意<b>没</b>做的、以及代价：
+   · <b>没有做「减回合」</b>。少追一回等于当场认输并放弃已投入的钱，是个结算动作，
+     不该和「加一回」并排放在同一个步进器里。要做得单独一颗按钮＋自己的确认单。
+   · <b>没有做已命中／待触发线的弹层</b>。Hector 说的是 running line；那两种状态
+     现在点不动（.bd-oline 上没有 role/tabindex，也没有 hover 反馈），
+     免得点开一个空壳。
+   · <b>没有接真实赔率</b>。可赢按本档引擎的 PAYOUT=1.96 算（＝amt×0.96），
+     与 hall-plans.html 第 6390 行同口径；文档 §4 写的是 1.99，接真数据时要统一。
+   · <b>加回合上限暂定 +2</b>（R5→R7）。这是我拍的数，不是产品规则 ——
+     R7 单注要 ¥7,290、累计 ¥10,930，再往上一屏根本读不完，也远超余额。
+     真实上限应该由「余额 ÷ 这一注」与风控给，接数据时替换 EXT_MAX。
+   · <b>数据模型有影响</b>：现在 R 是策略级的 m.R，单线加回合需要一个<b>线级</b>的
+     覆盖值（本档用 l.R，读的时候一律走 lineR(m,l)＝l.R||m.R）。落回
+     hall-plans.html 时，lineRow / pips / ladder* 里所有 m.R 都要改成 lineR(m,l)，
+     否则卡片上还是画 R4/5、弹层里却是 R4/7。这一条是落地时最容易漏的。
+   · <b>没有写「再追一回中了赚多少」这类话</b>。梯子表里列的是每一回合的客观数字，
+     不预测、不建议 —— 预测会被读成推荐，而这是赌博产品。
+
+   数字全部由 ladderAmt / ladderSum 现算（与 hall-plans.html 同一套公式），
+   改 stake / mult / R 三个参数，表和三格数会一起跟着变，不会自相矛盾。
+   演示用的策略是 C0404R5：每注 ¥10 · 倍投 ×3 · R5，与主档 MINE[0] 一致。
+
+② 落地记录 · 2026-08-13（Hector：Looks okay, apply it）—— 同版追加
+   本草案已整段落进 hall-plans.html（标记 08-13AI）。落地时另外发现并修掉三处，
+   草案里看不出来、只有接到真页面才会暴露：
+   · advancePrototypePeriod() 的打止判断写的是 m.R —— 加过回合的线在界面上变成 R4/6，
+     行为上仍然追到 R5 就打止，等于加了个假的。已改成 lineR(m,l)，并在打止时
+     delete l.R（回合归零后线级覆盖也该跟着清，否则下一轮凭空多几回）。
+   · 期号每跳一次会重算 lanes；弹层开着时里面是上一期的数。已在 roundUpdateCue()
+     里重绘弹层体；若这条线已经打止或命中（不再 chase），直接关掉 —— 留一张说不通的表更糟。
+   · 确认钮 +0 时 disabled 但仍是实心蓝：.bd-stateacts .bd-activatebtn 那条带 !important。
+   还有一处<b>已知未跟</b>：roundHeat(m,r) 只收到 r，仍按 m.R 判「到顶」，
+   所以加过回合的线在 R5 就提前染成 hot。接真数据时改成 roundHeat(m,l)。
+════════════════════════════════════════════════════════════════════════════════
+-->
+<style>
+:root{
+  --ink:#172033; --muted:#66738a; --faint:#98a3b5;
+  --line:#edf0f3; --line-strong:#e2e7ec;
+  --surface:#fff; --sunken:#f4f6f8; --sunken-line:#d6dde5;
+  --blue:#1677ee; --blue-d:#0f63ce; --blue-soft:#edf5ff; --blue-line:#bad9f8;
+  --win:#12a150; --red:#d93640;
+  --shadow-card:0 5px 16px rgba(30,45,65,.055);
+  --r-ctrl:9px; --r-card:12px; --r-sheet:16px;
+  --font:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{margin:0;font-family:var(--font);background:#eef2f5;color:var(--ink);
+  display:flex;align-items:flex-start;justify-content:center;padding:28px 16px 60px;}
+.stage{width:390px;max-width:100%;}
+.caption{font-size:12px;line-height:1.7;color:var(--muted);margin:0 0 14px;}
+.caption b{color:var(--ink);}
+.phone{position:relative;height:780px;border-radius:26px;overflow:hidden;
+  background:#f3f5f7;box-shadow:0 18px 46px -18px rgba(28,52,80,.34);}
+.screen{position:absolute;inset:0;overflow:hidden;
+  background:
+    radial-gradient(circle at 88% 2%,rgba(105,161,244,.09),transparent 29%),
+    linear-gradient(180deg,#fbfdff 0%,#f5f8fb 34%,#eef3f7 100%);}
+.body{position:absolute;inset:0;overflow-y:auto;padding:12px 12px 24px;}
+
+/* ── 策略卡（照 hall-plans 的 .bd-ocard 语汇：12px 圆角、一支卡片阴影、无描边）── */
+.card{background:var(--surface);border-radius:var(--r-card);box-shadow:var(--shadow-card);
+  overflow:hidden;margin-bottom:10px;}
+.cardhead{display:flex;align-items:flex-start;justify-content:space-between;
+  gap:10px;padding:11px 13px 9px;}
+.chgame{font-size:10.5px;color:var(--faint);display:block;margin-bottom:2px;}
+.chcode{font-size:16px;font-weight:800;letter-spacing:.2px;}
+.chpl{text-align:right;}
+.chpl small{display:block;font-size:10.5px;color:var(--faint);margin-bottom:2px;}
+.chpl b{font-size:15px;font-weight:800;color:var(--win);}
+.cardsum{display:flex;align-items:center;gap:6px;padding:0 13px 10px;
+  font-size:12px;color:var(--muted);}
+.state{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;
+  color:var(--win);}
+.state::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;}
+.cardsum .sp{margin-left:auto;}
+.cardsum b{color:var(--ink);font-weight:800;}
+
+/* ── 线路行 ── */
+/* 列宽是量出来的：390px 屏减两层内边距只剩 340px，而
+   名字 68 ＋ 串 48 ＋「R4/5 · 累计投入 ¥130」118 ＋「本期 ¥270 大 ›」92 ＋ 三条 6px 缝
+   ＝ 344，仍差 4px。所以中间那格的字号收到 11px（≈110px）才不被省略号切。
+   ⚠ hall-plans.html 线上那一行<b>现在就是切的</b>（截图里读作「累计投入 …」）——
+     那是本草案顺带量出来的既有问题，不是这一版引入的。 */
+.line{display:grid;grid-template-columns:68px auto 1fr auto;align-items:center;gap:6px;
+  padding:9px 13px;border-top:1px solid var(--line);font-size:11px;
+  background:none;border-left:0;border-right:0;border-bottom:0;width:100%;
+  font-family:inherit;text-align:left;color:inherit;}
+.line.tappable{cursor:pointer;}
+.line.tappable:active{background:var(--sunken);}
+.lname{font-weight:800;font-size:12px;white-space:nowrap;}
+.pips{display:inline-flex;gap:3px;align-items:center;}
+.pip{width:7px;height:7px;border-radius:50%;background:#e3e8ee;}
+.pip.on{background:#c9922e;}
+.pip.now{background:#e0a533;box-shadow:0 0 0 2px rgba(224,165,51,.22);}
+.pip.last{background:none;border:1.5px solid #e0b3b7;}
+.lst{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lst b{color:var(--ink);font-weight:800;}
+.lbet{white-space:nowrap;color:var(--muted);}
+.lbet b{color:var(--ink);font-weight:800;}
+.side{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;
+  background:var(--blue);color:#fff;font-size:10.5px;font-weight:800;margin-left:4px;}
+.side.s0{background:#e0a533;}
+.line.wait .lname,.line.wait .lst{color:var(--faint);font-weight:500;}
+.line.hit .lst b{color:var(--win);}
+.chev{width:14px;color:var(--faint);text-align:center;font-size:13px;}
+
+.hint{font-size:11px;color:var(--faint);padding:8px 13px 11px;border-top:1px solid var(--line);}
+
+/* ── 底部弹层 ── */
+.mask{position:absolute;inset:0;background:rgba(21,35,53,.36);opacity:0;visibility:hidden;
+  transition:opacity .2s var(--ease),visibility .2s;z-index:40;}
+.mask.on{opacity:1;visibility:visible;}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:41;background:#fff;
+  border-radius:var(--r-sheet) var(--r-sheet) 0 0;box-shadow:0 -12px 32px -14px rgba(0,0,0,.35);
+  transform:translateY(102%);transition:transform .24s var(--ease);
+  max-height:88%;display:flex;flex-direction:column;}
+.sheet.on{transform:translateY(0);}
+.shead{display:flex;align-items:flex-start;gap:10px;padding:15px 16px 12px;
+  border-bottom:1px solid var(--line);}
+.shead .t{font-size:16px;font-weight:800;line-height:1.25;}
+.shead .s{font-size:11.5px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:6px;}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:var(--r-ctrl);
+  background:var(--blue-soft);color:var(--blue-d);font-size:11px;font-weight:800;}
+.chip.warn{background:#fff5e6;color:#96631a;}
+.sclose{margin-left:auto;flex:none;width:30px;height:30px;border-radius:50%;border:0;
+  background:var(--sunken);color:var(--muted);font-size:16px;line-height:1;cursor:pointer;
+  font-family:inherit;}
+.sbody{overflow-y:auto;padding:14px 16px 4px;}
+.sfoot{padding:12px 16px 16px;border-top:1px solid var(--line);
+  display:grid;grid-template-columns:1fr 1.4fr;gap:8px;background:#fff;}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.stat{background:var(--sunken);border-radius:var(--r-ctrl);padding:9px 10px;}
+.stat small{display:block;font-size:10.5px;color:var(--muted);margin-bottom:3px;}
+.stat b{font-size:15px;font-weight:800;letter-spacing:.2px;}
+.stat.win b{color:var(--win);}
+
+.sect{font-size:11.5px;font-weight:800;color:var(--muted);margin:0 0 7px;}
+.ladder{width:100%;border-collapse:collapse;font-size:11.5px;margin-bottom:14px;}
+.ladder th{font-weight:500;color:var(--faint);text-align:right;padding:0 0 6px;font-size:10.5px;}
+.ladder th:first-child{text-align:left;}
+.ladder td{padding:7px 0;border-top:1px solid var(--line);text-align:right;
+  font-variant-numeric:tabular-nums;}
+.ladder td:first-child{text-align:left;font-weight:800;}
+.ladder tr.past td{color:var(--faint);}
+.ladder tr.now td{background:var(--blue-soft);font-weight:800;}
+.ladder tr.now td:first-child{border-radius:var(--r-ctrl) 0 0 var(--r-ctrl);padding-left:8px;}
+.ladder tr.now td:last-child{border-radius:0 var(--r-ctrl) var(--r-ctrl) 0;padding-right:8px;}
+.ladder tr.ext td{color:var(--blue-d);}
+.ladder tr.ext td:first-child::after{content:"新增";margin-left:6px;font-size:10px;
+  font-weight:500;color:var(--blue);}
+.ladder .net.up{color:var(--win);}
+.ladder .net.dn{color:var(--red);}
+
+.extbox{background:var(--sunken);border:1px solid var(--sunken-line);border-radius:var(--r-ctrl);
+  padding:11px 12px;margin-bottom:12px;}
+.extrow{display:flex;align-items:center;gap:10px;}
+.extrow .lab{font-size:12px;font-weight:800;}
+.extrow .lab small{display:block;font-size:10.5px;font-weight:500;color:var(--muted);margin-top:2px;}
+.stepper{margin-left:auto;display:inline-flex;align-items:center;gap:2px;background:#fff;
+  border:1px solid var(--sunken-line);border-radius:var(--r-ctrl);padding:2px;}
+.stepper button{width:30px;height:28px;border:0;background:none;border-radius:6px;
+  font-size:16px;line-height:1;color:var(--blue-d);cursor:pointer;font-family:inherit;}
+.stepper button:disabled{color:#c3ccd6;cursor:default;}
+.stepper button:not(:disabled):active{background:var(--blue-soft);}
+.stepper span{min-width:30px;text-align:center;font-size:13px;font-weight:800;
+  font-variant-numeric:tabular-nums;}
+.extnote{margin-top:9px;padding-top:9px;border-top:1px dashed var(--sunken-line);
+  font-size:11px;line-height:1.65;color:var(--muted);}
+.extnote b{color:var(--ink);font-weight:800;}
+.extnote.none{color:var(--faint);}
+
+.btn{border-radius:var(--r-ctrl);border:1px solid var(--sunken-line);background:var(--sunken);
+  color:#66758a;font-family:inherit;font-size:13px;font-weight:700;min-height:40px;cursor:pointer;}
+.btn.pri{border-color:var(--blue);background:var(--blue);color:#fff;}
+.btn.pri:disabled{border-color:#c6d9ef;background:#c6d9ef;cursor:default;}
+.btn:active{filter:brightness(.98);}
+
+.toast{position:absolute;left:50%;bottom:88px;transform:translate(-50%,8px);z-index:60;
+  background:rgba(23,32,51,.92);color:#fff;font-size:12px;padding:9px 14px;border-radius:999px;
+  opacity:0;transition:opacity .2s,transform .2s;white-space:nowrap;}
+.toast.on{opacity:1;transform:translate(-50%,0);}
+@media (prefers-reduced-motion:reduce){.sheet,.mask,.toast{transition:none;}}
+</style>
+</head>
+<body>
+<div class="stage">
+  <p class="caption">
+    <b>线路详情 ＋ 单线加回合 · draft v1</b> —— 点卡片里<b>在追</b>的那几条线（冠军·大小 / 亚军·单双 /
+    龙虎·冠十）。待触发与已命中的线本版不可点。加回合只作用于点开的那一条，
+    同策略的其它线与策略设置都不动。数字按 每注 ¥10 · 倍投 ×3 · 赔率 1.96 现算。
+  </p>
+
+  <div class="phone">
+    <div class="screen">
+      <div class="body">
+        <div class="card" id="card"></div>
+      </div>
+
+      <div class="mask" id="mask"></div>
+      <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="shTitle">
+        <div class="shead">
+          <div>
+            <div class="t" id="shTitle">—</div>
+            <div class="s" id="shSub"></div>
+          </div>
+          <button class="sclose" id="shClose" aria-label="关闭">×</button>
+        </div>
+        <div class="sbody" id="shBody"></div>
+        <div class="sfoot">
+          <button class="btn" id="shCancel">取消</button>
+          <button class="btn pri" id="shOk">确认</button>
+        </div>
+      </div>
+      <div class="toast" id="toast"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══ 数据 ══════════════════════════════════════════════════════════════════
+   与 hall-plans.html 的 MINE[0] 同一套字段。lanes 里多了一个 R —— 线级回合上限，
+   没写就跟策略走（lineR）。这是本草案唯一新增的数据字段。 */
+var PAYOUT=1.96, EXT_MAX=2;
+var M={code:'C0404R5',game:'极速飞艇',pl:21.20,stake:10,mode:'multi',mult:3,R:5,ran:42,
+  lanes:[
+    {n:'冠军·大小',s:'chase',r:4,side:1,sn:'大'},
+    {n:'亚军·单双',s:'chase',r:2,side:0,sn:'双'},
+    {n:'第三·大小',s:'hit',pl:9.60},
+    {n:'龙虎·冠十',s:'chase',r:1,side:1,sn:'龙'},
+    {n:'第五·单双',s:'wait'},
+    {n:'冠亚和·大小',s:'wait'}
+  ]};
+
+/* ══ 公式：与 hall-plans.html 逐字相同，别在这里另立一套 ══ */
+function ladderAmt(m,r){return m.mode==='flat'?m.stake:m.stake*Math.pow(m.mult||2,r-1);}
+function ladderSum(m,r){
+  if(r<=0)return 0;
+  if(m.mode==='flat')return m.stake*r;
+  var q=m.mult||2;return m.stake*(Math.pow(q,r)-1)/(q-1);
+}
+/* 线级回合上限 —— 落地时 lineRow / pips / 梯子 全都要改走这一支，不能再直接读 m.R */
+function lineR(m,l){return l.R||m.R;}
+function yuan(v){return '¥'+Math.round(v).toLocaleString('en-US');}
+function money(v){var a=Math.abs(v);return (v<0?'−¥':'+¥')+(a>=1000?Math.round(a).toLocaleString('en-US'):a.toFixed(2));}
+function esc(s){return String(s).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+
+/* ══ 卡片 ══ */
+function pipsHTML(m,l){
+  var R=lineR(m,l),h='';
+  for(var i=1;i<=R;i++){
+    var cls='pip';
+    if(l.s==='chase'||l.s==='stuck'){
+      if(i<l.r)cls+=' on'; else if(i===l.r)cls+=' now';
+    }
+    if(i===R)cls+=' last';
+    h+='<i class="'+cls+'"></i>';
+  }
+  return '<span class="pips" aria-hidden="true">'+h+'</span>';
+}
+function lineHTML(m,l,i){
+  var running=(l.s==='chase'||l.s==='stuck');
+  var mid,right;
+  if(running){
+    mid='<b>R'+l.r+'/'+lineR(m,l)+'</b> · 累计投入 <b>'+yuan(ladderSum(m,l.r-1))+'</b>';
+    right='本期 <b>'+yuan(ladderAmt(m,l.r))+'</b><i class="side s'+l.side+'">'+esc(l.sn)+'</i>';
+  }else if(l.s==='hit'){
+    mid='上期命中 <b>'+money(l.pl)+'</b>';right='回合重置 R1';
+  }else{ mid='待触发'; right='—'; }
+  return '<button type="button" class="line '+(running?'tappable':l.s)+'" '+
+    (running?'data-line="'+i+'"':'disabled')+'>'+
+      '<span class="lname">'+esc(l.n)+'</span>'+pipsHTML(m,l)+
+      '<span class="lst">'+mid+'</span>'+
+      '<span class="lbet">'+right+(running?'<i class="chev">›</i>':'')+'</span>'+
+    '</button>';
+}
+function renderCard(){
+  var running=M.lanes.filter(function(l){return l.s==='chase'||l.s==='stuck';}).length;
+  document.getElementById('card').innerHTML=
+    '<div class="cardhead"><span><small class="chgame">'+M.game+'</small>'+
+      '<b class="chcode">'+M.code+'</b></span>'+
+      '<span class="chpl"><small>累计盈亏</small><b>'+money(M.pl)+'</b></span></div>'+
+    '<div class="cardsum"><span class="state">运行中</span><span class="sp"></span>'+
+      '执行线路 <b>'+M.lanes.length+'</b> · 累计运行 <b>'+M.ran+' 期</b></div>'+
+    M.lanes.map(function(l,i){return lineHTML(M,l,i);}).join('')+
+    '<div class="hint">在追的 '+running+' 条可点开看这一条的梯子</div>';
+}
+
+/* ══ 弹层 ══ */
+var CUR=-1, EXT=0;
+function renderSheet(){
+  var l=M.lanes[CUR];if(!l)return;
+  var baseR=lineR(M,l), R=baseR+EXT;
+  var invested=ladderSum(M,l.r-1), now=ladderAmt(M,l.r), win=now*(PAYOUT-1);
+
+  document.getElementById('shTitle').textContent=l.n;
+  /* 抬头那枚 chip 写<b>当前</b>的 baseR，不是预览的 R ——
+     它说的是「这一条现在是什么状态」，还没确认的加回合不该混进状态里。
+     预览只出现在梯子表（R6 那行标「新增」）与下面那句说明里。 */
+  document.getElementById('shSub').innerHTML=
+    '<span class="chip">在追 R'+l.r+'/'+baseR+'</span>'+
+    '<span>本期方向 <b>'+esc(l.sn)+'</b> · 每注 '+yuan(M.stake)+' · '+
+    (M.mode==='flat'?'固定投':'倍投 ×'+M.mult)+'</span>';
+
+  var rows='';
+  for(var i=1;i<=R;i++){
+    var amt=ladderAmt(M,i), sum=ladderSum(M,i), net=amt*(PAYOUT-1)-ladderSum(M,i-1);
+    var cls=i<l.r?'past':(i===l.r?'now':(i>baseR?'ext':''));
+    rows+='<tr class="'+cls+'"><td>R'+i+'</td>'+
+      '<td>'+yuan(amt)+'</td><td>'+yuan(sum)+'</td>'+
+      '<td class="net '+(net>=0?'up':'dn')+'">'+money(net)+'</td></tr>';
+  }
+
+  var extCost=ladderSum(M,R)-ladderSum(M,baseR);
+  /* 只加一回时写「第 6 回合」，加多回才写区间 —— 「第 6…6 回合」是模板漏判 */
+  var span=(EXT===1)?('第 '+R+' 回合'):('第 '+(baseR+1)+'…'+R+' 回合合计');
+  var note = EXT===0
+    ? '<div class="extnote none">未加回合 · 这一条仍然是 R'+baseR+' 打止</div>'
+    : '<div class="extnote">加到 <b>R'+R+'</b> 之后，这一条最多再投 <b>'+yuan(extCost)+
+      '</b>（'+span+'）。<br>只改这一条线，'+
+      M.code+' 的其它 '+(M.lanes.length-1)+' 条与策略设置都不变。</div>';
+
+  document.getElementById('shBody').innerHTML=
+    '<div class="stats">'+
+      '<div class="stat"><small>已投入</small><b>'+yuan(invested)+'</b></div>'+
+      '<div class="stat"><small>本期投注</small><b>'+yuan(now)+'</b></div>'+
+      '<div class="stat win"><small>本期可赢</small><b>'+yuan(win)+'</b></div>'+
+    '</div>'+
+    '<p class="sect">这一条的梯子</p>'+
+    '<table class="ladder"><thead><tr><th>回合</th><th>本期金额</th><th>累计投入</th>'+
+      '<th>命中净收</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+    '<p class="sect">加回合（只给这一条）</p>'+
+    '<div class="extbox"><div class="extrow">'+
+      '<span class="lab">再加回合<small>当前 R'+baseR+' 打止</small></span>'+
+      '<span class="stepper">'+
+        '<button type="button" data-ext="-1" '+(EXT<=0?'disabled':'')+' aria-label="减少">−</button>'+
+        '<span>+'+EXT+'</span>'+
+        '<button type="button" data-ext="1" '+(EXT>=EXT_MAX?'disabled':'')+' aria-label="增加">＋</button>'+
+      '</span></div>'+note+'</div>';
+
+  var ok=document.getElementById('shOk');
+  ok.disabled=(EXT===0);
+  ok.textContent=EXT===0?'确认':'加到 R'+R;
+}
+function openSheet(i){
+  CUR=i;EXT=0;renderSheet();
+  document.getElementById('mask').classList.add('on');
+  document.getElementById('sheet').classList.add('on');
+}
+function closeSheet(){
+  document.getElementById('mask').classList.remove('on');
+  document.getElementById('sheet').classList.remove('on');
+  CUR=-1;
+}
+var TT;
+function toast(t){
+  var e=document.getElementById('toast');e.textContent=t;e.classList.add('on');
+  clearTimeout(TT);TT=setTimeout(function(){e.classList.remove('on');},2000);
+}
+
+/* 事件全部委托到不会重绘的容器上 —— 卡片与弹层内容都是 innerHTML 重建的 */
+document.addEventListener('click',function(e){
+  var t=e.target;if(!t.closest)return;
+  var row=t.closest('[data-line]');
+  if(row){openSheet(+row.getAttribute('data-line'));return;}
+  var step=t.closest('[data-ext]');
+  if(step){
+    EXT=Math.max(0,Math.min(EXT_MAX,EXT+ +step.getAttribute('data-ext')));
+    renderSheet();return;
+  }
+  if(t.closest('#shClose')||t.closest('#shCancel')||t.closest('#mask')){closeSheet();return;}
+  if(t.closest('#shOk')){
+    var l=M.lanes[CUR];if(!l||EXT===0)return;
+    l.R=lineR(M,l)+EXT;
+    var name=l.n,to=l.R;
+    closeSheet();renderCard();
+    toast(name+' 已加到 R'+to+' · 只影响这一条');
+    return;
+  }
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet();});
+
+renderCard();
+</script>
+</body>
+</html>
