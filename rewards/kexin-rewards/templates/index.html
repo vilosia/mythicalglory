@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#FFF8F2" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Kexin Rewards" />
+  <title>Kexin Rewards</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body data-gate="{{ gate|default('all') }}">
+
+  <!-- ================= LOGIN ================= -->
+  <section id="login-screen" class="screen login-screen">
+    <div class="login-inner">
+      <div class="login-badge">
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.6l2.6 5.5 5.9.8-4.3 4.2 1.1 5.9-5.3-2.9-5.3 2.9 1.1-5.9L3.5 9.9l5.9-.8z"/></svg>
+      </div>
+      <h1 class="login-title">Kexin Rewards</h1>
+      <p class="login-sub" id="login-sub">Please log in</p>
+
+      <form id="login-form" class="login-card" autocomplete="off">
+        <div class="field">
+          <label for="lg-name">Login name</label>
+          <input type="text" id="lg-name" name="loginName" autocapitalize="none"
+                 autocorrect="off" spellcheck="false" autocomplete="username" />
+        </div>
+        <div class="field">
+          <label for="lg-pass">Password</label>
+          <input type="password" id="lg-pass" name="password"
+                 autocomplete="current-password" />
+        </div>
+        <div id="login-error" class="login-error" hidden></div>
+        <button type="submit" class="btn solid" id="lg-go">Log in</button>
+      </form>
+
+      <p class="login-foot">A little family points book</p>
+    </div>
+  </section>
+
+  <!-- ================= MAIN APP ================= -->
+  <section id="app-screen" class="screen app-screen" hidden>
+    <main id="app-content" class="app-content"></main>
+    <nav id="bottom-nav" class="bottom-nav"></nav>
+  </section>
+
+  <!-- ================= SHEET LAYER ================= -->
+  <div id="overlay" class="overlay" hidden>
+    <div id="sheet" class="sheet" role="dialog" aria-modal="true"></div>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="{{ url_for('static', filename='js/icons.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
